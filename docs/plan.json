@@ -31,7 +31,7 @@
       "o": 0.25,
       "m": 0.5,
       "p": 1.0,
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": "T04",
@@ -87,7 +87,7 @@
       "o": 0.75,
       "m": 1.5,
       "p": 3.0,
-      "status": "todo"
+      "status": "done"
     },
     {
       "id": "T09",
