@@ -58,7 +58,10 @@ Before making the repo public: commit author emails (two personal Gmail addresse
 5. Simulated only in replay, badged: retrieval guard + UI badge tests.
 6. Secrets only in `.env`: history scan above, `check_invariants.py` no-secrets check, F1 fail-closed entrypoint.
 
+## Status
+
+All findings F1-F7 fixed and verified (gateway negative proofs 7/7 PASS, e2e MISS -> HIT -> REFUSE_NEWER_SOURCE PASS on brief-v2, 89 Python tests). T1 is the documented trust limit.
+
 ## Before the public deployment
 
-- F3 and F4 should be fixed first (F4 matters more once real traffic arrives).
 - Rate limiting per IP plus a daily AI cap (GiggerIQ pattern) is planned for the deployment step, not built yet.
