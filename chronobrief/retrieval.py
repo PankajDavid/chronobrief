@@ -231,7 +231,10 @@ def search(
     )
     if mode == "live" and simulated:
         raise RetrievalError("Simulated articles are only allowed in replay mode.")
-    sources = _cap_newest(_within_window(sources_from_tavily(raw, ref), ref, window_days), cap)
+    # Future-date guard uses the later of (fixture time, real now): a simulated article injected
+    # during a replay demo is dated "now", which must count as newer, not as untrustworthy.
+    normalised = sources_from_tavily(raw, max(ref, now))
+    sources = _cap_newest(_within_window(normalised, ref, window_days), cap)
     return RetrievalResult(
         subject=subj,
         mode=mode,
