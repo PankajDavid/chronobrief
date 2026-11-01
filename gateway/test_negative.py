@@ -10,10 +10,10 @@ Validates:
 6. ADR-005 ExactSet Headline Correction -> REFUSE_SET_CHANGED
 """
 import os
-import json
-import httpx
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 from pathlib import Path
+
+import httpx
 from dotenv import load_dotenv
 
 ROOT = Path(__file__).resolve().parent.parent

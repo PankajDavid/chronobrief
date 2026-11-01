@@ -1,0 +1,63 @@
+======================================================================
+T11 Streamlit Dashboard Proof against Live Bifrost Gateway
+Generated: 2026-11-01
+Gateway: http://localhost:8080 (chronobrief-gateway)
+Model: gemini-3.1-flash-lite
+Mode: REPLAY (fixtures/tavily_stripe.json)
+======================================================================
+
+--- RUN 1 (normal mode, cold cache) ---
+Decision: MISS_COLD
+Banner: info -> 🆕 MISS: first brief for this subject, freshly generated and stored.
+Claims count: 8
+Sources count: 25
+Top Claim Sourcing:
+  - Stripe is partnering with FedEx to integrate logistics data with financial infrastructure to provide financing options for small businesses. | Sources: ['S13', 'S18']
+  - Stripe acquired the embedded financing company Parafin. | Sources: ['S13']
+  - Microsoft appointed Stripe co-founder John Collison to its board of directors. | Sources: ['S10']
+
+--- RUN 2 (normal mode, warm cache) ---
+Decision: HIT
+Banner: success -> ✅ HIT: served from cache. Newest source in this request: 31 Oct 2026, 17:11 UTC. Newest source behind the cached brief: 31 Oct 2026, 17:11 UTC. Saved about 5,186 tokens ($0.0015)
+Saved tokens: 5186
+Saved cost USD: 0.001476
+Cached newest: 2026-10-31T17:11:00Z
+
+--- RUN 3 (refresh mode, skip cache — "Regenerate" button path) ---
+Decision: BYPASS_REFRESH
+Banner: info -> ↻ REGENERATED: the cache was skipped on request, and this brief replaced the stored one.
+
+--- RUN 4 (subsequent normal mode after refresh) ---
+Decision: HIT
+Banner: success -> ✅ HIT: served from cache. Newest source in this request: 31 Oct 2026, 17:11 UTC. Newest source behind the cached brief: 31 Oct 2026, 17:11 UTC. Saved about 5,120 tokens ($0.0014)
+
+======================================================================
+Audit Log Oracle Verification (scripts/verify_audit.py data/audit/freshcache.jsonl)
+======================================================================
+lookups 4  hits 2  hit rate 50.0%
+stale serves 0  (stale answers prevented: 0)
+saved (LLM only): 10306 tokens  $0.0029
+decisions {'MISS_COLD': 1, 'HIT': 2, 'BYPASS_REFRESH': 1}
+benchmark (expected until measured against audit log): 5-min TTL (high false miss) vs 24h TTL (high stale serve) vs ChronoBrief (0% stale serve)
+pitch: "Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."
+
+======================================================================
+Audit Log JSON (scripts/verify_audit.py data/audit/freshcache.jsonl --json)
+======================================================================
+{
+  "lookups": 4,
+  "hits": 2,
+  "hit_rate": 0.5,
+  "decisions": {
+    "MISS_COLD": 1,
+    "HIT": 2,
+    "BYPASS_REFRESH": 1
+  },
+  "stale_serves": 0,
+  "stale_serve_rate": 0.0,
+  "served_without_evidence": 0,
+  "stale_answers_prevented": 0,
+  "saved_tokens": 10306,
+  "saved_cost_usd": 0.002852,
+  "malformed_lines": 0
+}
