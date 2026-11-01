@@ -1,0 +1,46 @@
+{
+  "client": {
+    "host": "0.0.0.0",
+    "port": 8080
+  },
+  "governance": {
+    "virtual_keys": [
+      {
+        "id": "team-alpha",
+        "name": "Team Alpha",
+        "value": "team-alpha"
+      },
+      {
+        "id": "team-beta",
+        "name": "Team Beta",
+        "value": "team-beta"
+      }
+    ]
+  },
+  "plugins": [
+    {
+      "enabled": true,
+      "name": "freshcache",
+      "path": "/etc/bifrost/plugins/freshcache.so",
+      "config": {
+        "audit_path": "/var/log/bifrost/freshcache-audit.jsonl",
+        "max_entries": 1000,
+        "ttl_seconds": 86400,
+        "future_skew_seconds": 86400,
+        "exact_set": true
+      }
+    }
+  ],
+  "providers": {
+    "gemini": {
+      "keys": [
+        {
+          "name": "gemini-key",
+          "value": "env.GEMINI_API_KEY",
+          "weight": 1,
+          "models": ["*"]
+        }
+      ]
+    }
+  }
+}

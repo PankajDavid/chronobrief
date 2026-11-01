@@ -99,6 +99,9 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 	parsed := headers.Parse(req)
 	ctx.SetValue(keyParsedHeaders, parsed)
 	ctx.SetValue(keyStartTime, time.Now())
+	if parsed.TenantID == "" {
+		ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+	}
 
 	return nil, nil
 }
