@@ -17,9 +17,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from chronobrief.gateway import CacheMode, GatewayConfigError, GatewayError  # noqa: E402
+from chronobrief.metrics import load_scoreboard  # noqa: E402
 from chronobrief.pipeline import BriefResult, Settings, generate_brief  # noqa: E402
 from chronobrief.prompt import BriefParseError  # noqa: E402
-from chronobrief.retrieval import RetrievalConfigError, RetrievalError  # noqa: E402
+from chronobrief.retrieval import RetrievalConfigError, RetrievalError, slugify  # noqa: E402
 from chronobrief.ui import (  # noqa: E402
     SECTIONS,
     cache_banner,
@@ -28,6 +29,7 @@ from chronobrief.ui import (  # noqa: E402
     simulated_ids,
     source_line,
 )
+from scripts.inject_article import inject_simulated_article, reset_fixture  # noqa: E402
 
 COOLDOWN_SECONDS = 2.0
 
@@ -141,3 +143,56 @@ if res is not None and not st.session_state.get("error"):
         st.subheader("Sources")
         for sid, s in res.sources.items():
             st.markdown(source_line(sid, s, s.url in res.retrieval.simulated_urls))
+
+# ---------------------------------------------------------------- T12: cache scoreboard
+with st.expander("Cache scoreboard (from the gateway audit log)", expanded=False):
+    try:
+        board = load_scoreboard(settings.audit_log)
+    except OSError as exc:
+        board = None
+        st.warning(f"Could not read the audit log: {exc.strerror or exc}.")
+    if board is None:
+        st.write(f"No cache decisions recorded yet. The gateway writes them to `{md_escape(str(settings.audit_log))}`.")
+    else:
+        s = board.summary
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Reuse (hit) rate", f"{s['hit_rate'] * 100:.0f}%", help=f"{s['hits']} of {s['lookups']} lookups")
+        c2.metric("AI tokens saved", f"{s['saved_tokens']:,}")
+        c3.metric("AI cost saved (USD)", f"${s['saved_cost_usd']:.4f}")
+        c4, c5, c6 = st.columns(3)
+        c4.metric("Stale briefs served", str(s["stale_serves"]),
+                  help="Reused briefs whose evidence was older than the request. Must be 0.")
+        c5.metric("Stale briefs prevented", str(s["stale_answers_prevented"]),
+                  help="Times a newer source arrived and the stored brief was refused.")
+        hit_ms, miss_ms = board.latency_ms.get("HIT"), board.latency_ms.get("MISS_COLD")
+        c6.metric("Median latency HIT / MISS", f"{hit_ms if hit_ms is not None else '—'} / "
+                                               f"{miss_ms if miss_ms is not None else '—'} ms",
+                  help="Gateway-side time recorded in the audit log.")
+        verdict = "PASS" if s["stale_serves"] == 0 and s["served_without_evidence"] == 0 else "FAIL"
+        st.write(f"Independent check (scripts/verify_audit.py): **{verdict}** · "
+                 f"decisions: {md_escape(', '.join(f'{k} {v}' for k, v in sorted(s['decisions'].items())))}")
+        st.caption("Savings count AI generation only. Tavily search runs on every request.")
+        st.dataframe(board.recent, hide_index=True, width="stretch")
+
+# ---------------------------------------------------------------- T13: demo controls (replay only)
+if settings.mode == "replay":
+    with st.expander("Demo controls (replay mode only)", expanded=False):
+        demo_subject = (res.subject if res is not None else subject.strip()) or "Stripe"
+        st.write(f"Subject: **{md_escape(demo_subject)}**. "
+                 "“Simulate breaking news” adds one clearly badged SIMULATED article dated now to the recorded "
+                 "search. Then press Generate brief: the cache must refuse the stored brief.")
+        d1, d2 = st.columns(2)
+        if d1.button("Simulate breaking news"):
+            try:
+                art = inject_simulated_article(slugify(demo_subject), fixtures_dir=settings.fixtures_dir, mode="replay")
+                st.session_state["demo_msg"] = f"Added: {art['title']} ({art['published_date']}). Now press Generate brief."
+            except (FileNotFoundError, ValueError, RuntimeError) as exc:
+                st.session_state["demo_msg"] = f"Could not simulate: {exc}"
+        if d2.button("Reset demo"):
+            try:
+                reset_fixture(slugify(demo_subject), fixtures_dir=settings.fixtures_dir)
+                st.session_state["demo_msg"] = "Recorded search restored. Simulated articles removed."
+            except (FileNotFoundError, ValueError) as exc:
+                st.session_state["demo_msg"] = f"Nothing to reset: {exc}"
+        if msg := st.session_state.get("demo_msg"):
+            st.info(md_escape(msg))

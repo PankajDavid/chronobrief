@@ -42,6 +42,9 @@ def inject_simulated_article(
             shutil.copyfile(base, target)
         else:
             raise FileNotFoundError(f"Fixture not found: {target}")
+    if not base.exists():
+        # First injection for a newly captured subject: keep the clean recording so Reset works.
+        shutil.copyfile(target, base)
 
     ts = (now or datetime.now(UTC)).astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     data = json.loads(target.read_text(encoding="utf-8"))

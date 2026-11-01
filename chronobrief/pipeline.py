@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 
 import httpx
 
@@ -18,7 +19,7 @@ from chronobrief.brief import Brief, Removed, assign_ids, validate_brief
 from chronobrief.fingerprint import Fingerprint, Source, fingerprint
 from chronobrief.gateway import CacheInfo, CacheMode, GatewayReply, chat
 from chronobrief.prompt import PROMPT_VERSION, BriefParseError, build_messages, parse_brief, screen_sources
-from chronobrief.retrieval import Mode, RetrievalResult, search
+from chronobrief.retrieval import DEFAULT_FIXTURES_DIR, Mode, RetrievalResult, search
 
 EMPTY_FINGERPRINT = Fingerprint(newest=None, count_at_newest=0, dated=0, undated=0, set_hash="")
 
@@ -31,6 +32,8 @@ class Settings:
     mode: Mode = "replay"
     tavily_api_key: str = ""
     window_days: int = 30
+    fixtures_dir: Path = DEFAULT_FIXTURES_DIR
+    audit_log: Path = Path("data/audit/freshcache.jsonl")
 
     @classmethod
     def from_env(cls) -> Settings:
@@ -42,6 +45,8 @@ class Settings:
             mode="live" if mode == "live" else "replay",
             tavily_api_key=os.environ.get("TAVILY_API_KEY", ""),
             window_days=int(os.environ.get("CHRONO_WINDOW_DAYS", "30")),
+            fixtures_dir=Path(os.environ.get("CHRONO_FIXTURES_DIR") or DEFAULT_FIXTURES_DIR),
+            audit_log=Path(os.environ.get("CHRONO_AUDIT_LOG") or "data/audit/freshcache.jsonl"),
         )
 
 
@@ -70,7 +75,7 @@ def generate_brief(
 ) -> BriefResult:
     retrieval = search(
         subject, mode=settings.mode, now=now, api_key=settings.tavily_api_key,
-        client=tavily_client, window_days=settings.window_days,
+        client=tavily_client, window_days=settings.window_days, fixtures_dir=settings.fixtures_dir,
     )
     result = BriefResult(subject=retrieval.subject, retrieval=retrieval)
     if retrieval.partial:

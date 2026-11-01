@@ -79,7 +79,7 @@ def fixtures(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     orig = R.search
 
     def search(*a: object, **kw: object):  # type: ignore[no-untyped-def]
-        kw.setdefault("fixtures_dir", tmp_path)
+        kw["fixtures_dir"] = tmp_path
         return orig(*a, **kw)  # type: ignore[arg-type]
 
     monkeypatch.setattr(PL, "search", search)
