@@ -52,7 +52,7 @@ func initPlugin(config any) error {
 	pluginMu.Lock()
 	defer pluginMu.Unlock()
 
-	auditPath := "/var/log/bifrost/freshcache-audit.jsonl"
+	auditPath := "/var/log/bifrost/freshcache.jsonl"
 	maxEntries := 1000
 	ttl := 24 * time.Hour
 	futureSkew := 24 * time.Hour
