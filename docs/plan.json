@@ -20,7 +20,7 @@
       "o": 0.5,
       "m": 1.0,
       "p": 2.0,
-      "status": "todo"
+      "status": "done"
     },
     {
       "id": "T03",
@@ -42,7 +42,7 @@
       "o": 0.5,
       "m": 0.75,
       "p": 1.5,
-      "status": "todo"
+      "status": "done"
     },
     {
       "id": "T05",
@@ -53,7 +53,7 @@
       "o": 0.25,
       "m": 0.5,
       "p": 1.0,
-      "status": "todo"
+      "status": "done"
     },
     {
       "id": "T06",
@@ -65,7 +65,7 @@
       "o": 1.0,
       "m": 2.0,
       "p": 4.0,
-      "status": "todo"
+      "status": "done"
     },
     {
       "id": "T07",
@@ -76,7 +76,7 @@
       "o": 0.75,
       "m": 1.5,
       "p": 4.0,
-      "status": "todo"
+      "status": "done"
     },
     {
       "id": "T08",

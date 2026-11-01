@@ -46,6 +46,9 @@ const (
 	RefuseExpired       Decision = "REFUSE_EXPIRED"
 	RefuseNoFingerprint Decision = "REFUSE_NO_FINGERPRINT"
 	RefuseFutureDate    Decision = "REFUSE_FUTURE_DATE"
+	RefuseNoTenant      Decision = "REFUSE_NO_TENANT"
+	BypassStream        Decision = "BYPASS_STREAM"
+	BypassRefresh       Decision = "BYPASS_REFRESH"
 )
 
 // Serves reports whether the decision means "answer from cache".
@@ -102,3 +105,21 @@ func Storable(now time.Time, fp Fingerprint, p Policy) bool {
 	}
 	return true
 }
+
+// DecideWithTenant evaluates freshness with mandatory tenant isolation (ADR-006).
+// If tenantID is missing or empty, it fails closed (REFUSE_NO_TENANT) without lookup.
+func DecideWithTenant(now time.Time, tenantID string, in Fingerprint, e *Entry, p Policy) Decision {
+	if tenantID == "" {
+		return RefuseNoTenant
+	}
+	return Decide(now, in, e, p)
+}
+
+// StorableWithTenant reports whether an entry is storable, requiring a non-empty tenant ID.
+func StorableWithTenant(now time.Time, tenantID string, fp Fingerprint, p Policy) bool {
+	if tenantID == "" {
+		return false
+	}
+	return Storable(now, fp, p)
+}
+

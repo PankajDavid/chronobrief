@@ -60,6 +60,31 @@ func TestStorable(t *testing.T) {
 	}
 }
 
+func TestDecideWithTenant(t *testing.T) {
+	base := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
+	entry := &Entry{FP: base, CreatedAt: t0.Add(-1 * time.Hour)}
+
+	// Empty tenant must fail closed
+	if got := DecideWithTenant(t0, "", base, entry, pol); got != RefuseNoTenant {
+		t.Fatalf("expected REFUSE_NO_TENANT for empty tenant, got %s", got)
+	}
+
+	// Valid tenant evaluates normally
+	if got := DecideWithTenant(t0, "team-alpha", base, entry, pol); got != Hit {
+		t.Fatalf("expected HIT for valid tenant and identical fp, got %s", got)
+	}
+}
+
+func TestStorableWithTenant(t *testing.T) {
+	validFP := fp(t0.Add(-time.Hour), 1, 1, 0, "h")
+	if StorableWithTenant(t0, "", validFP, pol) {
+		t.Fatal("empty tenant must fail closed and never be storable")
+	}
+	if !StorableWithTenant(t0, "team-alpha", validFP, pol) {
+		t.Fatal("valid tenant with valid fp must be storable")
+	}
+}
+
 // The headline invariant: whenever Decide serves from cache, the request is NOT newer than
 // the entry. Checked over a few hundred thousand random fingerprint pairs.
 func TestNoStaleServeInvariant(t *testing.T) {
