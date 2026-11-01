@@ -14,5 +14,5 @@ services:
       - CHRONO_MODEL=${CHRONO_MODEL:-gemini-3.1-flash-lite}
       - CHRONO_CACHE_SET_POLICY=${CHRONO_CACHE_SET_POLICY:-exact_set}
     volumes:
-      - ./logs:/var/log/bifrost
+      - ./data/audit:/var/log/bifrost:rw
     restart: unless-stopped

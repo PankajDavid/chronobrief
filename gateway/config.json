@@ -25,7 +25,7 @@
       "name": "freshcache",
       "path": "/etc/bifrost/plugins/freshcache.so",
       "config": {
-        "audit_path": "/var/log/bifrost/freshcache-audit.jsonl",
+        "audit_path": "/var/log/bifrost/freshcache.jsonl",
         "max_entries": 1000,
         "ttl_seconds": 86400,
         "future_skew_seconds": 86400,

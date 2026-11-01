@@ -135,7 +135,7 @@ func Parse(req *schemas.HTTPRequest) RequestHeaders {
 
 	refreshStr := strings.ToLower(getHeader(req, "x-chrono-refresh"))
 	cacheControl := strings.ToLower(getHeader(req, "cache-control"))
-	if refreshStr == "true" || strings.Contains(cacheControl, "no-cache") {
+	if mode == "refresh" || refreshStr == "true" || strings.Contains(cacheControl, "no-cache") {
 		h.Refresh = true
 	}
 
