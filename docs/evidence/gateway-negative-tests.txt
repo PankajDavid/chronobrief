@@ -1,34 +1,34 @@
 ======================================================================
 CHRONOBRIEF GATEWAY NEGATIVE & ADR PROOFS
-Timestamp: 2026-11-01T14:02:03Z
+Timestamp: 2026-11-01T17:07:22Z
 Gateway: http://localhost:8080 | Model: gemini-3.1-flash-lite
 ======================================================================
 
 [TEST 1] No Fingerprint Headers -> REFUSE_NO_FINGERPRINT (Not Stored)
 HTTP Status: 200
 Response Header x-chrono-cache: REFUSE_NO_FINGERPRINT
-Audit Log Record: {"timestamp":"2026-11-01T14:02:06Z","tenant_id":"64b56b721b34","cache_key":"5ba54b4d25b1102b25bc789ebc125b909b1a2137a15e6ba8dc8f98cfd71f3814","decision":"REFUSE_NO_FINGERPRINT","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":1009}
+Audit Log Record: {"timestamp":"2026-11-01T17:07:25Z","tenant_id":"64b56b721b34","cache_key":"5ba54b4d25b1102b25bc789ebc125b909b1a2137a15e6ba8dc8f98cfd71f3814","decision":"REFUSE_NO_FINGERPRINT","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":948}
 Subsequent Call Header x-chrono-cache: REFUSE_NO_FINGERPRINT (expected REFUSE_NO_FINGERPRINT, not HIT)
 Result: PASS
 
 [TEST 2] Future-Dated Newest (>24h ahead) -> REFUSE_FUTURE_DATE (Not Stored)
 HTTP Status: 200
 Response Header x-chrono-cache: REFUSE_FUTURE_DATE
-Audit Log Record: {"timestamp":"2026-11-01T14:02:08Z","tenant_id":"64b56b721b34","cache_key":"e1eaad553d22ca1359ab564a76f6e447b5981edf6a11e2002b1b6a484836d446","decision":"REFUSE_FUTURE_DATE","request_newest":"2026-11-10T00:00:00Z","incoming_newest":"2026-11-10T00:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"2222222222222222222222222222222222222222222222222222222222222222","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":840}
+Audit Log Record: {"timestamp":"2026-11-01T17:07:27Z","tenant_id":"64b56b721b34","cache_key":"e1eaad553d22ca1359ab564a76f6e447b5981edf6a11e2002b1b6a484836d446","decision":"REFUSE_FUTURE_DATE","request_newest":"2026-11-10T00:00:00Z","incoming_newest":"2026-11-10T00:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"2222222222222222222222222222222222222222222222222222222222222222","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":864}
 Subsequent Call Header x-chrono-cache: REFUSE_FUTURE_DATE (expected REFUSE_FUTURE_DATE, not HIT)
 Result: PASS
 
 [TEST 3] Streaming Request -> BYPASS_STREAM in Audit Log (Not Stored)
 HTTP Status: 200
-Audit Log Record: {"timestamp":"2026-11-01T14:02:10Z","tenant_id":"64b56b721b34","cache_key":"","decision":"BYPASS_STREAM","request_newest":"2026-10-30T12:00:00Z","incoming_newest":"2026-10-30T12:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"3333333333333333333333333333333333333333333333333333333333333333","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":879}
+Audit Log Record: {"timestamp":"2026-11-01T17:07:29Z","tenant_id":"64b56b721b34","cache_key":"","decision":"BYPASS_STREAM","request_newest":"2026-10-30T12:00:00Z","incoming_newest":"2026-10-30T12:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"3333333333333333333333333333333333333333333333333333333333333333","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":1059}
 Subsequent Non-Streaming Call Header x-chrono-cache: MISS_COLD (expected MISS_COLD, proving stream was not cached)
 Result: PASS
 
 [TEST 4] refresh Mode Recomputes & Replaces -> BYPASS_REFRESH then HIT
 Call 1 (mode=refresh) Header: BYPASS_REFRESH
-Call 1 Audit Record: {"timestamp":"2026-11-01T14:02:12Z","tenant_id":"64b56b721b34","cache_key":"4e90e247ab3eb70bd8233556bf89d0f899b43d2f169e083a6d3ffe5e7631bb46","decision":"BYPASS_REFRESH","request_newest":"2026-10-30T15:00:00Z","incoming_newest":"2026-10-30T15:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"4444444444444444444444444444444444444444444444444444444444444444","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":889}
+Call 1 Audit Record: {"timestamp":"2026-11-01T17:07:31Z","tenant_id":"64b56b721b34","cache_key":"4e90e247ab3eb70bd8233556bf89d0f899b43d2f169e083a6d3ffe5e7631bb46","decision":"BYPASS_REFRESH","request_newest":"2026-10-30T15:00:00Z","incoming_newest":"2026-10-30T15:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"4444444444444444444444444444444444444444444444444444444444444444","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":1009}
 Call 2 (mode=normal) Header: HIT
-Call 2 Audit Record: {"timestamp":"2026-11-01T14:02:12Z","tenant_id":"64b56b721b34","cache_key":"4e90e247ab3eb70bd8233556bf89d0f899b43d2f169e083a6d3ffe5e7631bb46","decision":"HIT","request_newest":"2026-10-30T15:00:00Z","incoming_newest":"2026-10-30T15:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"4444444444444444444444444444444444444444444444444444444444444444","cached_newest":"2026-10-30T15:00:00Z","entry_newest":"2026-10-30T15:00:00Z","cached_count_at_newest":1,"entry_count":1,"cached_set_hash":"4444444444444444444444444444444444444444444444444444444444444444","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":18,"cost_usd":0.000012,"saved_cost_usd":0.000012,"latency_ms":0}
+Call 2 Audit Record: {"timestamp":"2026-11-01T17:07:31Z","tenant_id":"64b56b721b34","cache_key":"4e90e247ab3eb70bd8233556bf89d0f899b43d2f169e083a6d3ffe5e7631bb46","decision":"HIT","request_newest":"2026-10-30T15:00:00Z","incoming_newest":"2026-10-30T15:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"4444444444444444444444444444444444444444444444444444444444444444","cached_newest":"2026-10-30T15:00:00Z","entry_newest":"2026-10-30T15:00:00Z","cached_count_at_newest":1,"entry_count":1,"cached_set_hash":"4444444444444444444444444444444444444444444444444444444444444444","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":18,"cost_usd":0.000012,"saved_cost_usd":0.000012,"latency_ms":0}
 Result: PASS
 
 [TEST 5A] ADR-006 Missing Virtual Key Fails Closed -> REFUSE_NO_TENANT
@@ -45,7 +45,7 @@ Result 5B: PASS
 Headline Base Call 1: MISS_COLD
 Headline Base Call 2: HIT
 Headline Modified Call 3 Header: REFUSE_SET_CHANGED
-Headline Modified Call 3 Audit: {"timestamp":"2026-11-01T14:02:15Z","tenant_id":"64b56b721b34","cache_key":"1fe15f020c406820b04f3966dcfe1be360c10ff4e482005e5823bfa3678bac6b","decision":"REFUSE_SET_CHANGED","request_newest":"2026-10-31T12:00:00Z","incoming_newest":"2026-10-31T12:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":962}
+Headline Modified Call 3 Audit: {"timestamp":"2026-11-01T17:07:35Z","tenant_id":"64b56b721b34","cache_key":"1fe15f020c406820b04f3966dcfe1be360c10ff4e482005e5823bfa3678bac6b","decision":"REFUSE_SET_CHANGED","request_newest":"2026-10-31T12:00:00Z","incoming_newest":"2026-10-31T12:00:00Z","request_count_at_newest":1,"incoming_count":1,"request_set_hash":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","prompt_tokens":12,"completion_tokens":6,"total_tokens":18,"saved_tokens":0,"cost_usd":0.000012,"saved_cost_usd":0,"latency_ms":1009}
 Result 6: PASS
 
 ======================================================================

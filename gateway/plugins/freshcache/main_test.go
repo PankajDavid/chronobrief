@@ -3,7 +3,9 @@ package main
 import (
 	"context"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/chronobrief/freshcache/internal/decide"
 	"github.com/maximhq/bifrost/core/schemas"
@@ -159,3 +161,67 @@ func TestPluginLifecycle(t *testing.T) {
 		t.Fatalf("Cleanup failed: %v", err)
 	}
 }
+
+func TestServerSideRequestID(t *testing.T) {
+	bCtx := schemas.NewBifrostContext(context.Background(), schemas.NoDeadline)
+	req := &schemas.HTTPRequest{
+		Headers: map[string]string{
+			"x-freshcache-id": "client-spoofed-fc-id",
+			"x-request-id":    "client-spoofed-req-id",
+			"x-bf-vk":         "team-alpha",
+		},
+	}
+	_, err := HTTPTransportPreHook(bCtx, req)
+	if err != nil {
+		t.Fatalf("HTTPTransportPreHook failed: %v", err)
+	}
+
+	serverReqID, ok := bCtx.Value(keyReqID).(string)
+	if !ok || serverReqID == "" {
+		t.Fatal("expected server-generated reqID in context")
+	}
+	if serverReqID == "client-spoofed-fc-id" || serverReqID == "client-spoofed-req-id" {
+		t.Fatalf("security violation: client header was used as reqID: %s", serverReqID)
+	}
+	if !strings.HasPrefix(serverReqID, "fc-") {
+		t.Fatalf("expected server-generated reqID to start with 'fc-', got %s", serverReqID)
+	}
+	if req.Headers["x-freshcache-id"] != serverReqID {
+		t.Fatalf("expected request header x-freshcache-id to be overwritten with %s, got %s", serverReqID, req.Headers["x-freshcache-id"])
+	}
+}
+
+func TestPruneOldReqOutcomes(t *testing.T) {
+	now := time.Now()
+	// Clear any existing
+	reqOutcomes.Range(func(k, v any) bool {
+		reqOutcomes.Delete(k)
+		return true
+	})
+
+	// 1. Old entry (3 minutes ago) -> should be deleted
+	reqOutcomes.Store("old-entry-1", &reqOutcome{
+		createdAt: now.Add(-3 * time.Minute),
+	})
+	// 2. Old entry (5 minutes ago) -> should be deleted
+	reqOutcomes.Store("old-entry-2", &reqOutcome{
+		createdAt: now.Add(-5 * time.Minute),
+	})
+	// 3. Fresh entry (10 seconds ago) -> should be kept
+	reqOutcomes.Store("fresh-entry", &reqOutcome{
+		createdAt: now.Add(-10 * time.Second),
+	})
+
+	pruneOldReqOutcomes(now)
+
+	if _, ok := reqOutcomes.Load("old-entry-1"); ok {
+		t.Error("expected old-entry-1 to be pruned")
+	}
+	if _, ok := reqOutcomes.Load("old-entry-2"); ok {
+		t.Error("expected old-entry-2 to be pruned")
+	}
+	if _, ok := reqOutcomes.Load("fresh-entry"); !ok {
+		t.Error("expected fresh-entry to be preserved")
+	}
+}
+

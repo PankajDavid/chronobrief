@@ -48,6 +48,39 @@ var (
 	reqOutcomes sync.Map // map[string]*reqOutcome
 )
 
+const (
+	reqOutcomeTTL  = 2 * time.Minute
+	maxReqOutcomes = 5000
+)
+
+// pruneOldReqOutcomes removes reqOutcome entries older than reqOutcomeTTL,
+// and caps the map size at maxReqOutcomes to prevent unbounded memory growth (F4).
+func pruneOldReqOutcomes(now time.Time) {
+	cutoff := now.Add(-reqOutcomeTTL)
+	count := 0
+	reqOutcomes.Range(func(k, v any) bool {
+		count++
+		if o, ok := v.(*reqOutcome); ok {
+			if o.createdAt.Before(cutoff) {
+				reqOutcomes.Delete(k)
+				count--
+			}
+		}
+		return true
+	})
+	if count > maxReqOutcomes {
+		excess := count - maxReqOutcomes
+		reqOutcomes.Range(func(k, v any) bool {
+			if excess <= 0 {
+				return false
+			}
+			reqOutcomes.Delete(k)
+			excess--
+			return true
+		})
+	}
+}
+
 func initPlugin(config any) error {
 	pluginMu.Lock()
 	defer pluginMu.Unlock()
@@ -115,17 +148,9 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 	ctx.SetValue(keyParsedHeaders, parsed)
 	ctx.SetValue(keyStartTime, now)
 
-	reqID := ""
-	if req != nil {
-		reqID = req.CaseInsensitiveHeaderLookup("x-freshcache-id")
-		if reqID == "" {
-			reqID = req.CaseInsensitiveHeaderLookup("x-request-id")
-		}
-	}
-	if reqID == "" {
-		id := atomic.AddUint64(&reqCounter, 1)
-		reqID = fmt.Sprintf("fc-%d-%d", now.UnixNano(), id)
-	}
+	// Always generate request ID server-side; ignore client headers (F4)
+	id := atomic.AddUint64(&reqCounter, 1)
+	reqID := fmt.Sprintf("fc-%d-%d", now.UnixNano(), id)
 	if req != nil {
 		if req.Headers == nil {
 			req.Headers = make(map[string]string)
@@ -133,6 +158,9 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 		req.Headers["x-freshcache-id"] = reqID
 	}
 	ctx.SetValue(keyReqID, reqID)
+
+	// Prune old entries to prevent unbounded memory growth (F4)
+	pruneOldReqOutcomes(now)
 
 	initialOutcome := &reqOutcome{
 		startTime: now,
@@ -414,12 +442,6 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 	}
 
 	reqID, _ := ctx.Value(keyReqID).(string)
-	if reqID == "" && req != nil {
-		reqID = req.CaseInsensitiveHeaderLookup("x-freshcache-id")
-		if reqID == "" {
-			reqID = req.CaseInsensitiveHeaderLookup("x-request-id")
-		}
-	}
 
 	var outcome *reqOutcome
 	if reqID != "" {
