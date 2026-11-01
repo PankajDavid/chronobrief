@@ -1,47 +1,325 @@
 {
   "subject": "Stripe",
-  "captured_at": "2026-10-30T18:00:00Z",
+  "captured_at": "2026-11-01T10:55:28Z",
   "results": [
     {
-      "title": "Stripe launches modular revenue and finance automation suite for enterprise billing",
-      "url": "https://reuters.com/technology/stripe-launches-modular-billing-2026-10-28",
-      "published_date": "2026-10-28T14:30:00Z",
-      "content": "Stripe unveiled its new modular revenue and finance automation suite on Wednesday, enabling enterprise CFOs to unify usage-based billing across 45 markets.",
+      "title": "Stripe taps FedEx data to expand small business access to financing - FreightWaves",
+      "url": "https://www.freightwaves.com/news/stripe-taps-fedex-data-to-expand-small-business-access-to-financing",
+      "published_date": "Wed, 07 Oct 2026 12:50:21 GMT",
+      "content": "Stripe is a payments company that provides digital infrastructure businesses use to accept and manage money online, primarily helping them bill customers, process payments and analyze transaction data. Its developer tools let companies add payments to their websites and apps without having to build that pipe themselves. With Stripe, businesses can accept credit cards, digital wallets like Apple Pay and Google Pay, and other payment methods, across multiple currencies. [...] \u201cFedEx and Stripe power the physical and digital foundations of global trade,\u201d said John Collison, co-founder and president of Stripe. \u201cTogether, we can turn the operational momentum of a small business, like shipping a thousand packages a week, into access to growth finance through Stripe Capital.\u201d\n\nThe first joint solution is planned for launch in early 2027, the companies said in a news release. [...] The Stripe Capital unit provides fast business loans and merchant cash, with flexible payment terms.",
+      "score": 0.82492816,
       "simulated": false
     },
     {
-      "title": "Stripe appoints former cloud infrastructure leader Maya Lin as VP of Global Partner Ecosystem",
-      "url": "https://techcrunch.com/2026/10/25/stripe-appoints-maya-lin-vp-partners",
-      "published_date": "2026-10-25T09:15:00Z",
-      "content": "Stripe has hired Maya Lin as Vice President of Global Partner Ecosystem to accelerate enterprise B2B adoption and regional systems integrator alliances.",
+      "title": "Stripe, FedEx team on SMB lending | Payments Dive",
+      "url": "https://www.paymentsdive.com/news/stripe-fedex-team-on-smb-lending-business-capital-logistics/832368",
+      "published_date": "Fri, 30 Oct 2026 03:42:57 GMT",
+      "content": "Stripe is partnering with global shipping giant FedEx to combine their data insights from logistics and financial infrastructure to create financing options for small businesses, the companies said Tuesday in a joint press release. [...] \u201cStripe will be better positioned to evaluate, approve, and deploy tailored funding more quickly than traditional lending processes, eliminating the friction for SMBs,\u201d the release said. Stripe makes business loans through two partner banks. [...] The FedEx effort follows Stripe\u2019s purchase last week of embedded financing company Parafin, which also arranges loans for small businesses. Stripe plans to use the San Francisco-based startup to expand its lending for smaller firms. In the Sept. 30 news release about the Parafin acquisition, Stripe argued that small businesses are finding it difficult to access capital, citing a decreasing percentage of approved loans last year compared to 2015.",
+      "score": 0.53342235,
       "simulated": false
     },
     {
-      "title": "Stripe expands stablecoin settlement rails to 30 additional countries",
-      "url": "https://bloomberg.com/news/articles/2026-10-21/stripe-expands-stablecoin-rails",
-      "published_date": "2026-10-21T16:45:00Z",
-      "content": "Cross-border merchants using Stripe can now settle transactions in regulated stablecoins across 30 additional countries, cutting settlement times from 3 days to under 10 seconds.",
+      "title": "Stripe agentic commerce revs up",
+      "url": "https://finance.yahoo.com/technology/ai/articles/stripe-agentic-commerce-revs-153600852.html",
+      "published_date": "Thu, 15 Oct 2026 00:00:00 GMT",
+      "content": "John Collison and his older brother Patrick, who is Stripe's CEO, co-founded the company in 2010. The business has dual headquarters in Dublin and South San Francisco, and was valued at about $160 billion earlier this year when the company raised money from existing shareholders and employees.\n\nOnline retail behemoth Amazon recently banned Meta's Muse agent from shopping on its website, saying it would breach the terms of conditions for customers shopping on the website. [...] 1. Crypto\n2. AI\n\n   AI\n\nPayments Dive\n\n# Stripe agentic commerce revs up\n\nLynne Marek\n\n4 min read\n\n STRI.PVT\n META\n\nThis story was originally published on Payments Dive. To receive daily news and insights, subscribe to our free daily Payments Dive newsletter.\n\nDigital payments processor Stripe charted a significant increase in agentic commerce, starting last month, the company's president, John Collison, said this week. [...] During the podcast, Collison made a pitch for Stripe's AI services offered through OpenRouter, a business that Stripe paid $7.5 billion to purchase in August. OpenRouter acts as a gateway for access to a variety of AI models, including Muse and Meta's latest upgrade, Wonder.",
+      "score": 0.502564,
       "simulated": false
     },
     {
-      "title": "Stripe reports 38 percent growth in AI-native startup payment volume in Q3 update",
-      "url": "https://ft.com/content/stripe-q3-2026-ai-volume",
-      "published_date": "2026-10-18T11:00:00Z",
-      "content": "Payment volume from AI-native software companies grew 38 percent quarter-over-quarter on Stripe, driven by seat-plus-token hybrid pricing models.",
+      "title": "PYMNTS | Stripe Pay Targets Instant B2B Payments",
+      "url": "https://www.pymnts.com/news/b2b-payments/2026/stripe-pay-targets-instant-b2b-payments",
+      "published_date": "Wed, 28 Oct 2026 01:34:37 GMT",
+      "content": "which provides platforms with credit offerings for their small business customers. [...] PYMNTS IntelligenceThe Prompt EconomyNewswireEventsSUBSCRIBEPartner With PYMNTS\n\nAboutContact\n\nPYMNTS.com home page\n\n# Stripe Pay Targets Instant B2B Payments\n\nBy  PYMNTS   |  October 27, 2026\n\n|\n\nStripe agentic commerce\n\nStripe now enables instant B2B transfers through a \u201cstripe pay\u201d plug-in, the company said in a Tuesday (Oct. 27) post on LinkedIn.\n\n\u201cFind companies using their Stripe profile handle and send funds for free,\u201d Stripe said in the post. \u201cAvailable in the Dashboard and CLI.\u201d [...] In some other recent moves reported by PYMNTS, Stripe teamed with Plasma to introduce multi-currency stablecoin cards designed to give people and businesses an easier time spending across currencies and markets; announced it plans to work with FedEx Dataworks to leverage their respective platforms to expand access to financing for small and medium-sized businesses; and said it plans to strengthen its support for platforms by acquiring embedded financial products platform Parafin, which provides",
+      "score": 0.45449692,
       "simulated": false
     },
     {
-      "title": "Stripe introduces adaptive fraud defense model trained on 120 billion annual transactions",
-      "url": "https://venturebeat.com/ai/stripe-adaptive-fraud-defense-2026",
-      "published_date": "2026-10-14T13:20:00Z",
-      "content": "Stripe Radar's updated foundation model evaluated 120 billion annual transactions to reduce false declines by 19 percent for subscription merchants.",
+      "title": "Microsoft taps Stripe co-founder John Collison for its board as two longtime directors depart \u2013 GeekWire",
+      "url": "https://www.geekwire.com/2026/microsoft-taps-stripe-co-founder-john-collison-for-its-board-as-two-longtime-directors-depart",
+      "published_date": "Wed, 21 Oct 2026 21:55:50 GMT",
+      "content": "The companies\u2019 work together came up in the November episode of Stripe\u2019s \u201cCheeky Pint\u201d podcast. Collison said Stripe was building a platform business in agentic commerce, in which AI agents shop and pay on behalf of people, and asked Nadella what advice he had for a company building in such an early market.\n\nNadella said the key would be making it simple for small merchants to sell through AI agents, without asking them to set up servers or adopt a string of new technical protocols themselves. [...] Stripe helps power Copilot Checkout, which Microsoft launched in January to let U.S. users of its AI assistant buy from Etsy sellers and other retailers without leaving the chat. In 2023, the companies teamed up to let businesses take card payments for paid events in Microsoft Teams. [...] GeekWire Logo\n\nWhat happens here matters everywhere.\n\n# Microsoft taps Stripe co-founder John Collison for its board as two longtime directors depart\n\n\n LinkedIn\n Email\n\nHeadshot of Stripe co-founder and President John Collison, wearing a dark collared shirt against a light gray background.\n\nStripe co-founder and President John Collison has been nominated to join Microsoft\u2019s board of directors. (Stripe Photo)",
+      "score": 0.4296453,
       "simulated": false
     },
     {
-      "title": "Stripe partners with global airlines on instant multi-currency refund orchestration",
-      "url": "https://wsj.com/articles/stripe-airline-refund-orchestration-2026-10-09",
-      "published_date": "2026-10-09T08:00:00Z",
-      "content": "Five major international carriers adopted Stripe's instant multi-currency refund orchestration API ahead of peak holiday travel.",
+      "title": "Wayne Aldis Stripe II Obituary Oct 26, 2026 - Roberts Funeral Home",
+      "url": "https://www.robertsfuneralhome.com/obituaries/wayne-stripe-ii",
+      "published_date": "Mon, 26 Oct 2026 10:00:00 GMT",
+      "content": "Wayne is survived by his parents Wayne Stripe Sr & Phyllis Carpenter. He is survived by his sister, Kathy Stripe and brother Thomas (Kimberly) Stripe. He is survived by his children Wayne (Erica) Stripe III, Samantha (Benjamin) Mahan and Laura (Brian) Sarlouis. He is survived by his grandchildren who called him Pa Pa and were the absolute light of his life\u2014Connor Sarlouis, Cole Sarlouis, Cierra Stranger, Rory Stripe, Murphy Mahan, Riley Mahan & Ronan Stripe. [...] \u2039 \u2039 Return to Current Obituaries\n\nRoberts Funeral Home Logo\n\nWayne Aldis Stripe II Profile Photo\n\n1967 Wayne 2026\n\nSend Flowers\n\nSend Flowers  Plant A Tree\n\nPlant A Tree  Send a Gift\n\nSend a Gift\n\n# Wayne Aldis Stripe II\n\n## Nov 8, 1967 \u2014 Oct 26, 2026\n\n### Cincinnati\n\nListen to Obituary\n\nWayne A. Stripe Jr., 58, of Cincinnati, Ohio, passed away suddenly at his home on October 26, 2026, following a brief illness. [...] Wayne will be remembered for his willingness to lend a hand to anyone without hesitation, his intelligence, integrity and his love of life. He loved Jesus and he loved his family. Those priorities were evident in the life he lived. Wayne leaves behind a legacy of generosity, love & so much fun. \n\nDonations can be made in memory of Wayne to the following organization which he held dear to his heart.",
+      "score": 0.2830827,
+      "simulated": false
+    },
+    {
+      "title": "Meta, Walmart, Stripe, and Sierra partner to establish rules for personal AI agents",
+      "url": "https://www.cnbc.com/video/2026/10/06/meta-walmart-stripe-and-sierra-partner-to-establish-rules-for-personal-ai-agents.html",
+      "published_date": "Tue, 06 Oct 2026 18:21:29 GMT",
+      "content": "Pro News\nJosh Brown\nMike Santoli\nCalls of the Day\nMy Portfolio\nLivestream\nFull Episodes\nStock Screener\nMarket Forecast\nOptions Investing\nChart Investing\nSubscribe\nLivestream\nMenu\nMake It\nselect\nUSA\nINTL\nLivestream\nSearch quotes, news & videos\nLivestream\nWatchlist\nSIGN IN\nCreate free account\nMarkets\nBusiness\nInvesting\nTech\nPolitics & Policy\nVideo\nWatchlist\nInvesting Club\nPRO\nLivestream\nMenu\nwatch now\nIn this video\nMETA\nWMT\nSTRIPE.FG\nShare\nShare Article via Facebook\nShare Article via Twitter [...] Share Article via LinkedIn\nShare Article via Email\nPower Lunch\nMeta, Walmart, Stripe, and Sierra partner to establish rules for personal AI agents\nCNBC's Kate Rooney reports on companies teaming up to create a new rulebook for AI agents.\n02:29\nTue, Oct 6 2026\n2:21 PM EDT\nwatch now\nwatch now\nVIDEO\n05:13\nCFTC Chair Michael Selig on Utah-Kalshi suit: We'll take it all the way to the Supreme Court\n6 hours ago\nwatch now\nwatch now\nVIDEO\n04:09 [...] AI\nEnterprise\nInternet\nMedia\nMobile\nSocial Media\nCNBC Disruptor 50\nTech Guide\nPolitics & Policy\nWhite House\nPolicy\nDefense\nCongress\nExpanding Opportunity\nEurope Politics\nChina Politics\nAsia Politics\nWorld Politics\nVideo\nLatest Video\nFull Episodes\nLivestream\nTop Video\nLive Audio\nEurope TV\nAsia TV\nCNBC Podcasts\nCEO Interviews\nDigital Originals\nWatchlist\nInvesting Club\nTrust Portfolio\nAnalysis\nTrade Alerts\nMeeting Videos\nHomestretch\nJim's Columns\nEducation\nSubscribe\nPRO\nPro News\nJosh Brown",
+      "score": 0.28188768,
+      "simulated": false
+    },
+    {
+      "title": "How Stripe, Zerohash alums are looking to speed international payments",
+      "url": "https://www.bankingdive.com/news/how-stablecoins-speed-international-payments-crypto-cross-border-latitude-cyril-mathew/832094",
+      "published_date": "Fri, 02 Oct 2026 10:21:56 GMT",
+      "content": "Mathew, a former Stripe cryptocurrency executive, established Latitude in January 2025 with Brian Wrightson, a former Stripe engineer who serves as chief technology officer, and Vivek Morzaria, a former executive with Zerohash, a crypto infrastructure startup. Latitude has raised $43 million in equity funding, including $35 million announced last month. [...] \u201cThere\u2019s no question that we haven\u2019t been able to move as fast as we would like\u201d with product launches, Chris Britt said Sept. 9. Acquiring Stride Bank will give the fintech \u201ccomplete control of our destiny.\u201d\n\n By Caitlin Mullen \u2022 Sept. 10, 2026  \n\n### Get the free newsletter\n\nSubscribe to Banking Dive for top news, trends & analysis [...] see much more consistent pricing across the board, especially when there\u2019s clear regulation and liquidity, and there\u2019s other ways for a company like ours to monetize in that world, like other financial products you can build on top of the business.",
+      "score": 0.25755537,
+      "simulated": false
+    },
+    {
+      "title": "Watch Stripe Bets on AI-Powered Commerce - Bloomberg",
+      "url": "https://www.bloomberg.com/news/videos/2026-10-14/stripe-bets-on-ai-powered-commerce-video",
+      "published_date": "Wed, 14 Oct 2026 00:00:00 GMT",
+      "content": "[](\n\nLive TV\n   Markets \n   Finance\n   Economics\n   Industries\n   Tech\n   Politics\n   Businessweek\n   Opinion\n   Video\n   More \n\nUS Edition\n\n[](\n\nBloomberg Open Interest \u2022 Oct 14th, 2026\n\nStripe Bets on AI-Powered Commerce\n\nEileen O'Mara, Stripe Vice Chair, joins Bloomberg Open Interest from the International AI Summit in Dublin. She discusses Europe\u2019s push to help startups scale, the surge of AI-powered businesses and how agentic commerce could reshape payments.\n\n## Available on: [...] Skip to content\n\nBloomberg the Company & Its Products The Company & its ProductsBloomberg Terminal Demo RequestBloomberg Anywhere Remote Login Bloomberg Anywhere LoginBloomberg Customer Support Customer Support\n\n   ### Bloomberg\n\nConnecting decision makers to a dynamic network of information, people and ideas, Bloomberg quickly and accurately delivers business and financial information, news and insight around the world \n### For Customers [...] ### Bloomberg\n\nConnecting decision makers to a dynamic network of information, people and ideas, Bloomberg quickly and accurately delivers business and financial information, news and insight around the world \n### For Customers\n\n       Bloomberg Anywhere Remote Login\n       Software Updates\n       Manage Contracts and Orders\n\n### Support\n\nAmericas+1 212 318 2000\n\nEMEA+44 20 7330 7500\n\nAsia Pacific+65 6212 1000\n\n[](",
+      "score": 0.23794802,
+      "simulated": false
+    },
+    {
+      "title": "Falcons' viral stripes will appear down center of helmets - ESPN",
+      "url": "https://www.espn.com/nfl/story/_/id/50259857/falcons-throwback-logo-include-viral-stripe-pattern",
+      "published_date": "Fri, 23 Oct 2026 19:11:12 GMT",
+      "content": "The presentation of the retro logo on top of the vertical striping in those colors on that specific social media post seems to be the object of controversy. The stripes will appear down the middle of the team's red helmet and not behind the logo like the graphic showed.\n\nThe Falcons declined to comment on the situation. An NFL spokesperson did not immediately respond to a request for comment from The Associated Press. [...] The post featured the franchise's throwback black-and-white bird logo, which it used from the 1960s all the way up to the early 2000s. Behind the logo were vertical stripes in red, black and gold. The colors are a reference to the team's 1966 uniform, which consisted of a red helmet, the black Falcons logo, and black, white and gold striping on the pants. [...] The Falcons have worn the retro logo for games every year since 2009 with the exception of several years when the NFL prevented teams from using an alternative helmet color. Atlanta will wear the logo Sunday when it hosts the San Francisco 49ers at Mercedes-Benz Stadium.",
+      "score": 0.13620602,
+      "simulated": false
+    },
+    {
+      "title": "Jim Freeman, ex-Amazon Prime Video VP, joins Ticketmaster as CTO to lead \u2018AI-first\u2019 push",
+      "url": "https://www.musicbusinessworldwide.com/jim-freeman-ex-amazon-prime-video-vp-joins-ticketmaster-as-cto-to-lead-ai-first-push",
+      "published_date": "Tue, 20 Oct 2026 11:04:08 GMT",
+      "content": "Stripe 1Learn more about this providerImage 19: opens in a new window1Registers data on visitors' website-behaviour. This is used for internal analysis and website optimization. Maximum Storage Duration: SessionType: HTML Local Storage   \n       Vimeo 1Learn more about this providerImage 20: opens in a new windowvuidCollects data on the user's visits to the website, such as which pages have been read.Maximum Storage Duration: 2 yearsType: HTTP Cookie [...] His remit covers how fans access and manage their accounts and tickets, as well as protections against \u201cbad actors and unauthorized access,\u201d according to Ticketmaster.\n\nMortimore has held product leadership roles at Disney, Stripe, Visa, and Salesforce over more than 20 years, following earlier engineering roles at Netscape and Sun Microsystems.\n\nAt Disney, his most recent employer, he consolidated identity across the company\u2019s global businesses, including its theme parks, Disney+, and Hulu. [...] - [x] \n\nDo not sell or share my personal information \n\nAllow all Customize Allow selection Deny\n\n Search \n\n   News\n   \n\n Jim Freeman, Rachel Smith and Chuck Mortimore\n\nTicketmaster has appointed former Amazon executive Jim Freeman as its Chief Technology Officer.\n\nThe Live Nation-owned company has also hired Rachel Smith from Block as its first SVP of Data Science and Machine Learning, and ex-Disney executive Chuck Mortimore as SVP of Product.",
+      "score": 0.3466745,
+      "simulated": false
+    },
+    {
+      "title": "Dark Matter Tech appoints new CFO in leadership shuffle",
+      "url": "https://www.cfodive.com/news/dark-matter-tech-appoints-new-cfo-leadership-shuffle/833270",
+      "published_date": "Fri, 16 Oct 2026 15:10:48 GMT",
+      "content": "Fraxion Launches AI-Assisted Risk Assessment and Decision Support for Accounts Payable From Fraxion  \n   Numbers Game Adds Stripe Transaction Support to Bring Payments and Bookkeeping Together From Numbers Game  \n\nView all | Post a press release\n\n### What We\u2019re Reading [...] ## Company Announcements\n\nView all | Post a press release\n\nFraxion Launches AI-Assisted Risk Assessment and Decision Support for Accounts Payable From Fraxion October 29, 2026 Image 53: Fraxion logoNumbers Game Adds Stripe Transaction Support to Bring Payments and Bookkeeping Together From Numbers Game October 13, 2026 Image 54: Numbers Game logo\n\nWant to share a company announcement with your peers?\n\nGet started \u2794\n\n Editors\u2019 picks \n\n   Image 55: Gold bar [...] Dive Brief \n\n# Dark Matter Tech appoints new CFO in leadership shuffle\n\nThe mortgage tech provider named a new CFO, CTO and general counsel, after its freshly minted CEO increased the company\u2019s AI focus.\n\n Published Oct. 16, 2026 \n\nImage 11: Grace Noto's headshot\n\nGrace NotoSenior Editor\n\n   Image 12Share)\n\n       Image 13Copy link)\n       Image 14Email\n       Image 15LinkedIn\n       Image 16X/Twitter\n       Image 17Facebook\n       Image 18Print)",
+      "score": 0.33770624,
+      "simulated": false
+    },
+    {
+      "title": "Microsoft taps Stripe co-founder John Collison for its board as two longtime directors depart \u2013 GeekWire",
+      "url": "https://www.geekwire.com/2026/microsoft-taps-stripe-co-founder-john-collison-for-its-board-as-two-longtime-directors-depart",
+      "published_date": "Wed, 21 Oct 2026 21:55:50 GMT",
+      "content": "The relationship goes back years. Nadella said he first visited Stripe\u2019s San Francisco office when he was running Microsoft\u2019s cloud business, before he became CEO.\n\nHe said Stripe reminded Microsoft of something it had once been good at, \u201cfollowing the developer, being where the startups are,\u201d and said that thinking \u201cled me even to GitHub,\u201d the code-sharing platform Microsoft acquired in 2018 for $7.5 billion.\n\n### Related Stories\n\n[]( [...] GeekWire Logo\n\nWhat happens here matters everywhere.\n\n# Microsoft taps Stripe co-founder John Collison for its board as two longtime directors depart\n\n\n LinkedIn\n Email\n\nHeadshot of Stripe co-founder and President John Collison, wearing a dark collared shirt against a light gray background.\n\nStripe co-founder and President John Collison has been nominated to join Microsoft\u2019s board of directors. (Stripe Photo) [...] He would fill one of two board seats opening up at Microsoft\u2019s Dec. 8 annual meeting. LinkedIn co-founder Reid Hoffman said in June that he would leave, and the proxy reveals that Disney CFO Hugh Johnston, who chairs the board\u2019s audit committee, is not seeking re-election either. Both have served on the board since 2017.\n\nThe proxy also notes that former EY CEO Carmine Di Sibio, appointed to the board in May, will stand for election by shareholders for the first time.",
+      "score": 0.2800824,
+      "simulated": false
+    },
+    {
+      "title": "Pentagon appoints its own public affairs executive as acting Stars and Stripes publisher",
+      "url": "https://www.foxnews.com/media/pentagon-appoints-public-affairs-executive-acting-stars-stripes-publisher",
+      "published_date": "Sun, 18 Oct 2026 10:00:00 GMT",
+      "content": "The Pentagon has found a new publisher for Stars and Stripes, at least on an interim basis, appointing Christian Devine, executive director of the Pentagon's",
+      "score": 0.13898711,
+      "simulated": false
+    },
+    {
+      "title": "Stripe and Plasma co-develop a new multi-currency card experience | FinTech Magazine",
+      "url": "https://fintechmagazine.com/globenewswire/3381757",
+      "published_date": "Thu, 15 Oct 2026 13:20:52 GMT",
+      "content": "\u201cWe\u2019re building Plasma for people whose lives and finances span countries. Partnering with Stripe gives us the opportunity to develop multi-currency cards around how those people actually live and spend, with a simple ambition: spend like a local, anywhere.\u201d- Paul Faecks, CEO of Plasma [...] \u201cStablecoins make it possible to hold and move money globally. We're working with Plasma to bring that same flexibility to spending, giving businesses the infrastructure to offer cards across currencies and markets without having to build it themselves.\u201d - Henri Stern, Head of Stripe Crypto and Cofounder & CEO of Privy [...] About Stripe\n\nStripe is building programmable financial services for millions of businesses globally. Millions of companies use Stripe to accept payments online and in person, embed financial services, power custom revenue models, and build a more profitable business.",
+      "score": 0.09892066,
+      "simulated": false
+    },
+    {
+      "title": "Meta joins companies to tame \u2018chaos\u2019 of doing business with AI bots",
+      "url": "https://www.cnbc.com/2026/10/06/meta-joins-companies-to-tame-chaos-of-doing-business-with-ai-bots.html",
+      "published_date": "Tue, 06 Oct 2026 18:15:16 GMT",
+      "content": "David Singleton, vice president of engineering and consumer products at Meta Superintelligence Labs and former technology chief at Stripe, highlighted security. In order for agents to work well, he said, customers need to share credit card and personal information, and the new standard creates some level of visibility and control. [...] In this article\n\nA month after Meta's launch of Muse, the personal agent that quickly turned into a viral sensation, a group of companies is coming together to try to simplify the process of bringing the technology into the business world.\n\nMeta, Walmart, Stripe and a handful of other companies are publishing what they're calling a \"personal agent protocol.\" It's an open standard meant to dictate how artificial intelligence agents can interact with businesses. [...] \"The whole point of this is to be an open standard,\" Taylor said.",
+      "score": 0.08810389,
+      "simulated": false
+    },
+    {
+      "title": "Stripe, Plasma launch multi-currency stablecoin cards | The Paypers",
+      "url": "https://thepaypers.com/crypto-web3-and-cbdc/news/stripe-and-plasma-partner-on-multi-currency-stablecoin-cards",
+      "published_date": "Mon, 19 Oct 2026 03:00:00 GMT",
+      "content": "27 Oct 2026 / 5 min read / Crypto, Web3 and CBDC\n\nHSBC launches RedCoin Hong Kong dollar stablecoin on PayMe\n\n27 Oct 2026 / 5 min read / Crypto, Web3 and CBDC\n\nSouth Korea to require registration for cross-border crypto transfers\n\n27 Oct 2026 / 5 min read / Crypto, Web3 and CBDC\n\nRipple secures final OCC approval for national trust bank\n\n27 Oct 2026 / 5 min read / Crypto, Web3 and CBDC\n\nMatter Labs launches Prividium Commander for financial institutions [...] Plasma is building a financial account for people whose lives span multiple countries, assets, and businesses, with everyday spending as its initial focus. In its capacity as design partner, the company will work with Stripe to shape the card experience around how these customers manage and use their money across borders. Paul Faecks, CEO of Plasma, said the partnership gives the company the opportunity to develop cards based on how internationally mobile users live and spend, with the aim of [...] The Paypers is a global hub for market insights, real-time news, expert interviews, and in-depth analyses and resources across payments, fintech, and the digital economy. We deliver reports, webinars, and commentary on key topics, including regulation, real-time payments, cross-border payments and ecommerce, digital identity, payment innovation and infrastructure, Open Banking, Embedded Finance, crypto, fraud and financial crime prevention, and more \u2013 all developed in collaboration with",
+      "score": 0.08306123,
+      "simulated": false
+    },
+    {
+      "title": "Stars and Stripes gains new acting publisher following staff firings",
+      "url": "https://thehill.com/policy/defense/6147373-pentagon-appoints-acting-stars-stripes-publisher",
+      "published_date": "Wed, 14 Oct 2026 14:19:40 GMT",
+      "content": "\u201cI am confident that Stripes can modernize its platform to prioritize original reporting and content that is relevant and unique to the U.S. military community and not typically covered by commercial media,\u201d Devine told Stars and Stripes. [...] \u201cIn this interim role, he will provide decisive leadership to modernize Stars and Stripes and to strengthen its mission,\u201d Parnell said.\n\nThe appointment raises questions about the newspaper\u2019s independence, as the Stars and Stripes is owned and partially funded by the Defense Department but has historically enjoyed editorial freedom.\n\nDevine, however, said he is committed to maintaining the news outlet\u2019s independence from the Pentagon. [...] # Pentagon taps DOD public affairs official as Stars and Stripes publisher\n\nThe Pentagon has appointed a Department of Defense public affairs official as the acting publisher of the military newspaper Stars and Stripes weeks after firing three staffers at the independent publication for what it called subordination.",
+      "score": 0.0784517,
+      "simulated": false
+    },
+    {
+      "title": "At 140 years old, Molli appoints a chief executive and sets its sights on international expansion",
+      "url": "https://ww.fashionnetwork.com/news/At-140-years-old-molli-appoints-a-chief-executive-and-sets-its-sights-on-international-expansion,1874707.html",
+      "published_date": "Sun, 11 Oct 2026 10:00:00 GMT",
+      "content": "News nominations : One year after LVMH Ventures acquired a stake in the company, the high-end knitwear brand relaunched in 2016 is celebrating its 140th",
+      "score": 0.047998354,
+      "simulated": false
+    },
+    {
+      "title": "Key facts: META Q3 EPS est $6.35; Targets raised; Muse may cut $5B",
+      "url": "https://www.tradingview.com/news/tradingview:73d40ee2e68c6:0-key-facts-meta-q3-eps-est-6-35-targets-raised-muse-may-cut-5b",
+      "published_date": "Sun, 11 Oct 2026 10:00:00 GMT",
+      "content": "This is an AI-generated summary and may contain inaccuracies. Please verify any important information with the original sources.",
+      "score": 0.020459222,
+      "simulated": false
+    },
+    {
+      "title": "Stripe Launches Treasury for Agents, Streamlining Startup Finances",
+      "url": "https://smallbiztrends.com/stripe-launches-treasury-for-agents-streamlining-startup-finances",
+      "published_date": "Thu, 22 Oct 2026 07:59:46 GMT",
+      "content": "Small business owners often juggle a myriad of responsibilities, and with technology evolving rapidly, many are turning to innovative solutions to streamline operations. Stripe, a payment processing platform, recently announced the launch of Stripe Treasury for agents, an initiative designed to empower startups to manage their financial operations more efficiently, particularly using AI agents. This move could significantly impact how small businesses operate, offering both opportunities and [...] Stripe Treasury for agents allows businesses to conduct financial tasks directly within their existing payment management platform, providing substantial benefits for startups keen on enhancing their operational efficiency. As JR Farr, product lead for Stripe Treasury, notes, \u201cEvery founder wants to spend more time building and less time on admin.\u201d This new feature is aimed at reducing the administrative burden on founders by enabling agents to handle routine financial tasks. [...] ## Small Business Trends\n\n# Stripe Launches Treasury for Agents, Streamlining Startup Finances\n\n Published: Oct 22, 2026 by Mike Brown In Small Business News  \n\n Stripe News - Stripe Launches Treasury for Agents, Streamlining Startup Finances",
+      "score": 0.6636041,
+      "simulated": false
+    },
+    {
+      "title": "Stripe Reshapes Payments With AI Agents. What\u2019s Its Real Play?",
+      "url": "https://www.techflowpost.com/en-US/article/34998",
+      "published_date": "Fri, 30 Oct 2026 07:07:37 GMT",
+      "content": "Coinbase, official announcement launching x402 protocol, May 6, 2025.\n\n Stripe and OpenAI, Instant Checkout and Agentic Commerce Protocol (ACP), September 29, 2025.\n\n Google Cloud, Agentic Payment Protocol (AP2), September 16, 2025.\n\n Google, Universal Commerce Protocol (UCP), January 11, 2026.\n\n Stripe, Treasury financial services designed for agents, October 21, 2026.\n\n Stripe, official launch of Stripe Pay (October 27, 2026) and official CLI technical documentation. [...] Privy, Treasury Management features officially live, September 17, 2026.\n\n Henri Stern (Stripe), OUSD becomes default stablecoin, September 30, 2026.\n\n Bridge, official OUSD launch and reserve asset dashboard, September\u2013October 2026.\n\n Open Standard, OUSD launch and integration details; Solana Foundation, OUSD on Solana, September 2026.\n\n Neetika Bansal (Stripe), new paradigm for fintech fund flows, October 16, 2026.\n\n Tempo, privacy partition features officially live, October 14, 2026. [...] This article pierces through the noise of mergers, acquisitions, and product launches to deeply deconstruct how Stripe attempts to capture value before and after a payment occurs, and clarifies the economic chasm that must be crossed before agent-based commerce can realistically scale.\n\nOn October 26, Instinct launched a shopping agent with a prepaid balance feature for eligible U.S. users.",
+      "score": 0.57837737,
+      "simulated": false
+    },
+    {
+      "title": "Stripe launches Treasury for AI agents | The Paypers",
+      "url": "https://thepaypers.com/fintech/news/stripe-launches-treasury-for-agents-to-automate-startup-finances",
+      "published_date": "Sun, 25 Oct 2026 10:00:00 GMT",
+      "content": "NewsFintech\n\n# Stripe launches Treasury for agents to automate startup finances\n\nStefana Apetrei\n\nStefana Apetrei\n\n23 Oct 2026 / 5 Min Read\n\nStripe has launched Stripe Treasury for agents, enabling startups to manage financial operations via AI agents such as ChatGPT and Claude. [...] Stan plans to use the new capability to let Stash transfer funds between Kubrio\u2019s accounts and pay the platform\u2019s contractors and creators. Every payment will still require human approval.\n\nKeywords:\n\nproduct launchAI agentsagenticfinancial services\n\nCountries:\n\nWorld\n\n## News on Fintech\n\nStripe launches Treasury for agents to automate startup finances\n\n23 Oct 2026 / 5 min read / Fintech\n\nMashreq launches NEO BIZ digital banking for SMEs in Pakistan\n\n23 Oct 2026 / 5 min read / Fintech [...] The product builds on Stripe Treasury, which lets businesses carry out banking activities from the same dashboard they use to accept payments. With the agent-focused version, companies can hand financial tasks to AI agents that operate inside the tools they already use to run other parts of the business. At launch, agents can check account balances, settle invoices, move funds between accounts, and convert currencies. Stripe has said further capabilities, such as card creation, are planned, and",
+      "score": 0.55998856,
+      "simulated": false
+    },
+    {
+      "title": "Constructor Launches Agentic Checkout, Powered by Stripe--Letting Shoppers Go From Product Discovery to Purchase Within a Single AI Agent Experience",
+      "url": "https://www.prnewswire.com/news-releases/constructor-launches-agentic-checkout-powered-by-stripeletting-shoppers-go-from-product-discovery-to-purchase-within-a-single-ai-agent-experience-302898353.html",
+      "published_date": "Mon, 05 Oct 2026 12:30:00 GMT",
+      "content": "SAN FRANCISCO, Oct. 5, 2026 /PRNewswire/ -- Constructor, the product discovery platform for the agentic era, today announced Agentic Checkout, which integrates Stripe, to enable shoppers (humans and agents) to both find and buy products within a single agent conversation and interface. [...] The Latest Artificial Intelligence News\n\nComputer & Electronics\n\nComputer & Electronics\n\nElectronic Commerce\n\nElectronic Commerce\n\n News Releases in Similar Topics [...] Accessibility Statement Skip Navigation\n\n# Constructor Launches Agentic Checkout, Powered by Stripe--Letting Shoppers Go From Product Discovery to Purchase Within a Single AI Agent Experience\n\nConstructor\n\n## News provided by\n\n Constructor \n\nOct 05, 2026, 08:30 ET\n\n## Share this article\n\nShare toX\n\nShare this article\n\nShare toX\n\nNew Agentic Checkout eliminates a key point of friction in AI-powered shopping, helping retailers keep shoppers engaged and reducing distractions on the path to purchase",
+      "score": 0.47753036,
+      "simulated": false
+    },
+    {
+      "title": "New Ecommerce Tools: October 14, 2026 - Practical Ecommerce",
+      "url": "https://www.practicalecommerce.com/new-ecommerce-tools-october-14-2026",
+      "published_date": "Wed, 14 Oct 2026 09:00:10 GMT",
+      "content": "Constructor launches Agentic Checkout, powered by Stripe. Constructor, a product discovery platform for agentic commerce, has launched Agentic Checkout, powered by Stripe, enabling shoppers (humans and agents) to find and buy products within a single agent conversation and interface. With Agentic Checkout, shoppers can discover products, ask questions, get personalized recommendations, refine their choices, and then securely check out and pay without leaving the agent experience. Shoppers can [...] Shoppers can pay via the Link by Stripe digital wallet or other payment methods. [...] FedEx Dataworks and Stripe partner on global commerce for SMBs. FedEx Dataworks, FedEx Corp.\u2019s insights and intelligence subsidiary, and Stripehave partnered to expand global commerce by combining the FedEx network with Stripe\u2019s financial infrastructure. The companies plan to leverage their platforms to expand access to financing for small- and medium-sized businesses. Additionally, FedEx will begin using Stripe as an option to process payments, adding more than 50 payment methods to its",
+      "score": 0.42462727,
+      "simulated": false
+    },
+    {
+      "title": "Constructor claims a first as it launches Agentic Checkout solution powered by Stripe payments",
+      "url": "https://retailtechinnovationhub.com/home/2026/10/4/constructor-claims-a-first-as-it-launches-agentic-checkout-solution-powered-by-stripe",
+      "published_date": "Mon, 05 Oct 2026 00:00:00 GMT",
+      "content": "Sunday, November 1, 2026 Nov 1, 2026   Breaking Retail Technology News\n\nRetail Technology Innovation Hub.png)\n\nSubscribe to our daily newsletter\n\nRetail Technology Innovation Hub.png)\n\nRetail Technology Innovation Hub\n\nPayments \n\n# Constructor claims a first as it launches Agentic Checkout solution powered by Stripe\n\nScott Thompson Scott Thompson  | 05 Oct 2026 3 min read\n\n Constructor claims a first as it launches Agentic Checkout solution powered by Stripe [...] Constructor, which powers search and product discovery for retailers including Sephora, The Very Group, Monica Vinader, White Stuff, and Furniture Village, has launched Agentic Checkout, a move that, the company claims, makes it the first to offer Stripe powered checkout directly within an onsite shopping agent. [...] People on retail sites and apps can discover products, ask questions, get personalised recommendations, and refine their choices, then check out and pay, without leaving the agent experience. They can pay via the Link By Stripe digital wallet or other payment methods.",
+      "score": 0.3846353,
+      "simulated": false
+    },
+    {
+      "title": "Meta, Walmart, Stripe launch open standard for AI agents",
+      "url": "https://tech.yahoo.com/ai/meta-ai/articles/meta-walmart-stripe-launch-open-195459763.html",
+      "published_date": "Tue, 06 Oct 2026 00:00:00 GMT",
+      "content": "Mail\n\nAdvertisement\n\nAdvertisement\n\nAdvertisement\n\n# Meta, Walmart, Stripe launch open standard for AI agents\n\n[](\n\nQuartz\n\nColleen Cabili\n\nUpdated\n\nAdd to Preferred Sources\n\nUpdated\n\nMeta launched its Muse Wonder AI model, claiming it rivals ChatGPT and Claude hero image\n\na Meta logo on top of a glassy building [...] be quite similar,\" he told CNBC. [...] Meta, Walmart, Stripe, and enterprise AI startup Sierra are publishing an open standard they call a \"personal agent protocol,\" designed to govern how AI agents interact with businesses online, according to CNBC.",
+      "score": 0.3001303,
+      "simulated": false
+    },
+    {
+      "title": "Plasma: Announces Stripe partnership to co-develop multi-currency cards - 15 Oct 2026 \u2014 TradingView News",
+      "url": "https://www.tradingview.com/news/coinmarketcal:d68190cfe094b:0-plasma-announces-stripe-partnership-to-co-develop-multi-currency-cards-15-oct-2026",
+      "published_date": "Thu, 15 Oct 2026 14:00:46 GMT",
+      "content": "CoinMarketCal\nCoinMarketCal\n\n# Plasma: Announces Stripe partnership to co-develop multi-currency cards - 15 Oct 2026\n\nPlasma announces a partnership with Stripe on 15 October 2026 to bring new products to market. The companies will start by co-developing multi-currency cards, the first step in a broader push to introduce new products. [...] The cards could route real spending through Plasma's payment rails, connecting the planned products to everyday payments. The announcement does not specify how XPL would be used in the cards or the wider partnership.\n\nPlasma and @Stripe are partnering to bring a new generation of products to market.\n\nOur co-development of multi-currency cards is the first step in realizing this vision. pic.twitter.com/FXkXXSK6UQ\n\n## Compare charts\n\n## Latest news\n\n## More news from CoinMarketCal [...] Select market data provided by ICE Data Services. Select reference data provided by FactSet. Copyright \u00a9 2026 FactSet Research Systems Inc.Copyright \u00a9 2026, American Bankers Association. CUSIP Database provided by FactSet Research Systems Inc. All rights reserved. SEC filings and other documents provided by Quartr.\u00a9 2026 TradingView, Inc.\n\nLook First\nLook First",
+      "score": 0.25341776,
+      "simulated": false
+    },
+    {
+      "title": "Stripe Data Shows Companies Are Breaking Every Rule of SaaS \u2014 Nilofer Rajpurkar \u2014 BigGo Finance",
+      "url": "https://finance.biggo.com/news/340e7dd79d305586",
+      "published_date": "Mon, 12 Oct 2026 07:09:27 GMT",
+      "content": "AI revenue on Stripe is not plateauing; it is accelerating. Nilofer Rajpurkar, a product lead at Stripe, presents internal transaction data showing AI revenue grew 175% year over year, up from 120% the prior year. Beyond the headline number, she outlines a structural shift: top AI companies are compressing a decade of software go-to-market playbooks into months. They sell globally from day one, with 48% of revenue coming from abroad. They skip the product-led-to-sales-led sequence, launching [...] The first major shift Rajpurkar identifies is speed. She points to two data series on Stripe\u2019s platform that inflect at the same moment: the arrival of agentic coding tools in late 2024. iOS app releases, which had been declining, turned around and grew 24% month over month. New Delaware incorporations show a nearly identical inflection. The constraint on launching a business has shifted from engineering capacity to everything downstream of it. [...] References:\n\n Iluvatar CoreX Unveils Industry's Highest-Density GPU Supernode with 144 GPUs in a Single Rack\n XRP Ledger Surpasses 13 Million AI Agent Payments as Autonomous Commerce Accelerates\n AI Investment Underpins Global Growth, Could Boost Asian Emerging Economies by Up to 0.8 Percentage Points: IMF\n Short Positions in U.S. Treasuries Approach Historic Extremes as Traders Ignore Cooling Jobs Data and Keep Betting on Higher Yields\n\nAdd preferred source\n\n\u200c  \n\u200c  \n\u200c  \n\u200c  \n\u200c\n\n\u200c",
+      "score": 0.18422419,
+      "simulated": false
+    },
+    {
+      "title": "Polygon Takes Aim At Visa And Stripe After Closing Its Coinme Purchase | Yellow",
+      "url": "https://yellow.com/news/polygon-aims-visa-stripe-coinme",
+      "published_date": "Sat, 17 Oct 2026 16:46:58 GMT",
+      "content": "Apr 26, 2026\n\nMost people bet on sports. Prediction markets let you bet on almost anything else: elections, central bank decisions, tech product launches, even weat\n\nPrediction Markets Move $4B On World Cup, Know The Mechanics Now\n\nJul 15, 2026\n\nPrediction markets placed more than $4.2 billion on the 2026 FIFA World Cup winner alone. That is not a bet with a bookmaker. No house set those odd [...] Why Polygon Just Buried Stablecoin Details Beneath Zero-Knowledge Proofs\n\nMay 05, 2026\n\nPolygon (POL) has launched private stablecoin payments through its consumer wallet, looking to draw institutions onto the chain with shielded transfer\n\nRelated Research Articles\n\nAre Stablecoins Ready To Become A Real Retail Payment Network?\n\nSep 03, 2026\n\nStablecoins will power more than $200 billion in US retail purchases by 2030. The growth will come from crypto-backed payment cards, merchant-issued d [...] Early users include cross-border payments provider Tazapay, payroll platform Toku, crypto payments network Mesh and infrastructure firm Kira. The unified integration, however, is still in technical preview. It is not yet open to all customers.\n\nAlso Read: Is Tesla's Flying Roadster Even Legal? No Clear Answer Before 2028\n\n## Marc Boiron's Strategy",
+      "score": 0.0926305,
+      "simulated": false
+    },
+    {
+      "title": "FedEx and Stripe Team Up to Transform Financing for Small Businesses",
+      "url": "https://smallbiztrends.com/fedex-and-stripe-team-up-to-transform-financing-for-small-businesses",
+      "published_date": "Sat, 31 Oct 2026 17:11:00 GMT",
+      "content": "In an exciting development for small and medium-sized businesses (SMBs), FedEx Dataworks and Stripe have announced a strategic collaboration aimed at streamlining global commerce. This partnership seeks to bridge the gap between supply chain intelligence and financial infrastructure, offering SMBs innovative solutions to access funding and a variety of payment methods. With plans to launch the first joint solution in early 2027, the collaboration promises to bring substantial benefits to [...] John Collison, co-founder and president of Stripe, emphasized the transformative potential of this partnership: \u201cFedEx and Stripe power the physical and digital foundations of global trade. Together, we can turn the operational momentum of a small business, like shipping a thousand packages a week, into access to growth finance through Stripe Capital.\u201d This integration of shipping metrics with financial insights represents a significant shift in how small business financing can be approached. [...] ---\n\nThe collaboration is set to enable Stripe Capital to evaluate and approve funding requests more efficiently than traditional processes, effectively reducing the friction that many SMBs experience. By utilizing \u201creal-time operational signals\u201d from FedEx, Stripe hopes to deploy tailored funding solutions quickly, offering businesses a pathway to financial resources that align with their operational realities.",
+      "score": 0.6033015,
+      "simulated": false
+    },
+    {
+      "title": "Stripe Wants to Become the Financial Operating System for AI",
+      "url": "https://insights4vc.substack.com/p/the-economics-of-stripes-ai-strategy",
+      "published_date": "Fri, 30 Oct 2026 10:00:00 GMT",
+      "content": "## Stripe: The acquisitions behind the strategy\n\nStripe reported $1.9 trillion in total volume for 2025, up 34%. An employee tender in February 2026 valued the company at $159 billion. The first figure measures payments processed and the second values its equity; neither measures revenue. Axios reported 41% revenue growth and 43% free-cash-flow growth for the first half. Stripe has not disclosed profit by product in these announcements. ( ( [...] Y Combinator has named agentic commerce, stablecoin applications, trading and institutional financial products among the crypto businesses it wants to fund. Visiting partner Nemil Dalal\u2019s request for startups offers a useful counterpart to Stripe\u2019s strategy: the infrastructure is being assembled, while the products built on top still have to prove demand.\n\nThe on-time application deadline for YC\u2019s Winter 2027 batch is November 2, 2026, at 8 p.m. PT. Apply to YC. [...] Stripe\u2019s recent acquisitions cover several points in that process. Bridge, acquired in a deal completed on February 4, 2025, handles stablecoin issuance and orchestration. Privy joined in 2025 with wallet, signing and programmable-control software. The Metronome acquisition closed on January 14, 2026, adding usage metering and billing. On August 19, Stripe agreed to buy OpenRouter, a service that routes AI requests across model providers. As of the October 28 research cutoff, the companies had",
+      "score": 0.48850358,
+      "simulated": false
+    },
+    {
+      "title": "Stripe, FedEx team on SMB lending | Payments Dive",
+      "url": "https://www.paymentsdive.com/news/stripe-fedex-team-on-smb-lending-business-capital-logistics/832368",
+      "published_date": "Fri, 30 Oct 2026 03:42:57 GMT",
+      "content": "FedEx and Stripe described the announcement as the start of \u201ca strategic, long-term collaboration\u201d that aims to scale their logistics and financial data into services by early next year. A Stripe spokesperson declined to comment Tuesday on the partnership beyond the companies\u2019 press release.\n\nFedEx, based in Memphis, Tennessee, delivers about 18 million packages daily in around 220 countries and territories, according to its website. [...] Stripe is partnering with global shipping giant FedEx to combine their data insights from logistics and financial infrastructure to create financing options for small businesses, the companies said Tuesday in a joint press release. [...] That\u2019s because traditional lending models depend on credit scores and banking data, \u201coften overlooking operational indicators such as shipment activity, inventory movement and fulfillment performance,\u201d the release said.\n\nStripe aims to use the partnership \u201cto help inform financing analysis\u201d by leveraging \u201csupply chain intelligence\u201d and \u201creal-time operational signals\u201d from these smaller companies gained from FedEx data, according to the release.",
+      "score": 0.44275752,
+      "simulated": false
+    },
+    {
+      "title": "Stripe to expand stablecoin cards to 100 countries as Privy's Henri Stern takes charge of crypto",
+      "url": "https://www.coindesk.com/business/2026/10/01/stripe-to-expand-stablecoin-cards-to-over-100-countries-by-the-end-of-the-year",
+      "published_date": "Mon, 05 Oct 2026 00:00:00 GMT",
+      "content": "Stripe has been assembling the pieces for a broader blockchain payments push. After buying Bridge and Privy, it also partnered with crypto investment firm Paradigm to develop Tempo, a blockchain designed for payments. Stripe is also a founding investor in Open Standard, the company developing Open USD, a stablecoin that aims to challenge Circle's USDC and Tether's USDT. Bridge co-founder Zach Abrams recently moved to run Open Standard full time. [...] Global payments firm Stripe is expanding its stablecoin cards business globally, betting that digital dollars can become another way for consumers and businesses to pay alongside traditional currencies.\n\nHenri Stern, CEO and co-founder of crypto wallet infrastructure firm Privy acquired last year by Stripe, has taken on an additional role overseeing stablecoins and crypto across Stripe, the company told CoinDesk. [...] Summary\n\nShow\n\n   Stripe plans to expand its stablecoin card programs to more than 100 countries by year-end.\n   Henri Stern, CEO of digital asset wallet infrastructure firm Privy that Stripe acquired in 2025, has taken on an additional role overseeing stablecoins and crypto across Stripe.\n   Stablecoin card spending reached about $1.2 billion last month, tripling in volume in a year, according to PaymentScan.",
+      "score": 0.39040667,
+      "simulated": false
+    },
+    {
+      "title": "Sierra Partners with Stripe to Bring Payments Into AI Agent Calls \u2013 Unite.AI",
+      "url": "https://www.unite.ai/sierra-partners-with-stripe-to-bring-payments-into-ai-agent-calls",
+      "published_date": "Tue, 20 Oct 2026 17:21:01 GMT",
+      "content": "Sierra on October 20, 2026, announced a partnership with Stripe that lets customers converse with one of its AI agents, pay, and receive a receipt on the same call. Sierra said healthcare payments company Cedar was one of the first companies to take payments over the phone through the integration. [...] My Feed\n\n### Partnerships\n\n# Sierra Partners with Stripe to Bring Payments Into AI Agent Calls\n\nPublished\n\nBy\n\n Aiden Cross, AI Product Strategy & Execution AI Research Agent\n\nAdd Unite.AI to your preferred sources on Google [...] \u201cMedical bills create a moment of real anxiety for patients, and historically, getting a question answered and actually paying the bill have been two separate, disconnected steps,\u201d Cedar Chief Strategy Officer Dugan Winkie said. \u201cWorking with Sierra and Stripe, we\u2019ve closed that gap.\u201d\n\n## Stripe App Marketplace Listing",
+      "score": 0.3753864,
+      "simulated": false
+    },
+    {
+      "title": "Plasma (XPL) Surges 8.94% Amid Token Unlock, Stripe Partnership | Top Stories | CoinMarketCap",
+      "url": "https://coinmarketcap.com/top-stories/6ad8e28f5bf205246167f6c5",
+      "published_date": "Wed, 21 Oct 2026 20:04:48 GMT",
+      "content": "1.   On 15 Oct, Stripe and Plasma announced that they will co\u2011develop multi\u2011currency, stablecoin\u2011backed payment cards, with Plasma acting as a design partner. The cards are intended to let users spend directly from balances in currencies such as USD, EUR, BRL, MXN and COP, plus stablecoins like Open USD (OUSD), without unnecessary FX conversions.\u2074 [...] 2.   A separate piece explains that Plasma will integrate into Stripe\u2019s stablecoin\u2011card infrastructure, which already supports more than 30 countries and is planned to expand to 100+ countries in 2027, positioning Plasma at the intersection of stablecoin payments and mainstream fintech rails.\u2075 [...] 3.   A later article on stablecoin\u2011payments growth highlights Mastercard, Stripe and Visa initiatives and again references Stripe\u2019s planned multi\u2011currency card experience \u201cwith Plasma as design partner,\u201d reinforcing Plasma\u2019s role in this emerging payments stack.\u2076",
+      "score": 0.35180137,
+      "simulated": false
+    },
+    {
+      "title": "Plasma: Announces Stripe partnership to co-develop multi-currency cards - 15 Oct 2026 \u2014 TradingView News",
+      "url": "https://www.tradingview.com/news/coinmarketcal:d68190cfe094b:0-plasma-announces-stripe-partnership-to-co-develop-multi-currency-cards-15-oct-2026",
+      "published_date": "Thu, 15 Oct 2026 14:00:46 GMT",
+      "content": "CoinMarketCal\nCoinMarketCal\n\n# Plasma: Announces Stripe partnership to co-develop multi-currency cards - 15 Oct 2026\n\nPlasma announces a partnership with Stripe on 15 October 2026 to bring new products to market. The companies will start by co-developing multi-currency cards, the first step in a broader push to introduce new products. [...] The cards could route real spending through Plasma's payment rails, connecting the planned products to everyday payments. The announcement does not specify how XPL would be used in the cards or the wider partnership.\n\nPlasma and @Stripe are partnering to bring a new generation of products to market.\n\nOur co-development of multi-currency cards is the first step in realizing this vision. pic.twitter.com/FXkXXSK6UQ\n\n## Compare charts\n\n## Latest news\n\n## More news from CoinMarketCal [...] Select market data provided by ICE Data Services. Select reference data provided by FactSet. Copyright \u00a9 2026 FactSet Research Systems Inc.Copyright \u00a9 2026, American Bankers Association. CUSIP Database provided by FactSet Research Systems Inc. All rights reserved. SEC filings and other documents provided by Quartr.\u00a9 2026 TradingView, Inc.\n\nLook First\nLook First",
+      "score": 0.34740478,
+      "simulated": false
+    },
+    {
+      "title": "ExpenseIn extends Stripe deal to automate reimbursements",
+      "url": "https://thepaypers.com/fintech/news/expensein-extends-stripe-partnership-to-automate-employee-reimbursements",
+      "published_date": "Tue, 06 Oct 2026 00:00:00 GMT",
+      "content": "NewsFintech\n\n# ExpenseIn extends Stripe partnership to automate employee reimbursements\n\nCP\n\nClaudia Pincovski\n\n06 Oct 2026 / 4 Min Read\n\nUK-based expense management platform ExpenseIn has extended its partnership with Stripe, the programmable financial services company, to introduce automated reimbursement for its users. The integration enables employees to be repaid automatically for approved out-of-pocket expenses, removing one of the final manual steps in the expense process. [...] Commenting on the announcement, Richard Jones, VP of Product at ExpenseIn, said that reimbursement has always been the final mile of expense management and the part employees feel most directly. He added that the partnership with Stripe enables ExpenseIn to offer customers a fully end-to-end process, from submitting a claim to being paid, without adding extra admin for finance teams, and described the move as a meaningful step towards making expense management something businesses barely have [...] The new reimbursement capability is available to ExpenseIn customers as of 6 October 2026, with no additional setup required for existing users.\n\nKeywords:\n\npartnershipreimbursmentexpense managementfinancial servicespayroll\n\nCountries:\n\nWorld\n\n## News on Fintech\n\nRevolut to launch Revolut Ventures with Carne Group in 2027\n\n27 Oct 2026 / 5 min read / Fintech\n\nBOB raises USD 5.5 mln to expand AI finance assistant for SMEs\n\n27 Oct 2026 / 5 min read / Fintech",
+      "score": 0.33882108,
+      "simulated": false
+    },
+    {
+      "title": "Stripe Unveils B2B Payments that Mirror the P2P Experience - PaymentsJournal",
+      "url": "https://www.paymentsjournal.com/stripe-unveils-b2b-payments-that-mirror-the-p2p-experience",
+      "published_date": "Wed, 28 Oct 2026 16:58:15 GMT",
+      "content": "For Stripe, the launch comes amid a broader push into new areas of financial technology. The company has expanded beyond its core payments business through moves involving AI and digital assets, including its deal involving OpenRouter and its acquisition of stablecoin firm Bridge. Stripe Pay is another step in the company\u2019s effort to extend its reach across the business payments ecosystem. [...] \u201cStripe is moving beyond payment acceptance and deeper into business money movement,\u201d Riley said. \u201cIts broader strategy includes financial accounts, wallets, and tools designed for automated transactions. This is a well-thought-out loss leader.\u201d\n\n\u201cBut this is also a building block for agentic payments,\u201d he said. \u201cStripe Pay supports command-line payments and authenticated workflows for software agents.\u201d\n\n0\n\nSHARES\n\n0\n\nVIEWS\n\nShare on LinkedIn [...] Beyond convenience, payment efficiency has implications for cash flow and working capital. This is one reason virtual cards have gained traction. They give organizations greater control over payment timing and more visibility into spending and liquidity. Whether Stripe Pay can deliver similar advantages will depend on how businesses use the service and how it integrates with their existing payment processes.\n\n## A Strategic Building Block",
+      "score": 0.24832493,
+      "simulated": false
+    },
+    {
+      "title": "Plasma partners with Stripe as XPL surges by 10% \u2014 Can the rally continue?",
+      "url": "https://ambcrypto.com/plasma-partners-with-stripe-as-xpl-surges-by-10-can-the-rally-continue",
+      "published_date": "Sun, 18 Oct 2026 10:00:00 GMT",
+      "content": "Plasma [XPL] saw a price surge of 10.92% following the announcement of its partnership with Stripe, aimed at expanding stablecoin payments across global",
+      "score": 0.245343,
       "simulated": false
     }
   ]

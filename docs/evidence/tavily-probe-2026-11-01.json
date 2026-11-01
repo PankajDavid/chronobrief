@@ -1,0 +1,111 @@
+{
+  "request": {
+    "query": "\"Stripe\"",
+    "topic": "news",
+    "start_date": "2026-10-02",
+    "end_date": "2026-11-01",
+    "max_results": 10,
+    "search_depth": "basic"
+  },
+  "latency_seconds": 0.99,
+  "response": {
+    "query": "Stripe",
+    "follow_up_questions": null,
+    "answer": null,
+    "images": [],
+    "results": [
+      {
+        "url": "https://www.freightwaves.com/news/stripe-taps-fedex-data-to-expand-small-business-access-to-financing",
+        "title": "Stripe taps FedEx data to expand small business access to financing - FreightWaves",
+        "content": "Stripe is a payments company that provides digital infrastructure businesses use to accept and manage money online, primarily helping them bill customers, process payments and analyze transaction data. Its developer tools let companies add payments to their websites and apps without having to build that pipe themselves. With Stripe, businesses can accept credit cards, digital wallets like Apple Pay and Google Pay, and other payment methods, across multiple currencies. [...] \u201cFedEx and Stripe power the physical and digital foundations of global trade,\u201d said John Collison, co-founder and president of Stripe. \u201cTogether, we can turn the operational momentum of a small business, like shipping a thousand packages a week, into access to growth finance through Stripe Capital.\u201d\n\nThe first joint solution is planned for launch in early 2027, the companies said in a news release. [...] The Stripe Capital unit provides fast business loans and merchant cash, with flexible payment terms.",
+        "score": 0.82492816,
+        "published_date": "Wed, 07 Oct 2026 12:50:21 GMT",
+        "raw_content": null,
+        "id": "85624c-00"
+      },
+      {
+        "url": "https://www.paymentsdive.com/news/stripe-fedex-team-on-smb-lending-business-capital-logistics/832368",
+        "title": "Stripe, FedEx team on SMB lending | Payments Dive",
+        "content": "Stripe is partnering with global shipping giant FedEx to combine their data insights from logistics and financial infrastructure to create financing options for small businesses, the companies said Tuesday in a joint press release. [...] \u201cStripe will be better positioned to evaluate, approve, and deploy tailored funding more quickly than traditional lending processes, eliminating the friction for SMBs,\u201d the release said. Stripe makes business loans through two partner banks. [...] The FedEx effort follows Stripe\u2019s purchase last week of embedded financing company Parafin, which also arranges loans for small businesses. Stripe plans to use the San Francisco-based startup to expand its lending for smaller firms. In the Sept. 30 news release about the Parafin acquisition, Stripe argued that small businesses are finding it difficult to access capital, citing a decreasing percentage of approved loans last year compared to 2015.",
+        "score": 0.53342235,
+        "published_date": "Fri, 30 Oct 2026 03:42:57 GMT",
+        "raw_content": null,
+        "id": "5bb20c-01"
+      },
+      {
+        "url": "https://finance.yahoo.com/technology/ai/articles/stripe-agentic-commerce-revs-153600852.html",
+        "title": "Stripe agentic commerce revs up",
+        "content": "John Collison and his older brother Patrick, who is Stripe's CEO, co-founded the company in 2010. The business has dual headquarters in Dublin and South San Francisco, and was valued at about $160 billion earlier this year when the company raised money from existing shareholders and employees.\n\nOnline retail behemoth Amazon recently banned Meta's Muse agent from shopping on its website, saying it would breach the terms of conditions for customers shopping on the website. [...] 1. Crypto\n2. AI\n\n   AI\n\nPayments Dive\n\n# Stripe agentic commerce revs up\n\nLynne Marek\n\n4 min read\n\n STRI.PVT\n META\n\nThis story was originally published on Payments Dive. To receive daily news and insights, subscribe to our free daily Payments Dive newsletter.\n\nDigital payments processor Stripe charted a significant increase in agentic commerce, starting last month, the company's president, John Collison, said this week. [...] During the podcast, Collison made a pitch for Stripe's AI services offered through OpenRouter, a business that Stripe paid $7.5 billion to purchase in August. OpenRouter acts as a gateway for access to a variety of AI models, including Muse and Meta's latest upgrade, Wonder.",
+        "score": 0.502564,
+        "published_date": "Thu, 15 Oct 2026 00:00:00 GMT",
+        "raw_content": null,
+        "id": "3373cb-02"
+      },
+      {
+        "url": "https://www.pymnts.com/news/b2b-payments/2026/stripe-pay-targets-instant-b2b-payments",
+        "title": "PYMNTS | Stripe Pay Targets Instant B2B Payments",
+        "content": "which provides platforms with credit offerings for their small business customers. [...] PYMNTS IntelligenceThe Prompt EconomyNewswireEventsSUBSCRIBEPartner With PYMNTS\n\nAboutContact\n\nPYMNTS.com home page\n\n# Stripe Pay Targets Instant B2B Payments\n\nBy  PYMNTS   |  October 27, 2026\n\n|\n\nStripe agentic commerce\n\nStripe now enables instant B2B transfers through a \u201cstripe pay\u201d plug-in, the company said in a Tuesday (Oct. 27) post on LinkedIn.\n\n\u201cFind companies using their Stripe profile handle and send funds for free,\u201d Stripe said in the post. \u201cAvailable in the Dashboard and CLI.\u201d [...] In some other recent moves reported by PYMNTS, Stripe teamed with Plasma to introduce multi-currency stablecoin cards designed to give people and businesses an easier time spending across currencies and markets; announced it plans to work with FedEx Dataworks to leverage their respective platforms to expand access to financing for small and medium-sized businesses; and said it plans to strengthen its support for platforms by acquiring embedded financial products platform Parafin, which provides",
+        "score": 0.45449692,
+        "published_date": "Wed, 28 Oct 2026 01:34:37 GMT",
+        "raw_content": null,
+        "id": "a09da2-03"
+      },
+      {
+        "url": "https://www.geekwire.com/2026/microsoft-taps-stripe-co-founder-john-collison-for-its-board-as-two-longtime-directors-depart",
+        "title": "Microsoft taps Stripe co-founder John Collison for its board as two longtime directors depart \u2013 GeekWire",
+        "content": "The companies\u2019 work together came up in the November episode of Stripe\u2019s \u201cCheeky Pint\u201d podcast. Collison said Stripe was building a platform business in agentic commerce, in which AI agents shop and pay on behalf of people, and asked Nadella what advice he had for a company building in such an early market.\n\nNadella said the key would be making it simple for small merchants to sell through AI agents, without asking them to set up servers or adopt a string of new technical protocols themselves. [...] Stripe helps power Copilot Checkout, which Microsoft launched in January to let U.S. users of its AI assistant buy from Etsy sellers and other retailers without leaving the chat. In 2023, the companies teamed up to let businesses take card payments for paid events in Microsoft Teams. [...] GeekWire Logo\n\nWhat happens here matters everywhere.\n\n# Microsoft taps Stripe co-founder John Collison for its board as two longtime directors depart\n\n\n LinkedIn\n Email\n\nHeadshot of Stripe co-founder and President John Collison, wearing a dark collared shirt against a light gray background.\n\nStripe co-founder and President John Collison has been nominated to join Microsoft\u2019s board of directors. (Stripe Photo)",
+        "score": 0.4296453,
+        "published_date": "Wed, 21 Oct 2026 21:55:50 GMT",
+        "raw_content": null,
+        "id": "8b644d-04"
+      },
+      {
+        "url": "https://www.robertsfuneralhome.com/obituaries/wayne-stripe-ii",
+        "title": "Wayne Aldis Stripe II Obituary Oct 26, 2026 - Roberts Funeral Home",
+        "content": "Wayne is survived by his parents Wayne Stripe Sr & Phyllis Carpenter. He is survived by his sister, Kathy Stripe and brother Thomas (Kimberly) Stripe. He is survived by his children Wayne (Erica) Stripe III, Samantha (Benjamin) Mahan and Laura (Brian) Sarlouis. He is survived by his grandchildren who called him Pa Pa and were the absolute light of his life\u2014Connor Sarlouis, Cole Sarlouis, Cierra Stranger, Rory Stripe, Murphy Mahan, Riley Mahan & Ronan Stripe. [...] \u2039 \u2039 Return to Current Obituaries\n\nRoberts Funeral Home Logo\n\nWayne Aldis Stripe II Profile Photo\n\n1967 Wayne 2026\n\nSend Flowers\n\nSend Flowers  Plant A Tree\n\nPlant A Tree  Send a Gift\n\nSend a Gift\n\n# Wayne Aldis Stripe II\n\n## Nov 8, 1967 \u2014 Oct 26, 2026\n\n### Cincinnati\n\nListen to Obituary\n\nWayne A. Stripe Jr., 58, of Cincinnati, Ohio, passed away suddenly at his home on October 26, 2026, following a brief illness. [...] Wayne will be remembered for his willingness to lend a hand to anyone without hesitation, his intelligence, integrity and his love of life. He loved Jesus and he loved his family. Those priorities were evident in the life he lived. Wayne leaves behind a legacy of generosity, love & so much fun. \n\nDonations can be made in memory of Wayne to the following organization which he held dear to his heart.",
+        "score": 0.2830827,
+        "published_date": "Mon, 26 Oct 2026 10:00:00 GMT",
+        "raw_content": null,
+        "id": "41e614-05"
+      },
+      {
+        "url": "https://www.cnbc.com/video/2026/10/06/meta-walmart-stripe-and-sierra-partner-to-establish-rules-for-personal-ai-agents.html",
+        "title": "Meta, Walmart, Stripe, and Sierra partner to establish rules for personal AI agents",
+        "content": "Pro News\nJosh Brown\nMike Santoli\nCalls of the Day\nMy Portfolio\nLivestream\nFull Episodes\nStock Screener\nMarket Forecast\nOptions Investing\nChart Investing\nSubscribe\nLivestream\nMenu\nMake It\nselect\nUSA\nINTL\nLivestream\nSearch quotes, news & videos\nLivestream\nWatchlist\nSIGN IN\nCreate free account\nMarkets\nBusiness\nInvesting\nTech\nPolitics & Policy\nVideo\nWatchlist\nInvesting Club\nPRO\nLivestream\nMenu\nwatch now\nIn this video\nMETA\nWMT\nSTRIPE.FG\nShare\nShare Article via Facebook\nShare Article via Twitter [...] Share Article via LinkedIn\nShare Article via Email\nPower Lunch\nMeta, Walmart, Stripe, and Sierra partner to establish rules for personal AI agents\nCNBC's Kate Rooney reports on companies teaming up to create a new rulebook for AI agents.\n02:29\nTue, Oct 6 2026\n2:21 PM EDT\nwatch now\nwatch now\nVIDEO\n05:13\nCFTC Chair Michael Selig on Utah-Kalshi suit: We'll take it all the way to the Supreme Court\n6 hours ago\nwatch now\nwatch now\nVIDEO\n04:09 [...] AI\nEnterprise\nInternet\nMedia\nMobile\nSocial Media\nCNBC Disruptor 50\nTech Guide\nPolitics & Policy\nWhite House\nPolicy\nDefense\nCongress\nExpanding Opportunity\nEurope Politics\nChina Politics\nAsia Politics\nWorld Politics\nVideo\nLatest Video\nFull Episodes\nLivestream\nTop Video\nLive Audio\nEurope TV\nAsia TV\nCNBC Podcasts\nCEO Interviews\nDigital Originals\nWatchlist\nInvesting Club\nTrust Portfolio\nAnalysis\nTrade Alerts\nMeeting Videos\nHomestretch\nJim's Columns\nEducation\nSubscribe\nPRO\nPro News\nJosh Brown",
+        "score": 0.28188768,
+        "published_date": "Tue, 06 Oct 2026 18:21:29 GMT",
+        "raw_content": null,
+        "id": "8ca017-06"
+      },
+      {
+        "url": "https://www.bankingdive.com/news/how-stablecoins-speed-international-payments-crypto-cross-border-latitude-cyril-mathew/832094",
+        "title": "How Stripe, Zerohash alums are looking to speed international payments",
+        "content": "Mathew, a former Stripe cryptocurrency executive, established Latitude in January 2025 with Brian Wrightson, a former Stripe engineer who serves as chief technology officer, and Vivek Morzaria, a former executive with Zerohash, a crypto infrastructure startup. Latitude has raised $43 million in equity funding, including $35 million announced last month. [...] \u201cThere\u2019s no question that we haven\u2019t been able to move as fast as we would like\u201d with product launches, Chris Britt said Sept. 9. Acquiring Stride Bank will give the fintech \u201ccomplete control of our destiny.\u201d\n\n By Caitlin Mullen \u2022 Sept. 10, 2026  \n\n### Get the free newsletter\n\nSubscribe to Banking Dive for top news, trends & analysis [...] see much more consistent pricing across the board, especially when there\u2019s clear regulation and liquidity, and there\u2019s other ways for a company like ours to monetize in that world, like other financial products you can build on top of the business.",
+        "score": 0.25755537,
+        "published_date": "Fri, 02 Oct 2026 10:21:56 GMT",
+        "raw_content": null,
+        "id": "9c6455-07"
+      },
+      {
+        "url": "https://www.bloomberg.com/news/videos/2026-10-14/stripe-bets-on-ai-powered-commerce-video",
+        "title": "Watch Stripe Bets on AI-Powered Commerce - Bloomberg",
+        "content": "[](\n\nLive TV\n   Markets \n   Finance\n   Economics\n   Industries\n   Tech\n   Politics\n   Businessweek\n   Opinion\n   Video\n   More \n\nUS Edition\n\n[](\n\nBloomberg Open Interest \u2022 Oct 14th, 2026\n\nStripe Bets on AI-Powered Commerce\n\nEileen O'Mara, Stripe Vice Chair, joins Bloomberg Open Interest from the International AI Summit in Dublin. She discusses Europe\u2019s push to help startups scale, the surge of AI-powered businesses and how agentic commerce could reshape payments.\n\n## Available on: [...] Skip to content\n\nBloomberg the Company & Its Products The Company & its ProductsBloomberg Terminal Demo RequestBloomberg Anywhere Remote Login Bloomberg Anywhere LoginBloomberg Customer Support Customer Support\n\n   ### Bloomberg\n\nConnecting decision makers to a dynamic network of information, people and ideas, Bloomberg quickly and accurately delivers business and financial information, news and insight around the world \n### For Customers [...] ### Bloomberg\n\nConnecting decision makers to a dynamic network of information, people and ideas, Bloomberg quickly and accurately delivers business and financial information, news and insight around the world \n### For Customers\n\n       Bloomberg Anywhere Remote Login\n       Software Updates\n       Manage Contracts and Orders\n\n### Support\n\nAmericas+1 212 318 2000\n\nEMEA+44 20 7330 7500\n\nAsia Pacific+65 6212 1000\n\n[](",
+        "score": 0.23794802,
+        "published_date": "Wed, 14 Oct 2026 00:00:00 GMT",
+        "raw_content": null,
+        "id": "14fb7d-08"
+      },
+      {
+        "url": "https://www.espn.com/nfl/story/_/id/50259857/falcons-throwback-logo-include-viral-stripe-pattern",
+        "title": "Falcons' viral stripes will appear down center of helmets - ESPN",
+        "content": "The presentation of the retro logo on top of the vertical striping in those colors on that specific social media post seems to be the object of controversy. The stripes will appear down the middle of the team's red helmet and not behind the logo like the graphic showed.\n\nThe Falcons declined to comment on the situation. An NFL spokesperson did not immediately respond to a request for comment from The Associated Press. [...] The post featured the franchise's throwback black-and-white bird logo, which it used from the 1960s all the way up to the early 2000s. Behind the logo were vertical stripes in red, black and gold. The colors are a reference to the team's 1966 uniform, which consisted of a red helmet, the black Falcons logo, and black, white and gold striping on the pants. [...] The Falcons have worn the retro logo for games every year since 2009 with the exception of several years when the NFL prevented teams from using an alternative helmet color. Atlanta will wear the logo Sunday when it hosts the San Francisco 49ers at Mercedes-Benz Stadium.",
+        "score": 0.13620602,
+        "published_date": "Fri, 23 Oct 2026 19:11:12 GMT",
+        "raw_content": null,
+        "id": "9ffd0a-09"
+      }
+    ],
+    "response_time": 0.0,
+    "request_id": "7b466b78-04bf-4c5b-8b8b-5928ddcb8150"
+  }
+}
