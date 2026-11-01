@@ -21,9 +21,10 @@ Why: if sources were in the key, a new article would silently create a new entry
 Key = sha256(model | subject | intent | window_days | prompt_version). Bumping the prompt version invalidates everything on purpose.
 
 ## ADR-005: Default set policy is exact_set for the demo (ExactSet: true)
-Why: `ExactSet: true` (`exact_set`) is the default policy for the demo because a same-day article swap or a corrected article headline (`set_hash` change) must trigger `REFUSE_SET_CHANGED` and force recomputation. A brief should never rely on stale evidence when headline corrections or source substitutions occur on the same day.
-Fallback: switch back to `newest_only` if live Tavily search jitter produces unwanted cache misses without any news movement.
+Why: `ExactSet: true` (`exact_set`) is the default policy for the demo because a same-day article swap or a corrected article headline (`set_hash` change) must trigger `REFUSE_SET_CHANGED` and force recomputation. A brief should never rely on stale evidence when headline corrections or source substitutions occur on the same day. Because live Tavily search results vary slightly call-to-call even without new news, cache `HIT` demonstrations must run in replay mode (`CHRONO_TAVILY_MODE=replay`) for deterministic repeatability.
+Fallback: switch back to `newest_only` if live Tavily search jitter produces unwanted cache misses without any news movement during live ad-hoc runs.
 
-## ADR-006: Tenant ID extracted strictly from Bifrost Virtual Key
-Why: Cache isolation between teams/tenants must not be spoofable by clients. The cache key is `sha256(len_prefixed(tenant_id, model, subject, intent, window_days, prompt_version))`. `tenant_id` is extracted inside the Go plugin from the Bifrost virtual key (`x-bf-vk` / Bifrost virtual key context, defaulting to `"default"` only when virtual keys are not configured) and NEVER from a client-supplied `x-chrono-*` header, preventing cross-team cache leakage.
-Fallback: Default to `"default"` tenant if virtual keys are not configured in Bifrost.
+## ADR-006: Tenant ID extracted strictly from Bifrost Virtual Key (Fail Closed)
+Why: Cache isolation between teams/tenants must not be spoofable by clients. The cache key is `sha256(len_prefixed(tenant_id, model, subject, intent, window_days, prompt_version))`. `tenant_id` is extracted inside the Go plugin strictly from the authenticated Bifrost virtual key (`x-bf-vk` / Bifrost virtual key context) and NEVER from a client-supplied `x-chrono-*` header, preventing cross-team cache leakage.
+Fail Closed Policy: If a request has no Bifrost virtual key (missing or empty), the plugin MUST NOT cache—it refuses lookup and does not store (`REFUSE_NO_TENANT` / fail closed). Never fall back to a shared `"default"` tenant, which would leak cached briefs across callers.
+Fallback: Require valid Bifrost virtual key configuration in all environments where caching is active.

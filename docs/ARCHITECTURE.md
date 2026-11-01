@@ -32,19 +32,21 @@ Response, plugin to agent: `x-chrono-cache` (HIT, MISS_COLD, REFUSE_*), `x-chron
 
 ## Cache Key & Tenant Isolation (ADR-006)
 The cache key is `sha256(len_prefixed(tenant_id, model, subject, intent, window_days, prompt_version))`.
-`tenant_id` is extracted inside the Go plugin from the Bifrost virtual key (`x-bf-vk` / Bifrost virtual key context, defaulting to `"default"` only when virtual keys are not configured) and NEVER from a client-supplied `x-chrono-*` header, preventing cross-team cache leakage.
+`tenant_id` is extracted inside the Go plugin strictly from the authenticated Bifrost virtual key (`x-bf-vk` / Bifrost virtual key context) and NEVER from a client-supplied `x-chrono-*` header, preventing cross-team cache leakage.
+**Fail Closed (No "default" tenant)**: If a request has no Bifrost virtual key (missing or empty), the plugin MUST NOT cache—it refuses lookup and does not store (`REFUSE_NO_TENANT` / fail closed). Never fall back to a shared `"default"` tenant, which would risk cross-caller leakage.
 Bumping `prompt_version` invalidates all cached entries deterministically.
 
 ## Decision order (internal/decide)
-no evidence -> refuse; future-dated -> refuse; no entry -> cold miss; expired -> refuse; newer source -> refuse; undated count changed -> refuse; exact policy and set differs -> refuse; else hit.
+missing tenant / unauthenticated -> refuse (fail closed); no evidence -> refuse; future-dated -> refuse; no entry -> cold miss; expired -> refuse; newer source -> refuse; undated count changed -> refuse; exact policy and set differs -> refuse; else hit.
 
 ## Policy Comparison Benchmark & LLM-Only Savings
 - **Canonical Pitch Line**: `"Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."`
+- **Cache Policy**: `exact_set` (`ExactSet: true`) is our policy. Because live Tavily search results vary slightly call-to-call even without new news, cache `HIT` demonstrations must run in replay mode (`CHRONO_TAVILY_MODE=replay`) for deterministic repeatability.
 - **Savings = LLM cost and tokens only**: Tavily search runs on every request to gather live source timestamps and titles; cache hits save 100% of LLM generation cost and latency.
-- **Comparison Benchmark (5-min TTL vs. 24h TTL vs. ChronoBrief freshcache)**:
-  - *5-min TTL*: High false-miss rate (recomputes needlessly when teammates prep >5 mins apart with unchanged news).
-  - *24h TTL*: High stale-serve rate (serves yesterday's brief after breaking news or headline corrections).
-  - *ChronoBrief*: 0% stale serves while retaining full 24h cache hits when evidence is unchanged.
+- **Comparison Benchmark (Expected Behaviour until measured against audit log)**:
+  - *5-min TTL (Expected)*: High false-miss rate (recomputes needlessly when teammates prep >5 mins apart with unchanged news).
+  - *24h TTL (Expected)*: High stale-serve rate (serves yesterday's brief after breaking news or headline corrections).
+  - *ChronoBrief (Expected)*: 0% stale serves while retaining full 24h cache hits when evidence is unchanged.
 
 
 ## Audit record (one JSON line per lookup)
@@ -54,7 +56,7 @@ ts, key, subject, model, prompt_version, mode, decision, incoming_newest, entry_
 Hit rate; tokens and cost saved (from the original computation recorded at store time); stale serves (must be 0); stale answers prevented (REFUSE_NEWER_SOURCE count, i.e. what a plain TTL or semantic cache would have served wrongly).
 
 ## Threat model, honestly
-- `tenant_id` is derived from the Bifrost virtual key context (`x-bf-vk`), never from client headers, guaranteeing cross-tenant cache isolation.
+- `tenant_id` is derived strictly from the authenticated Bifrost virtual key context (`x-bf-vk`), never from client headers. Requests lacking a virtual key fail closed (`REFUSE_NO_TENANT`), guaranteeing cross-tenant cache isolation.
 - Freshness headers are client-supplied metadata. A caller who lies about freshness can cause a stale serve. Acceptable here because the only caller is our app; documented, not hidden. Hardening option: shared-secret header checked by the plugin.
 - Source text is untrusted. It is fenced as data in the prompt and never treated as instructions.
 - A brief that fails citation validation can already be cached by the time we validate it. The client heals this: a HIT that fails validation triggers an immediate `refresh` request.

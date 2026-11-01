@@ -1,6 +1,8 @@
-# Bifrost Plugin Recon (Pre-Seeded Reference + Live Verification Checklist)
+# Bifrost Plugin Recon (Pre-Seeded Reference & Live Verification Checklist)
 
-> **Note for Antigravity Agent (`/cb-recon`)**: This file is pre-seeded with verified facts from the official Bifrost documentation (`https://docs.getbifrost.ai/plugins/writing-go-plugin`, `https://docs.getbifrost.ai/plugins/migration-guide`, and `https://docs.getbifrost.ai/plugins/getting-started` as of late October 2026). During `/cb-recon`, verify the exact latest git tag on `https://github.com/maximhq/bifrost` and append the Docker hello-world load proof log excerpt at the bottom.
+> **CRITICAL RECON NOTICE**:
+> Upstream tags `transports/v2.4.0` and `core v1.14.1` exist on `maximhq/bifrost`, but the exact `go` directive and toolchain version are **UNVERIFIED** until `/cb-recon` (`T02`) clones `maximhq/bifrost` at `transports/v2.4.0` and reads its `go.mod` verbatim.
+> The plugin and Docker build MUST match Bifrost's `go.mod` toolchain version exactly.
 
 ## 1. Verified Hook Signatures (Bifrost v1.6+ / v2.0 HTTP Transport)
 In Bifrost's native Go plugin architecture (`package main`, built with `CGO_ENABLED=1 go build -buildmode=plugin`), symbols are looked up in the `.so` shared object:
@@ -20,10 +22,10 @@ In Bifrost's native Go plugin architecture (`package main`, built with `CGO_ENAB
 2. **PostLLMHook Short-Circuit Guarantee**: In Bifrost, all executed `PreLLMHook`s receive corresponding `PostLLMHook` calls even when short-circuited. Always mark cache hits on `ctx` in `PreLLMHook` so `PostLLMHook` does not re-store the cached copy or double-log.
 3. **Synchronous Cost Calculation**: `ctx.CalculateCost(resp)` (or `ctx.CalculateCostBreakdown(resp)` in v1.10.2+) must be called synchronously inside `PostLLMHook` before any async goroutine, because pooled context/response objects are reset after request completion.
 
-## 3. Verified Recon Pins & Architecture Confirmation
-- **Pinned Upstream Tag**: `maximhq/bifrost` tag `transports/v2.4.0`
-- **Pinned Core Version**: `github.com/maximhq/bifrost/core v1.14.1`
-- **Pinned Go Toolchain**: Go `1.27.3` (compatible with `golang:1.23+` builder)
+## 3. Recon Target Pins & Architecture Confirmation
+- **Target Upstream Tag**: `maximhq/bifrost` tag `transports/v2.4.0` (to be verified in T02)
+- **Target Core Version**: `github.com/maximhq/bifrost/core v1.14.1` (to be verified in T02)
+- **Go Toolchain**: UNVERIFIED — will be determined by reading `go.mod` of `maximhq/bifrost` at `transports/v2.4.0` during T02
 - **Hook Lifecycle & Context Propagation**:
   - `HTTPTransportPreHook` (parses incoming `x-chrono-*` headers, injects parsed fingerprint into `ctx.SetValue`)
   - `PreLLMHook` (evaluates `decide.Decide`; on `HIT`, short-circuits via `&schemas.LLMPluginShortCircuit{Response: cached}`)

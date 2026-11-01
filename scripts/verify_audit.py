@@ -8,10 +8,10 @@ The stale-serve count it prints is the number we show the judges, so it must com
 Savings = LLM cost and tokens only: Tavily search runs on every request to gather live source
 timestamps and titles; cache hits save 100% of LLM generation cost and latency.
 
-Comparison Benchmark = 5-min TTL vs. 24h TTL vs. ChronoBrief (freshcache):
-  - 5-min TTL: High false-miss rate (recomputes needlessly when teammates prep >5 mins apart with unchanged news).
-  - 24h TTL: High stale-serve rate (serves yesterday's brief after breaking news or headline corrections).
-  - ChronoBrief: 0% stale serves while retaining full 24h cache hits when evidence is unchanged.
+Comparison Benchmark (Expected Behaviour until measured against audit log):
+  - 5-min TTL (Expected): High false-miss rate (recomputes needlessly when teammates prep >5 mins apart with unchanged news).
+  - 24h TTL (Expected): High stale-serve rate (serves yesterday's brief after breaking news or headline corrections).
+  - ChronoBrief (Expected): 0% stale serves while retaining full 24h cache hits when evidence is unchanged.
 
 Pitch Line: "Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."
 
@@ -94,7 +94,10 @@ def main() -> int:
         print(f"stale serves {s['stale_serves']}  (stale answers prevented: {s['stale_answers_prevented']})")
         print(f"saved (LLM only): {s['saved_tokens']} tokens  ${s['saved_cost_usd']:.4f}")
         print(f"decisions {s['decisions']}")
-        print("benchmark: 5-min TTL (high false miss) vs 24h TTL (high stale serve) vs ChronoBrief (0% stale serve)")
+        print(
+            "benchmark (expected until measured against audit log): "
+            "5-min TTL (high false miss) vs 24h TTL (high stale serve) vs ChronoBrief (0% stale serve)"
+        )
         print('pitch: "Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."')
         if s["malformed_lines"]:
             print(f"WARNING {s['malformed_lines']} malformed line(s)")
