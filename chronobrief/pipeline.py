@@ -111,9 +111,11 @@ def generate_brief(
     reply = call(cache_mode)
     try:
         brief, removed = parse_and_validate(reply)
-        lost_claims = [r for r in removed if not r.ref.startswith("icebreaker")]
-        if reply.cache.hit and lost_claims:
-            raise BriefParseError(f"cached brief failed validation ({len(lost_claims)} claim(s) removed)")
+        # A HIT means the evidence is unchanged, so the validator removes exactly what it removed when
+        # the brief was first stored: that is normal, not a reason to regenerate (doing so would turn
+        # every HIT into a paid call). Only a cached brief with NO surviving claims is suspect.
+        if reply.cache.hit and not brief.claims:
+            raise BriefParseError("cached brief has no claims that pass validation")
     except BriefParseError as exc:
         if reply.cache.hit:
             result.notices.append("Cached brief failed checks, so it was regenerated.")

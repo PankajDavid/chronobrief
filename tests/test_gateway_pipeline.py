@@ -198,3 +198,15 @@ def test_cli_renders_brief_against_fake_gateway(fixtures: Path, capsys: pytest.C
     assert M.main(["Stripe"]) == 0
     out = capsys.readouterr().out
     assert "Cache: MISS_COLD" in out and "## News" in out and "## Sources" in out
+
+
+def test_hit_with_partly_removed_claims_is_served_not_regenerated(fixtures: Path) -> None:
+    mixed = json.dumps({"claims": [
+        {"id": "c1", "section": "news", "text": "Stripe and FedEx teamed up.", "source_ids": ["S1"]},
+        {"id": "c2", "section": "news", "text": "Stripe raised 9 billion.", "source_ids": ["S1"]},
+    ], "icebreakers": []})
+    gw = FakeGateway(replies=[mixed])
+    first = _run(gw)
+    assert first.brief and len(first.brief.claims) == 1 and first.removed
+    second = _run(gw)
+    assert second.cache and second.cache.hit and second.calls == 1  # served, no paid regeneration
