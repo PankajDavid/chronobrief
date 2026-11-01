@@ -31,6 +31,7 @@ import httpx
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from chronobrief.fingerprint import parse_published  # noqa: E402
 from chronobrief.retrieval import (  # noqa: E402
     DEFAULT_FIXTURES_DIR,
     TAVILY_SEARCH_URL,
@@ -107,8 +108,8 @@ def probe(subject: str) -> None:
     for r in results:
         fmt = _date_format(r.get("published_date"))
         formats[fmt] = formats.get(fmt, 0) + 1
-        pd = r.get("published_date")
-        if isinstance(pd, str) and pd[:10] < start:
+        parsed = parse_published(r.get("published_date"))
+        if parsed is not None and parsed < now - timedelta(days=30):
             outside += 1
     print(f"Saved raw response -> {out.relative_to(ROOT)}")
     print("\n--- paste into docs/TAVILY_PROBE.md ---")

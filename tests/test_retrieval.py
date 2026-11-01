@@ -166,3 +166,11 @@ def test_subject_normalisation_and_slug() -> None:
     with pytest.raises(ValueError):
         normalise_subject("   ")
     assert slugify("Open AI, Inc.") == "open-ai-inc"
+
+
+def test_real_captured_stripe_fixture_parses_every_date() -> None:
+    """The committed fixture is a real Tavily capture (RFC 2822 dates). Every result must parse."""
+    res = search("Stripe", mode="replay", now=NOW)
+    fp = fingerprint(res.sources)
+    assert res.sources and not res.simulated_urls
+    assert fp.undated == 0 and fp.newest is not None and fp.set_hash
