@@ -1,0 +1,172 @@
+{
+  "_comment": "Hours. o=optimistic m=most likely p=pessimistic. Edit estimates after /cb-rules-sync tells you the real time window. Statuses: todo | doing | done.",
+  "deadline_iso": "2026-11-15T18:29:00Z",
+  "tasks": [
+    {
+      "id": "T01",
+      "name": "Sync hackathon rules into docs/HACKATHON_RULES.md",
+      "deps": [],
+      "o": 0.25,
+      "m": 0.5,
+      "p": 1.0,
+      "status": "done"
+    },
+    {
+      "id": "T02",
+      "name": "Bifrost recon: verified plugin API and gateway config",
+      "deps": [
+        "T01"
+      ],
+      "o": 0.5,
+      "m": 1.0,
+      "p": 2.0,
+      "status": "done"
+    },
+    {
+      "id": "T03",
+      "name": "Tavily probe: real response shape and date formats",
+      "deps": [
+        "T01"
+      ],
+      "o": 0.25,
+      "m": 0.5,
+      "p": 1.0,
+      "status": "done"
+    },
+    {
+      "id": "T04",
+      "name": "Freeze cache spec (docs/SPEC_CACHE.md)",
+      "deps": [
+        "T02"
+      ],
+      "o": 0.5,
+      "m": 0.75,
+      "p": 1.5,
+      "status": "todo"
+    },
+    {
+      "id": "T05",
+      "name": "Plugin: pure decision logic and tests (seeded, verify)",
+      "deps": [
+        "T04"
+      ],
+      "o": 0.25,
+      "m": 0.5,
+      "p": 1.0,
+      "status": "todo"
+    },
+    {
+      "id": "T06",
+      "name": "Plugin: Bifrost hooks, store, audit log",
+      "deps": [
+        "T02",
+        "T05"
+      ],
+      "o": 1.0,
+      "m": 2.0,
+      "p": 4.0,
+      "status": "todo"
+    },
+    {
+      "id": "T07",
+      "name": "Docker build of gateway + plugin, load proof",
+      "deps": [
+        "T06"
+      ],
+      "o": 0.75,
+      "m": 1.5,
+      "p": 4.0,
+      "status": "todo"
+    },
+    {
+      "id": "T08",
+      "name": "Agent: Tavily retrieval, replay mode, fingerprint wiring",
+      "deps": [
+        "T03"
+      ],
+      "o": 0.75,
+      "m": 1.5,
+      "p": 3.0,
+      "status": "todo"
+    },
+    {
+      "id": "T09",
+      "name": "Agent: prompt v1, brief schema, citation validator",
+      "deps": [
+        "T08"
+      ],
+      "o": 1.0,
+      "m": 2.0,
+      "p": 3.0,
+      "status": "todo"
+    },
+    {
+      "id": "T10",
+      "name": "Gateway client and compose wiring (MISS, HIT, REFUSE proven by curl)",
+      "deps": [
+        "T07",
+        "T09"
+      ],
+      "o": 0.5,
+      "m": 1.0,
+      "p": 2.0,
+      "status": "todo"
+    },
+    {
+      "id": "T11",
+      "name": "Streamlit dashboard and one-page brief view",
+      "deps": [
+        "T09"
+      ],
+      "o": 1.0,
+      "m": 2.0,
+      "p": 3.0,
+      "status": "todo"
+    },
+    {
+      "id": "T12",
+      "name": "Metrics panel and decision log view",
+      "deps": [
+        "T10",
+        "T11"
+      ],
+      "o": 0.5,
+      "m": 1.0,
+      "p": 2.0,
+      "status": "todo"
+    },
+    {
+      "id": "T13",
+      "name": "Demo rehearsal tooling: replay and simulated-article injector",
+      "deps": [
+        "T12"
+      ],
+      "o": 0.5,
+      "m": 1.0,
+      "p": 2.0,
+      "status": "todo"
+    },
+    {
+      "id": "T14",
+      "name": "Audit against rubric, fix lowest axis",
+      "deps": [
+        "T13"
+      ],
+      "o": 0.5,
+      "m": 1.0,
+      "p": 2.0,
+      "status": "todo"
+    },
+    {
+      "id": "T15",
+      "name": "Submission pack: README, diagram, demo script, pitch",
+      "deps": [
+        "T14"
+      ],
+      "o": 0.5,
+      "m": 1.0,
+      "p": 1.5,
+      "status": "todo"
+    }
+  ]
+}

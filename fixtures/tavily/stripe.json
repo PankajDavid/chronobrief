@@ -1,0 +1,48 @@
+{
+  "subject": "Stripe",
+  "captured_at": "2026-10-30T18:00:00Z",
+  "results": [
+    {
+      "title": "Stripe launches modular revenue and finance automation suite for enterprise billing",
+      "url": "https://reuters.com/technology/stripe-launches-modular-billing-2026-10-28",
+      "published_date": "2026-10-28T14:30:00Z",
+      "content": "Stripe unveiled its new modular revenue and finance automation suite on Wednesday, enabling enterprise CFOs to unify usage-based billing across 45 markets.",
+      "simulated": false
+    },
+    {
+      "title": "Stripe appoints former cloud infrastructure leader Maya Lin as VP of Global Partner Ecosystem",
+      "url": "https://techcrunch.com/2026/10/25/stripe-appoints-maya-lin-vp-partners",
+      "published_date": "2026-10-25T09:15:00Z",
+      "content": "Stripe has hired Maya Lin as Vice President of Global Partner Ecosystem to accelerate enterprise B2B adoption and regional systems integrator alliances.",
+      "simulated": false
+    },
+    {
+      "title": "Stripe expands stablecoin settlement rails to 30 additional countries",
+      "url": "https://bloomberg.com/news/articles/2026-10-21/stripe-expands-stablecoin-rails",
+      "published_date": "2026-10-21T16:45:00Z",
+      "content": "Cross-border merchants using Stripe can now settle transactions in regulated stablecoins across 30 additional countries, cutting settlement times from 3 days to under 10 seconds.",
+      "simulated": false
+    },
+    {
+      "title": "Stripe reports 38 percent growth in AI-native startup payment volume in Q3 update",
+      "url": "https://ft.com/content/stripe-q3-2026-ai-volume",
+      "published_date": "2026-10-18T11:00:00Z",
+      "content": "Payment volume from AI-native software companies grew 38 percent quarter-over-quarter on Stripe, driven by seat-plus-token hybrid pricing models.",
+      "simulated": false
+    },
+    {
+      "title": "Stripe introduces adaptive fraud defense model trained on 120 billion annual transactions",
+      "url": "https://venturebeat.com/ai/stripe-adaptive-fraud-defense-2026",
+      "published_date": "2026-10-14T13:20:00Z",
+      "content": "Stripe Radar's updated foundation model evaluated 120 billion annual transactions to reduce false declines by 19 percent for subscription merchants.",
+      "simulated": false
+    },
+    {
+      "title": "Stripe partners with global airlines on instant multi-currency refund orchestration",
+      "url": "https://wsj.com/articles/stripe-airline-refund-orchestration-2026-10-09",
+      "published_date": "2026-10-09T08:00:00Z",
+      "content": "Five major international carriers adopted Stripe's instant multi-currency refund orchestration API ahead of peak holiday travel.",
+      "simulated": false
+    }
+  ]
+}
