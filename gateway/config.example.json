@@ -8,12 +8,14 @@
       {
         "id": "team-alpha",
         "name": "Team Alpha",
-        "value": "${CHRONO_VK_ALPHA}"
+        "value": "${CHRONO_VK_ALPHA}",
+        "allow_all_providers": true
       },
       {
         "id": "team-beta",
         "name": "Team Beta",
-        "value": "${CHRONO_VK_BETA}"
+        "value": "${CHRONO_VK_BETA}",
+        "allow_all_providers": true
       }
     ]
   },
@@ -36,7 +38,7 @@
       "keys": [
         {
           "name": "gemini-key",
-          "value": "env.GEMINI_API_KEY",
+          "value": "${GEMINI_API_KEY}",
           "weight": 1,
           "models": ["*"]
         }

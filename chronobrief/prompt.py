@@ -141,10 +141,15 @@ def parse_brief(text: str, *, subject: str, meeting_time: str | None = None) -> 
         raise BriefParseError("reply is not a JSON object")
     claims = data.get("claims", [])
     if isinstance(claims, list):
-        for c in claims:
+        seen_ids: set[str] = set()
+        for idx, c in enumerate(claims, 1):
             if isinstance(c, dict):
                 c.pop("date_unverified", None)
                 c.pop("freshness_age_days", None)
+                cid = str(c.get("id") or "").strip()
+                if not cid or cid in seen_ids:
+                    c["id"] = f"c{idx}"
+                seen_ids.add(c["id"])
     try:
         return Brief.model_validate(
             {"subject": subject, "meeting_time": meeting_time,

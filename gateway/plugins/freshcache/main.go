@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/chronobrief/freshcache/internal/audit"
@@ -24,14 +25,27 @@ const (
 	keyServed        pluginContextKey = "freshcache:served"
 	keyStartTime     pluginContextKey = "freshcache:start_time"
 	keyHitEntry      pluginContextKey = "freshcache:hit_entry"
+	keyReqID                          = "freshcache:req_id"
 )
 
+type reqOutcome struct {
+	decision  decide.Decision
+	cacheKey  string
+	served    bool
+	hitEntry  *store.StoredEntry
+	startTime time.Time
+	createdAt time.Time
+}
+
 var (
-	pluginMu     sync.RWMutex
-	cacheStore   *store.Store
-	auditLogger  *audit.Logger
-	cachePolicy  decide.Policy
-	isInitDone   bool
+	pluginMu    sync.RWMutex
+	cacheStore  *store.Store
+	auditLogger *audit.Logger
+	cachePolicy decide.Policy
+	isInitDone  bool
+
+	reqCounter  uint64
+	reqOutcomes sync.Map // map[string]*reqOutcome
 )
 
 func initPlugin(config any) error {
@@ -97,11 +111,38 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 	}()
 
 	parsed := headers.Parse(req)
+	now := time.Now()
 	ctx.SetValue(keyParsedHeaders, parsed)
-	ctx.SetValue(keyStartTime, time.Now())
+	ctx.SetValue(keyStartTime, now)
+
+	reqID := ""
+	if req != nil {
+		reqID = req.CaseInsensitiveHeaderLookup("x-freshcache-id")
+		if reqID == "" {
+			reqID = req.CaseInsensitiveHeaderLookup("x-request-id")
+		}
+	}
+	if reqID == "" {
+		id := atomic.AddUint64(&reqCounter, 1)
+		reqID = fmt.Sprintf("fc-%d-%d", now.UnixNano(), id)
+	}
+	if req != nil {
+		if req.Headers == nil {
+			req.Headers = make(map[string]string)
+		}
+		req.Headers["x-freshcache-id"] = reqID
+	}
+	ctx.SetValue(keyReqID, reqID)
+
+	initialOutcome := &reqOutcome{
+		startTime: now,
+		createdAt: now,
+	}
 	if parsed.TenantID == "" {
 		ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+		initialOutcome.decision = decide.RefuseNoTenant
 	}
+	reqOutcomes.Store(reqID, initialOutcome)
 
 	return nil, nil
 }
@@ -119,15 +160,43 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 		parsed = headers.RequestHeaders{}
 	}
 
+	reqID, _ := ctx.Value(keyReqID).(string)
+	var outcome *reqOutcome
+	if reqID != "" {
+		if v, ok := reqOutcomes.Load(reqID); ok {
+			outcome = v.(*reqOutcome)
+		}
+	}
+	if outcome == nil {
+		cutoff := time.Now().Add(-10 * time.Second)
+		count := 0
+		reqOutcomes.Range(func(k, v any) bool {
+			o := v.(*reqOutcome)
+			if o.createdAt.After(cutoff) {
+				outcome = o
+				count++
+			}
+			return true
+		})
+		if count != 1 {
+			outcome = &reqOutcome{createdAt: time.Now(), startTime: time.Now()}
+			if reqID != "" {
+				reqOutcomes.Store(reqID, outcome)
+			}
+		}
+	}
+
 	// 1. Streaming bypass
 	if req != nil && (req.RequestType == schemas.ChatCompletionStreamRequest || strings.Contains(strings.ToLower(string(req.RequestType)), "stream")) {
 		ctx.SetValue(keyDecision, decide.BypassStream)
+		outcome.decision = decide.BypassStream
 		return req, nil, nil
 	}
 
 	// 2. Missing Virtual Key -> Fail Closed (ADR-006)
 	if parsed.TenantID == "" {
 		ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+		outcome.decision = decide.RefuseNoTenant
 		return req, nil, nil
 	}
 
@@ -138,10 +207,12 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 	}
 	cacheK := key.Compute(parsed.TenantID, parsed.Subject, parsed.Intent, parsed.WindowDays, parsed.PromptVersion, model)
 	ctx.SetValue(keyCacheKey, cacheK)
+	outcome.cacheKey = cacheK
 
 	// 4. Client bypass (refresh): skip lookup, proceed to model, store result in PostLLMHook
 	if parsed.Refresh {
 		ctx.SetValue(keyDecision, decide.BypassRefresh)
+		outcome.decision = decide.BypassRefresh
 		return req, nil, nil
 	}
 	// 5. Lookup Entry in Store
@@ -168,11 +239,14 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 	now := time.Now().UTC()
 	decision := decide.Decide(now, parsed.Fingerprint, decideEntry, pol)
 	ctx.SetValue(keyDecision, decision)
+	outcome.decision = decision
 
 	// 6. Handle HIT
 	if decision.Serves() && storedEntry != nil && storedEntry.Response != nil {
 		ctx.SetValue(keyServed, true)
 		ctx.SetValue(keyHitEntry, storedEntry)
+		outcome.served = true
+		outcome.hitEntry = storedEntry
 		return req, &schemas.LLMPluginShortCircuit{Response: storedEntry.Response}, nil
 	}
 
@@ -207,19 +281,31 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 	// 1. If served from cache (HIT)
 	if served {
 		hitE, _ := ctx.Value(keyHitEntry).(*store.StoredEntry)
+		reqNewest := ""
+		if !parsed.Fingerprint.Newest.IsZero() {
+			reqNewest = parsed.Fingerprint.Newest.Format(time.RFC3339)
+		}
 		rec := audit.Record{
 			Timestamp:            time.Now().UTC().Format(time.RFC3339),
 			TenantID:             parsed.TenantID,
 			CacheKey:             cacheK,
 			Decision:             string(dec),
-			RequestNewest:        parsed.Fingerprint.Newest.Format(time.RFC3339),
+			RequestNewest:        reqNewest,
+			IncomingNewest:       reqNewest,
 			RequestCountAtNewest: parsed.Fingerprint.CountAtNewest,
+			IncomingCount:        parsed.Fingerprint.CountAtNewest,
 			RequestSetHash:       parsed.Fingerprint.SetHash,
 			LatencyMS:            latencyMS,
 		}
 		if hitE != nil {
-			rec.CachedNewest = hitE.Fingerprint.Newest.Format(time.RFC3339)
+			cachedNewest := ""
+			if !hitE.Fingerprint.Newest.IsZero() {
+				cachedNewest = hitE.Fingerprint.Newest.Format(time.RFC3339)
+			}
+			rec.CachedNewest = cachedNewest
+			rec.EntryNewest = cachedNewest
 			rec.CachedCountAtNewest = hitE.Fingerprint.CountAtNewest
+			rec.EntryCount = hitE.Fingerprint.CountAtNewest
 			rec.CachedSetHash = hitE.Fingerprint.SetHash
 			rec.PromptTokens = hitE.PromptTokens
 			rec.CompletionTokens = hitE.CompletionTokens
@@ -236,13 +322,19 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 
 	// 2. If response failed or empty, do not store
 	if bifrostErr != nil || resp == nil || resp.ChatResponse == nil {
+		reqNewest := ""
+		if !parsed.Fingerprint.Newest.IsZero() {
+			reqNewest = parsed.Fingerprint.Newest.Format(time.RFC3339)
+		}
 		rec := audit.Record{
 			Timestamp:            time.Now().UTC().Format(time.RFC3339),
 			TenantID:             parsed.TenantID,
 			CacheKey:             cacheK,
 			Decision:             string(dec),
-			RequestNewest:        parsed.Fingerprint.Newest.Format(time.RFC3339),
+			RequestNewest:        reqNewest,
+			IncomingNewest:       reqNewest,
 			RequestCountAtNewest: parsed.Fingerprint.CountAtNewest,
+			IncomingCount:        parsed.Fingerprint.CountAtNewest,
 			RequestSetHash:       parsed.Fingerprint.SetHash,
 			LatencyMS:            latencyMS,
 		}
@@ -279,13 +371,19 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 	}
 
 	// 5. Append audit log
+	reqNewest := ""
+	if !parsed.Fingerprint.Newest.IsZero() {
+		reqNewest = parsed.Fingerprint.Newest.Format(time.RFC3339)
+	}
 	rec := audit.Record{
 		Timestamp:            now.Format(time.RFC3339),
 		TenantID:             parsed.TenantID,
 		CacheKey:             cacheK,
 		Decision:             string(dec),
-		RequestNewest:        parsed.Fingerprint.Newest.Format(time.RFC3339),
+		RequestNewest:        reqNewest,
+		IncomingNewest:       reqNewest,
 		RequestCountAtNewest: parsed.Fingerprint.CountAtNewest,
+		IncomingCount:        parsed.Fingerprint.CountAtNewest,
 		RequestSetHash:       parsed.Fingerprint.SetHash,
 		PromptTokens:         pt,
 		CompletionTokens:     ct,
@@ -315,24 +413,78 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 		resp.Headers = make(map[string]string)
 	}
 
-	dec, ok := ctx.Value(keyDecision).(decide.Decision)
-	if !ok || dec == "" {
-		dec = decide.MissCold
+	reqID, _ := ctx.Value(keyReqID).(string)
+	if reqID == "" && req != nil {
+		reqID = req.CaseInsensitiveHeaderLookup("x-freshcache-id")
+		if reqID == "" {
+			reqID = req.CaseInsensitiveHeaderLookup("x-request-id")
+		}
 	}
-	resp.Headers["x-chrono-cache"] = string(dec)
 
-	if cacheK, ok := ctx.Value(keyCacheKey).(string); ok && cacheK != "" {
+	var outcome *reqOutcome
+	if reqID != "" {
+		if v, ok := reqOutcomes.LoadAndDelete(reqID); ok {
+			outcome = v.(*reqOutcome)
+		}
+	}
+	if outcome == nil {
+		var matchedKey any
+		cutoff := time.Now().Add(-10 * time.Second)
+		count := 0
+		reqOutcomes.Range(func(k, v any) bool {
+			o := v.(*reqOutcome)
+			if o.createdAt.After(cutoff) {
+				outcome = o
+				matchedKey = k
+				count++
+			}
+			return true
+		})
+		if count == 1 && matchedKey != nil {
+			reqOutcomes.Delete(matchedKey)
+		} else if count > 1 {
+			outcome = nil
+		}
+	}
+
+	dec := decide.MissCold
+	var cacheK string
+	var hitE *store.StoredEntry
+	served := false
+
+	if outcome != nil {
+		if outcome.decision != "" {
+			dec = outcome.decision
+		}
+		cacheK = outcome.cacheKey
+		hitE = outcome.hitEntry
+		served = outcome.served
+	} else {
+		if d, ok := ctx.Value(keyDecision).(decide.Decision); ok && d != "" {
+			dec = d
+		}
+		if k, ok := ctx.Value(keyCacheKey).(string); ok {
+			cacheK = k
+		}
+		if s, ok := ctx.Value(keyServed).(bool); ok {
+			served = s
+		}
+		if h, ok := ctx.Value(keyHitEntry).(*store.StoredEntry); ok {
+			hitE = h
+		}
+	}
+
+	resp.Headers["x-chrono-cache"] = string(dec)
+	if cacheK != "" {
 		resp.Headers["x-chrono-cache-key"] = cacheK
 	}
 	resp.Headers["x-chrono-served-at"] = time.Now().UTC().Format(time.RFC3339)
 
-	if served, _ := ctx.Value(keyServed).(bool); served {
-		if hitE, ok := ctx.Value(keyHitEntry).(*store.StoredEntry); ok && hitE != nil {
-			resp.Headers["x-chrono-cached-newest"] = hitE.Fingerprint.Newest.Format(time.RFC3339)
-			resp.Headers["x-chrono-cached-count"] = strconv.Itoa(hitE.Fingerprint.CountAtNewest)
-			resp.Headers["x-chrono-saved-tokens"] = strconv.Itoa(hitE.TotalTokens)
-			resp.Headers["x-chrono-saved-cost-usd"] = fmt.Sprintf("%.6f", hitE.CostUSD)
-		}
+	if served && hitE != nil {
+		resp.Headers["x-chrono-cached-newest"] = hitE.Fingerprint.Newest.Format(time.RFC3339)
+		resp.Headers["x-chrono-cached-count"] = strconv.Itoa(hitE.Fingerprint.CountAtNewest)
+		resp.Headers["x-chrono-saved-tokens"] = strconv.Itoa(hitE.TotalTokens)
+		resp.Headers["x-chrono-saved-cost-usd"] = fmt.Sprintf("%.6f", hitE.CostUSD)
 	}
 
 	return nil

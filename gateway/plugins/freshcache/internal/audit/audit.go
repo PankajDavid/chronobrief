@@ -15,10 +15,14 @@ type Record struct {
 	CacheKey             string  `json:"cache_key"`
 	Decision             string  `json:"decision"`
 	RequestNewest        string  `json:"request_newest,omitempty"`
+	IncomingNewest       string  `json:"incoming_newest,omitempty"`
 	RequestCountAtNewest int     `json:"request_count_at_newest,omitempty"`
+	IncomingCount        int     `json:"incoming_count,omitempty"`
 	RequestSetHash       string  `json:"request_set_hash,omitempty"`
 	CachedNewest         string  `json:"cached_newest,omitempty"`
+	EntryNewest          string  `json:"entry_newest,omitempty"`
 	CachedCountAtNewest  int     `json:"cached_count_at_newest,omitempty"`
+	EntryCount           int     `json:"entry_count,omitempty"`
 	CachedSetHash        string  `json:"cached_set_hash,omitempty"`
 	PromptTokens         int     `json:"prompt_tokens"`
 	CompletionTokens     int     `json:"completion_tokens"`

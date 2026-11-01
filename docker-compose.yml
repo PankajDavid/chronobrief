@@ -11,7 +11,7 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - CHRONO_VK_ALPHA=${CHRONO_VK_ALPHA:-}
       - CHRONO_VK_BETA=${CHRONO_VK_BETA:-}
-      - CHRONO_MODEL=${CHRONO_MODEL:-gemini-2.5-flash}
+      - CHRONO_MODEL=${CHRONO_MODEL:-gemini-3.1-flash-lite}
       - CHRONO_CACHE_SET_POLICY=${CHRONO_CACHE_SET_POLICY:-exact_set}
     volumes:
       - ./logs:/var/log/bifrost

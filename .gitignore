@@ -12,3 +12,4 @@ data/audit/*.jsonl
 data/cache/
 .DS_Store
 .recon/
+logs/
