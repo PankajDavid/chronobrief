@@ -1,0 +1,1537 @@
+Command exited with code 0.
+
+Command output:
+=== 1. Building hello-world plugin ===
+go: downloading github.com/maximhq/bifrost/core v1.14.1
+go: downloading github.com/valyala/fasthttp v1.74.0
+go: downloading github.com/mark3labs/mcp-go v1.3.0
+go: downloading github.com/tidwall/gjson v1.18.0
+go: downloading github.com/tidwall/sjson v1.2.5
+go: downloading golang.org/x/net v0.61.0
+go: downloading github.com/bytedance/sonic v1.15.3-0.20260730064818-2a36d6da63e2
+go: downloading github.com/tidwall/pretty v1.2.1
+go: downloading github.com/tidwall/match v1.1.1
+go: downloading golang.org/x/text v0.43.0
+go: downloading github.com/google/jsonschema-go v0.4.2
+go: downloading github.com/yosida95/uritemplate/v3 v3.0.2
+go: downloading github.com/google/uuid v1.6.0
+go: downloading github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
+go: downloading github.com/spf13/cast v1.10.0
+go: downloading github.com/klauspost/compress v1.20.0
+go: downloading github.com/valyala/bytebufferpool v1.0.0
+go: downloading github.com/molecule-man/go-brrr v1.0.1
+go: downloading github.com/bytedance/gopkg v0.1.3
+go: downloading github.com/bytedance/sonic/loader v0.5.2
+go: downloading github.com/cloudwego/base64x v0.1.6
+go: downloading golang.org/x/arch v0.23.0
+go: downloading github.com/klauspost/cpuid/v2 v2.3.0
+go: downloading github.com/twitchyliquid64/golang-asm v0.15.1
+=== 2. Verifying plugin symbols ===
+ok       Init
+ok       GetName
+ok       HTTPTransportPreHook
+ok       PreLLMHook
+ok       PostLLMHook
+ok       HTTPTransportPostHook
+ok       Cleanup
+=== 3. Building bifrost-http gateway ===
+go: downloading go.uber.org/automaxprocs v1.6.0
+go: downloading github.com/canonical/starlark v0.0.0-20260428155828-9a81051fac39
+go: downloading github.com/rs/zerolog v1.34.0
+go: downloading github.com/Azure/azure-sdk-for-go/sdk/azcore v1.20.0
+go: downloading cloud.google.com/go v0.123.0
+go: downloading github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.13.1
+go: downloading github.com/aws/aws-sdk-go-v2 v1.42.0
+go: downloading github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.10
+go: downloading github.com/aws/aws-sdk-go-v2/config v1.32.14
+go: downloading github.com/andybalholm/brotli v1.2.2
+go: downloading github.com/aws/aws-sdk-go-v2/credentials v1.19.14
+go: downloading github.com/golang-jwt/jwt/v5 v5.3.1
+go: downloading github.com/cespare/xxhash/v2 v2.3.0
+go: downloading github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.21
+go: downloading github.com/aws/aws-sdk-go-v2/service/s3 v1.99.0
+go: downloading golang.org/x/oauth2 v0.36.0
+go: downloading github.com/fasthttp/websocket v1.5.12
+go: downloading github.com/aws/aws-sdk-go-v2/service/sts v1.41.10
+go: downloading github.com/aws/smithy-go v1.27.1
+go: downloading github.com/fasthttp/router v1.5.4
+go: downloading github.com/maximhq/bifrost/framework v1.11.1
+go: downloading github.com/maximhq/bifrost/plugins/compat v0.5.3
+go: downloading github.com/maximhq/bifrost/plugins/governance v1.11.1
+go: downloading github.com/maximhq/bifrost/plugins/logging v1.11.1
+go: downloading github.com/maximhq/bifrost/plugins/maxim v1.7.14
+go: downloading github.com/maximhq/bifrost/plugins/modelcatalogresolver v1.1.14
+go: downloading github.com/maximhq/bifrost/plugins/otel v1.6.4
+go: downloading github.com/maximhq/bifrost/plugins/prompts v1.1.14
+go: downloading github.com/maximhq/bifrost/plugins/routing v1.2.4
+go: downloading github.com/maximhq/bifrost/plugins/semanticcache v1.7.4
+go: downloading github.com/maximhq/bifrost/plugins/telemetry v1.9.4
+go: downloading github.com/prometheus/client_golang v1.23.3-0.20251103151724-a5ae20370e5e
+go: downloading github.com/prometheus/client_model v0.6.2
+go: downloading gorm.io/gorm v1.31.1
+go: downloading github.com/mattn/go-colorable v0.1.14
+go: downloading github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.2
+go: downloading github.com/AzureAD/microsoft-authentication-library-for-go v1.6.0
+go: downloading golang.org/x/crypto v0.58.0
+go: downloading github.com/a2aproject/a2a-go/v2 v2.5.0
+go: downloading golang.org/x/mod v0.41.0
+go: downloading google.golang.org/grpc v1.83.2
+go: downloading golang.org/x/sync v0.24.0
+go: downloading golang.org/x/sys v0.49.0
+go: downloading github.com/savsgio/gotils v0.0.0-20250408102913-196191ec6287
+go: downloading cloud.google.com/go/compute/metadata v0.9.0
+go: downloading github.com/aws/aws-sdk-go-v2/internal/ini v1.8.6
+go: downloading github.com/aws/aws-sdk-go-v2/service/signin v1.0.9
+go: downloading github.com/aws/aws-sdk-go-v2/service/sso v1.30.15
+go: downloading github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.29
+go: downloading github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.19
+go: downloading github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.7
+go: downloading github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.21
+go: downloading github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.22
+go: downloading github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.13
+go: downloading github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.21
+go: downloading github.com/maximhq/maxim-go v0.2.1
+go: downloading go.opentelemetry.io/otel v1.45.0
+go: downloading go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.44.0
+go: downloading go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetrichttp v1.44.0
+go: downloading go.opentelemetry.io/otel/metric v1.45.0
+go: downloading go.opentelemetry.io/otel/sdk/metric v1.45.0
+go: downloading go.opentelemetry.io/proto/otlp v1.11.0
+go: downloading go.opentelemetry.io/otel/sdk v1.45.0
+go: downloading google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af
+go: downloading github.com/stretchr/testify v1.12.1
+go: downloading github.com/blevesearch/go-porterstemmer v1.0.3
+go: downloading github.com/maximhq/bifrost/plugins/mocker v1.6.14
+go: downloading github.com/jinzhu/now v1.1.5
+go: downloading github.com/beorn7/perks v1.0.1
+go: downloading github.com/prometheus/common v0.69.0
+go: downloading github.com/prometheus/procfs v0.21.1
+go: downloading github.com/go-git/go-billy/v5 v5.9.0
+go: downloading github.com/go-git/go-git/v5 v5.19.2
+go: downloading github.com/pion/rtcp v1.2.18
+go: downloading github.com/pion/webrtc/v4 v4.2.22
+go: downloading github.com/google/cel-go v0.30.0
+go: downloading github.com/mattn/go-isatty v0.0.24
+go: downloading github.com/kylelemons/godebug v1.1.0
+go: downloading github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
+go: downloading gorm.io/driver/sqlite v1.6.0
+go: downloading github.com/jackc/pgx/v5 v5.9.2
+go: downloading github.com/mattn/go-sqlite3 v1.14.32
+go: downloading gorm.io/driver/clickhouse v0.7.0
+go: downloading go.yaml.in/yaml/v3 v3.0.5
+go: downloading github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.6.4
+go: downloading cloud.google.com/go/storage v1.62.1
+go: downloading github.com/parquet-go/parquet-go v0.32.0
+go: downloading google.golang.org/api v0.282.0
+go: downloading github.com/philippgille/chromem-go v0.7.0
+go: downloading github.com/pinecone-io/go-pinecone/v5 v5.3.0
+go: downloading github.com/weaviate/weaviate-go-client/v5 v5.7.1
+go: downloading github.com/qdrant/go-client v1.16.2
+go: downloading github.com/redis/go-redis/v9 v9.17.2
+go: downloading github.com/weaviate/weaviate v1.38.0
+go: downloading github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.29
+go: downloading google.golang.org/genproto/googleapis/rpc v0.0.0-20260803160001-6ac0973c030d
+go: downloading github.com/jinzhu/inflection v1.0.0
+go: downloading google.golang.org/genproto/googleapis/api v0.0.0-20260803160001-6ac0973c030d
+go: downloading github.com/jaswdr/faker/v2 v2.8.0
+go: downloading github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
+go: downloading github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822
+go: downloading github.com/cyphar/filepath-securejoin v0.6.1
+go: downloading google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
+go: downloading github.com/go-logr/logr v1.4.4
+go: downloading go.opentelemetry.io/otel/trace v1.45.0
+go: downloading gorm.io/driver/postgres v1.6.0
+go: downloading dario.cat/mergo v1.0.2
+go: downloading github.com/ProtonMail/go-crypto v1.1.6
+go: downloading github.com/sergi/go-diff v1.4.0
+go: downloading github.com/emirpasic/gods v1.18.1
+go: downloading github.com/hashicorp/go-version v1.9.0
+go: downloading github.com/ClickHouse/clickhouse-go/v2 v2.32.0
+go: downloading github.com/pion/datachannel v1.6.3
+go: downloading github.com/pion/dtls/v3 v3.1.9
+go: downloading github.com/pion/ice/v4 v4.4.4
+go: downloading github.com/pion/interceptor v0.1.49
+go: downloading github.com/pion/logging v0.2.4
+go: downloading github.com/pion/randutil v0.1.0
+go: downloading github.com/pion/rtp v1.10.5
+go: downloading github.com/pion/sctp v1.11.3
+go: downloading github.com/pion/srtp/v3 v3.1.0
+go: downloading cel.dev/expr v0.25.2
+go: downloading github.com/pion/sdp/v3 v3.0.20
+go: downloading github.com/pion/stun/v4 v4.0.1
+go: downloading github.com/pion/transport/v5 v5.1.1
+go: downloading github.com/antlr4-go/antlr/v4 v4.13.1
+go: downloading cloud.google.com/go/auth v0.20.0
+go: downloading cloud.google.com/go/iam v1.7.0
+go: downloading github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.55.0
+go: downloading github.com/googleapis/gax-go/v2 v2.22.0
+go: downloading go.opentelemetry.io/contrib/detectors/gcp v1.44.0
+go: downloading github.com/jackc/pgpassfile v1.0.0
+go: downloading github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
+go: downloading github.com/go-logr/stdr v1.2.2
+go: downloading go.opentelemetry.io/auto/sdk v1.2.1
+go: downloading github.com/cenkalti/backoff/v5 v5.0.3
+go: downloading github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376
+go: downloading github.com/pjbgf/sha1cd v0.6.0
+go: downloading github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
+go: downloading github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
+go: downloading github.com/parquet-go/bitpack v1.0.0
+go: downloading github.com/parquet-go/jsonlite v1.0.0
+go: downloading github.com/twpayne/go-geom v1.6.1
+go: downloading github.com/pion/mdns/v2 v2.2.1
+go: downloading github.com/pion/turn/v5 v5.1.2
+go: downloading golang.org/x/exp v0.0.0-20260529124908-c761662dc8c9
+go: downloading cloud.google.com/go/monitoring v1.24.3
+go: downloading github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.55.0
+go: downloading github.com/ClickHouse/ch-go v0.65.0
+go: downloading github.com/pkg/errors v0.9.1
+go: downloading github.com/oapi-codegen/runtime v1.1.1
+go: downloading github.com/jackc/puddle/v2 v2.2.2
+go: downloading github.com/go-openapi/strfmt v0.27.0
+go: downloading github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8
+go: downloading github.com/kevinburke/ssh_config v1.2.0
+go: downloading github.com/skeema/knownhosts v1.3.1
+go: downloading github.com/xanzy/ssh-agent v0.3.3
+go: downloading github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.33.0
+go: downloading github.com/pierrec/lz4/v4 v4.1.22
+go: downloading gopkg.in/warnings.v0 v0.1.2
+go: downloading github.com/cloudflare/circl v1.6.3
+go: downloading github.com/wlynxg/anet v0.0.5
+go: downloading golang.org/x/time v0.15.0
+go: downloading github.com/envoyproxy/go-control-plane/envoy v1.37.0
+go: downloading github.com/paulmach/orb v0.11.1
+go: downloading github.com/shopspring/decimal v1.4.0
+go: downloading gopkg.in/yaml.v3 v3.0.1
+go: downloading github.com/apapsch/go-jsonmerge/v2 v2.0.0
+go: downloading github.com/go-openapi/errors v0.22.8
+go: downloading github.com/go-viper/mapstructure/v2 v2.5.0
+go: downloading github.com/oklog/ulid/v2 v2.1.2
+go: downloading github.com/go-faster/city v1.0.1
+go: downloading github.com/go-faster/errors v0.7.1
+go: downloading github.com/segmentio/asm v1.2.0
+go: downloading github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2
+go: downloading github.com/spiffe/go-spiffe/v2 v2.7.0
+go: downloading github.com/envoyproxy/protoc-gen-validate v1.3.3
+go: downloading go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.68.0
+go: downloading github.com/googleapis/enterprise-certificate-proxy v0.3.16
+go: downloading github.com/google/s2a-go v0.1.9
+go: downloading github.com/go-jose/go-jose/v4 v4.1.6
+go: downloading github.com/felixge/httpsnoop v1.0.4
+go: downloading github.com/go-openapi/runtime v0.29.2
+go: downloading github.com/go-openapi/swag v0.29.1
+go: downloading github.com/go-openapi/validate v0.26.5
+go: downloading github.com/stretchr/objx v0.5.3
+go: downloading github.com/go-openapi/swag/mangling v0.29.1
+go: downloading github.com/go-openapi/jsonpointer v1.0.0
+go: downloading github.com/go-openapi/swag/loading v0.29.1
+go: downloading github.com/go-openapi/swag/jsonutils v0.29.1
+go: downloading github.com/go-openapi/swag/conv v0.29.1
+go: downloading github.com/go-openapi/swag/fileutils v0.29.1
+go: downloading github.com/go-openapi/swag/cmdutils v0.29.1
+go: downloading github.com/go-openapi/swag/netutils v0.29.1
+go: downloading github.com/go-openapi/swag/stringutils v0.29.1
+go: downloading github.com/go-openapi/swag/typeutils v0.29.1
+go: downloading github.com/go-openapi/swag/yamlutils v0.29.1
+go: downloading github.com/go-openapi/analysis v0.26.2
+go: downloading github.com/go-openapi/loads v0.25.2
+go: downloading github.com/go-openapi/spec v0.22.11
+go: downloading github.com/go-openapi/swag/pools v0.29.1
+go: downloading github.com/go-openapi/jsonreference v1.0.1
+go: downloading cloud.google.com/go/auth/oauth2adapt v0.2.8
+go: downloading go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0
+=== 4. Configuring gateway with plugin ===
+=== 5. Starting bifrost-http gateway ===
+=== 6. Gateway is live, sending test requests ===
+--- GET /v1/models ---
+HTTP/1.1 200 OK
+Server: fasthttp
+Date: Sun, 01 Nov 2026 09:04:31 GMT
+Content-Type: application/json
+Content-Length: 104
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: frame-ancestors 'none'
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Access-Control-Allow-Origin: 
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD
+Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Stainless-Timeout, X-Api-Key, X-OpenAI-Agents-SDK, X-Operation-ID, X-Bifrost-View-As, X-Bifrost-Setup-Token, MCP-Protocol-Version, Mcp-Session-Id, Mcp-Method, Mcp-Name, Last-Event-ID
+Access-Control-Max-Age: 86400
+Access-Control-Expose-Headers: x-bifrost-request-id, x-bifrost-trace-id, x-request-id, x-bifrost-provider, x-bifrost-original-model, x-bifrost-resolved-model, x-bifrost-fallback-index, x-bifrost-request-type, x-bifrost-upstream-latency-ms, x-bifrost-routing-info-provider, x-bifrost-routing-info-model, x-bifrost-routing-info-key, x-bifrost-routing-info-alias-model-id, x-bifrost-routing-info-alias-model-name, x-bifrost-routing-info-alias-model-family, x-bifrost-routing-info-is-fallback, x-bifrost-routing-info-primary-provider, x-bifrost-routing-info-primary-model, x-bifrost-routing-info-server-side-fallback-model, x-bifrost-routing-info-requested-provider, x-bifrost-routing-info-requested-model, x-bifrost-cache-hit, x-bifrost-cache-id, x-bifrost-cache-hit-type, x-bifrost-cache-hit-latency-ms, x-bifrost-cache-requested-provider, x-bifrost-cache-requested-model, x-bifrost-cache-similarity, x-bifrost-cache-threshold, x-bifrost-cache-provider-used, x-bifrost-cache-model-used, x-bifrost-cache-input-tokens, x-bifrost-latency-ms, x-bifrost-pricing-request-type, x-bifrost-converted-request-type, x-bifrost-dropped-compat-params, x-bifrost-dropped-unsupported-tools, x-bifrost-passthrough-path, x-bifrost-error-type, x-bifrost-retry-after-ms, mcp-session-id
+Vary: Origin
+X-Bifrost-Request-Id: e9545e12-c393-424b-9e88-d4b3d63e5b95
+X-Request-Id: e9545e12-c393-424b-9e88-d4b3d63e5b95
+X-Bifrost-Trace-Id: 9c7d65dc961e4ba3abb54c9cd5a3de18
+X-Bifrost-Request-Type: list_models
+X-Hello-World-Plugin: transport-post-hook-value
+X-Hello-World-Response-Header: response-headers-hook-value
+
+{"data":[],"extra_fields":{"request_type":"list_models","routing_info":{},"latency":0,"chunk_index":0}}
+
+--- POST /v1/chat/completions ---
+HTTP/1.1 400 Bad Request
+Server: fasthttp
+Date: Sun, 01 Nov 2026 09:04:31 GMT
+Content-Type: application/json
+Content-Length: 280
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Content-Security-Policy: frame-ancestors 'none'
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Access-Control-Allow-Origin: 
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD
+Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Stainless-Timeout, X-Api-Key, X-OpenAI-Agents-SDK, X-Operation-ID, X-Bifrost-View-As, X-Bifrost-Setup-Token, MCP-Protocol-Version, Mcp-Session-Id, Mcp-Method, Mcp-Name, Last-Event-ID
+Access-Control-Max-Age: 86400
+Access-Control-Expose-Headers: x-bifrost-request-id, x-bifrost-trace-id, x-request-id, x-bifrost-provider, x-bifrost-original-model, x-bifrost-resolved-model, x-bifrost-fallback-index, x-bifrost-request-type, x-bifrost-upstream-latency-ms, x-bifrost-routing-info-provider, x-bifrost-routing-info-model, x-bifrost-routing-info-key, x-bifrost-routing-info-alias-model-id, x-bifrost-routing-info-alias-model-name, x-bifrost-routing-info-alias-model-family, x-bifrost-routing-info-is-fallback, x-bifrost-routing-info-primary-provider, x-bifrost-routing-info-primary-model, x-bifrost-routing-info-server-side-fallback-model, x-bifrost-routing-info-requested-provider, x-bifrost-routing-info-requested-model, x-bifrost-cache-hit, x-bifrost-cache-id, x-bifrost-cache-hit-type, x-bifrost-cache-hit-latency-ms, x-bifrost-cache-requested-provider, x-bifrost-cache-requested-model, x-bifrost-cache-similarity, x-bifrost-cache-threshold, x-bifrost-cache-provider-used, x-bifrost-cache-model-used, x-bifrost-cache-input-tokens, x-bifrost-latency-ms, x-bifrost-pricing-request-type, x-bifrost-converted-request-type, x-bifrost-dropped-compat-params, x-bifrost-dropped-unsupported-tools, x-bifrost-passthrough-path, x-bifrost-error-type, x-bifrost-retry-after-ms, mcp-session-id
+Vary: Origin
+X-Bifrost-Request-Id: cf6c751e-a2e4-4a3d-b89d-45b871ecf50c
+X-Request-Id: cf6c751e-a2e4-4a3d-b89d-45b871ecf50c
+X-Bifrost-Trace-Id: f0287bd25edf476fad96bb51b55cfc47
+X-Bifrost-Original-Model: test-model
+X-Bifrost-Resolved-Model: test-model
+X-Bifrost-Request-Type: chat_completion
+X-Hello-World-Plugin: transport-post-hook-value
+X-Hello-World-Response-Header: response-headers-hook-value
+
+{"is_bifrost_error":false,"error":{"message":"could not auto resolve a provider for the request, please specify a provider explicitly"},"extra_fields":{"routing_info":{},"original_model_requested":"test-model","resolved_model_used":"test-model","request_type":"chat_completion"}}
+
+=== 7. Shutting down gateway ===
+=== 8. Server Log Output ===
+2026/11/01 09:04:21 maxprocs: Leaving GOMAXPROCS=24: CPU quota undefined
+
+╔═══════════════════════════════════════════════════════════╗
+║                                                           ║
+║   ██████╗ ██╗███████╗██████╗  ██████╗ ███████╗████████╗   ║
+║   ██╔══██╗██║██╔════╝██╔══██╗██╔═══██╗██╔════╝╚══██╔══╝   ║
+║   ██████╔╝██║█████╗  ██████╔╝██║   ██║███████╗   ██║      ║
+║   ██╔══██╗██║██╔══╝  ██╔══██╗██║   ██║╚════██║   ██║      ║
+║   ██████╔╝██║██║     ██║  ██║╚██████╔╝███████║   ██║      ║
+║   ╚═════╝ ╚═╝╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝      ║
+║                                                           ║
+║═══════════════════════════════════════════════════════════║
+║                          v1.0.0                           ║
+║═══════════════════════════════════════════════════════════║
+║                 The Fastest LLM Gateway                   ║
+║═══════════════════════════════════════════════════════════║
+║             https://github.com/maximhq/bifrost            ║
+╚═══════════════════════════════════════════════════════════╝
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════════╗
+║ config file /tmp/run/config.json does not include a "$schema" location. Set it to                ║
+║ "https://www.getbifrost.ai/schema" or your mirrored schema location to enable IDE validation.    ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+{"level":"warn","time":"2026-11-01T09:04:21Z","message":"config file /tmp/run/config.json does not include a \"$schema\" location"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"loading configuration from: /tmp/run/config.json"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"connecting to sqlite database"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableConfigHash"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableBudget"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableRateLimit"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableProvider"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableKey"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableModel"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableOauthConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableOauthToken"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableMCPClient"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableClientConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableEnvKey"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableVectorStoreConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableLogStoreConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableCustomer"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableTeam"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableVirtualKey"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableGovernanceConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TableModelPricing"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TablePricingOverride"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] init: creating table TablePlugin"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration many2manyjoin"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] adding join table for governance_virtual_key_keys: many2manyjoin"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration many2manyjoin"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration addcustomproviderconfigjsoncolumn"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration addcustomproviderconfigjsoncolumn"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration addvirtualkeyproviderconfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] addvirtualkeyproviderconfig: creating table TableVirtualKeyProviderConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration addvirtualkeyproviderconfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allowed_origins_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allowed_origins_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allow_direct_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allow_direct_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_enable_litellm_fallbacks_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_enable_litellm_fallbacks_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_profile_config_claims_columns_to_team_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_profile_config_claims_columns_to_team_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_team_source_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_team_source_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_key_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_key_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_framework_configs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_framework_configs_table: creating table TableFrameworkConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_framework_configs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration cleanup_mcp_client_tools_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration cleanup_mcp_client_tools_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_mcp_configs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_vk_mcp_configs_table: creating table TableVirtualKeyMCPConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_mcp_configs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration update_plugins_table_for_custom_plugins"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration update_plugins_table_for_custom_plugins"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_provider_config_budget_rate_limit"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_provider_config_budget_rate_limit"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_sessions_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_sessions_table: creating table SessionsTable"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_sessions_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_headers_json_column_into_mcp_client"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_headers_json_column_into_mcp_client"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_disable_content_logging_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_disable_content_logging_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vertex_project_number_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vertex_project_number_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vertex_deployments_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vertex_deployments_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_and_fill_provider_column_in_key_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_and_fill_provider_column_in_key_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_tools_to_auto_execute_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_tools_to_auto_execute_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_is_code_mode_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_is_code_mode_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_log_retention_days_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_log_retention_days_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_enabled_column_to_key_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_enabled_column_to_key_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration update_model_pricing_table_to_add_cache_and_batch_pricing"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration update_model_pricing_table_to_add_cache_and_batch_pricing"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_agent_depth_and_mcp_tool_execution_timeout_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_agent_depth_and_mcp_tool_execution_timeout_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_code_mode_binding_level_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_code_mode_binding_level_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration normalize_mcp_client_names"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] normalize_mcp_client_names: processing 0 mcpClients"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration normalize_mcp_client_names"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration move_keys_to_provider_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] move_keys_to_provider_config: creating table TableVirtualKeyProviderConfigKey"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] move_keys_to_provider_config: processing 0 oldAssociations"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] move_keys_to_provider_config: dropping table governance_virtual_key_keys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration move_keys_to_provider_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_plugin_version_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_plugin_version_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_send_back_raw_request_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_send_back_raw_request_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_config_hash_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_config_hash_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_key_config_hash_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_key_config_hash_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_additional_config_hash_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_additional_config_hash_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_200k_token_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_200k_token_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_image_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_image_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_use_for_batch_api_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_use_for_batch_api_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_header_filter_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_header_filter_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_azure_client_id_and_client_secret_and_tenant_id_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_azure_client_id_and_client_secret_and_tenant_id_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_distributed_locks_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_distributed_locks_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_config_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_model_config_table: creating table TableModelConfig"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_config_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_provider_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_provider_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allowed_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allowed_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_disable_db_pings_in_health_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_disable_db_pings_in_health_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_is_ping_available_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_is_ping_available_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_tool_pricing_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_tool_pricing_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration remove_server_prefix_from_mcp_tools"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] remove_server_prefix_from_mcp_tools: processing 0 mcpClients"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] remove_server_prefix_from_mcp_tools: processing 0 vkMCPConfigs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration remove_server_prefix_from_mcp_tools"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_tool_sync_interval_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_tool_sync_interval_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_config_to_oauth_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_config_to_oauth_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_routing_rules_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_routing_rules_table: creating table TableRoutingRule"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_routing_rules_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_base_model_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_base_model_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_azure_scopes_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_azure_scopes_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_replicate_deployments_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_replicate_deployments_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_key_status_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_key_status_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_provider_status_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_provider_status_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_rate_limit_to_teams_and_customers"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_rate_limit_to_teams_and_customers"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_async_job_result_ttl_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_async_job_result_ttl_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_required_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_required_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_logging_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_logging_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_hide_deleted_virtual_keys_in_filters_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_hide_deleted_virtual_keys_in_filters_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_enforce_scim_auth_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_enforce_scim_auth_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_enforce_auth_on_inference_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_enforce_auth_on_inference_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration reconcile_pricing_overrides_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] reconcile_pricing_overrides_table: auto-migrating TablePricingOverride"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration reconcile_pricing_overrides_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_encryption_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_encryption_columns: processing 9 backfillTables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_encryption_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_output_cost_per_video_per_second_and_output_cost_per_second_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_output_cost_per_video_per_second_and_output_cost_per_second_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_enable_governance_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_enable_governance_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vllm_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vllm_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration widen_encrypted_varchar_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration widen_encrypted_varchar_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_bedrock_assume_role_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_bedrock_assume_role_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_store_raw_request_response_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_store_raw_request_response_column: processing 0 providers"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_store_raw_request_response_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_pricing_refactor_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_pricing_refactor_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration rename_truncated_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration rename_truncated_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_image_quality_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_image_quality_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_routing_targets_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_routing_targets_table: creating table TableRoutingTarget"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_routing_targets_table: processing 0 legacyRows"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_routing_targets_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_prompt_repo_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TableFolder"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TablePrompt"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TablePromptVersion"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TablePromptVersionMessage"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TablePromptSession"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TablePromptSessionMessage"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: auto-migrating TablePromptVersion and TablePromptSession"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_prompt_repo_tables: creating table TableModelParameters"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_prompt_repo_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_plugin_order_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_plugin_order_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allow_all_keys_to_provider_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_allow_all_keys_to_provider_config: processing 0 allConfigs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_allow_all_keys_to_provider_config: processing 0 modifiedVKIDs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allow_all_keys_to_provider_config"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_provider_config_blacklisted_models_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_provider_config_blacklisted_models_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration backfill_empty_virtual_key_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_empty_virtual_key_configs: processing 0 allVKs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_empty_virtual_key_configs: processing 0 allVKs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_empty_virtual_key_configs: processing 0 modifiedVKIDs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration backfill_empty_virtual_key_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_disable_auto_tool_inject_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_disable_auto_tool_inject_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_enable_temp_token_auth_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_enable_temp_token_auth_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration backfill_allowed_models_wildcard"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_allowed_models_wildcard: processing 0 modifiedVKIDs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_allowed_models_wildcard: processing 0 keys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration backfill_allowed_models_wildcard"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_allowed_extra_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_allowed_extra_headers_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration make_base_pricing_columns_nullable"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration make_base_pricing_columns_nullable"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allow_on_all_virtual_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allow_on_all_virtual_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_open_ai_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_open_ai_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_key_blacklisted_models_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_key_blacklisted_models_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_chain_rule_column_to_routing_rules"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_chain_rule_column_to_routing_rules: processing 0 rules"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_chain_rule_column_to_routing_rules"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_deployment_columns_and_add_aliases"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] drop_deployment_columns_and_add_aliases: processing 0 affectedKeys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_deployment_columns_and_add_aliases"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_replicate_key_config_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_replicate_key_config_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_budget_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_budget_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_routing_chain_max_depth_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_routing_chain_max_depth_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_prompt_variables_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_prompt_variables_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_capability_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_capability_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_ollama_sgl_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_ollama_sgl_config_columns: processing 0 providers"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_ollama_sgl_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_multi_budget_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_multi_budget_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_per_user_oauth_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_per_user_oauth_tables: creating table TableOauthUserToken"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_per_user_oauth_tables: creating table TableOauthUserSession"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_per_user_oauth_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_discovered_tools_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_discovered_tools_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_whitelisted_routes_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_whitelisted_routes_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration replace_enable_litellm_with_compat_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[migrator] dropping column enable_litellm_fallbacks from table config_client"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration replace_enable_litellm_with_compat_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_pricing_unique_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_model_pricing_unique_index: creating index idx_model_provider_mode on TableModelPricing"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_pricing_unique_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration default_compat_should_convert_params_false"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration default_compat_should_convert_params_false"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_priority_tier_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_priority_tier_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_flex_tier_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_flex_tier_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration normalize_otel_trace_type"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration normalize_otel_trace_type"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration migrate_calendar_aligned"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[Migration] Prefilled calendar_aligned field for existing budgets and rate limits"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration migrate_calendar_aligned"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_team_budgets_to_budgets_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_team_budgets_to_budgets_table: creating index TeamID on TableBudget"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_team_budgets_to_budgets_table: processing 0 teamsToRehash"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_team_budgets_to_budgets_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_ocr_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_ocr_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration convert_mcp_client_tool_sync_interval_minutes_to_seconds"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration convert_mcp_client_tool_sync_interval_minutes_to_seconds"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_external_base_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_external_base_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration split_mcp_external_base_url_into_server_client"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration split_mcp_external_base_url_into_server_client"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration make_oauth_token_expiry_nullable"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration make_oauth_token_expiry_nullable"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allow_per_request_content_storage_override_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allow_per_request_content_storage_override_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_retain_content_in_object_storage_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_retain_content_in_object_storage_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allow_per_request_raw_override_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allow_per_request_raw_override_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_disabled_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_disabled_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration gov_unique_team_names"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] gov_unique_team_names: processing 0 dups"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration gov_unique_team_names"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_allow_direct_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] drop_allow_direct_keys_column: processing 0 clientConfigs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_allow_direct_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_allow_direct_keys_column_ddl"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[migrator] dropping column allow_direct_keys from table config_client"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_allow_direct_keys_column_ddl"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth_auth_mode_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_oauth_auth_mode_columns: processing 3 dedupeStmts"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_oauth_auth_mode_columns: processing 3 partialUniques"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth_auth_mode_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration replace_oauth_session_token_with_session_id"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration replace_oauth_session_token_with_session_id"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_legacy_oauth_server_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_legacy_oauth_server_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_non_vk_oauth_user_rows"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_non_vk_oauth_user_rows"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_mcp_external_server_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_mcp_external_server_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_team_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_team_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_legacy_calendar_aligned_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_legacy_calendar_aligned_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_access_profile_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_access_profile_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_vk_access_profile_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_vk_access_profile_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_feature_flags_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_feature_flags_table: creating table TableFeatureFlag"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_feature_flags_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_framework_config_hash_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_framework_config_hash_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_parameters_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_parameters_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_client_config_metadata_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_client_config_metadata_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_temp_tokens_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_temp_tokens_table: creating table TempToken"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_temp_tokens_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration backfill_vk_provider_config_blacklisted_models"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_vk_provider_config_blacklisted_models: processing 0 virtualKeys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration backfill_vk_provider_config_blacklisted_models"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_created_by_user_id_column_for_virtual_keys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_created_by_user_id_column_for_virtual_keys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration re_add_allow_direct_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration re_add_allow_direct_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration refresh_config_hash_after_mcp_external_server_url_removal"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] refresh_config_hash_after_mcp_external_server_url_removal: processing 0 clientConfigs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration refresh_config_hash_after_mcp_external_server_url_removal"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_azure_api_version_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_azure_api_version_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_per_user_header_credentials_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_mcp_per_user_header_credentials_table: creating table TableMCPPerUserHeaderCredential"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_mcp_per_user_header_credentials_table: processing 3 partialUniques"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_mcp_per_user_header_credentials_table: processing 2 statusIndexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_per_user_header_credentials_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_per_user_header_flows_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_mcp_per_user_header_flows_table: creating table TableMCPPerUserHeaderFlow"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_per_user_header_flows_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_tls_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_tls_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_additional_attributes_to_pricing"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_additional_attributes_to_pricing"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_config_scope_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_config_scope_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration migrate_provider_governance_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] migrate_provider_governance_to_model_configs: processing 0 providers"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration migrate_provider_governance_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_budget_model_config_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_budget_model_config_id_column: processing 0 mcs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_budget_model_config_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vertex_aws_workload_identity_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vertex_aws_workload_identity_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_config_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_model_config_calendar_aligned_column: processing 0 rows"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_config_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration migrate_virtual_key_governance_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] migrate_virtual_key_governance_to_model_configs: processing 0 vks"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration migrate_virtual_key_governance_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_customer_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_customer_calendar_aligned_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_customer_budgets_to_budgets_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_customer_budgets_to_budgets_table: creating index CustomerID on TableBudget"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_customer_budgets_to_budgets_table: processing 0 customersToRehash"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_customer_budgets_to_budgets_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_config_budgets_fk_constraint"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_config_budgets_fk_constraint"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_library_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_mcp_library_table: creating table TableMCPLibrary"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_library_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_library_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_library_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_library_source_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_library_source_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_fast_mode_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_fast_mode_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_customer_name_unique_constraint_dedup"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_customer_name_unique_constraint_dedup: processing 0 customers"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_customer_name_unique_constraint_dedup"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration null_legacy_customer_budget_id_refs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration null_legacy_customer_budget_id_refs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] running migrationAddSkillsRepoTables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] migrationAddSkillsRepoTables finished"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth2_server_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth2_server_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth2_issuance_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth2_issuance_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_dump_errors_in_console_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_dump_errors_in_console_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_bedrock_mantle_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_bedrock_mantle_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_model_pricing_is_deprecated_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_model_pricing_is_deprecated_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_tool_execution_timeout_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_tool_execution_timeout_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_key_expires_at_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_key_expires_at_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_key_delete_after_expire_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_key_delete_after_expire_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_client_config_delete_expired_virtual_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_client_config_delete_expired_virtual_keys_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_fast_mode_cache_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_fast_mode_cache_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_inference_geo_multiplier_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_inference_geo_multiplier_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_flex_and_cache_creation_272k_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_flex_and_cache_creation_272k_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vertex_force_single_region_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vertex_force_single_region_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_sidekiq_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_sidekiq_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_sidekiq_kind_status_created_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_sidekiq_kind_status_created_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_sidekiq_partitioning_key_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[migrator] adding column partitioning_key to table sidekiq"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_sidekiq_partitioning_key_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration repair_bare_wildcard_allowed_models"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration repair_bare_wildcard_allowed_models"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_bedrock_project_id_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_bedrock_project_id_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_dual_credential_conflict_behavior_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_dual_credential_conflict_behavior_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_webhook_endpoints_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_webhook_endpoints_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_webhook_jobs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_webhook_jobs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_webhook_config_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_webhook_config_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth_config_resource_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth_config_resource_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_use_anthropic_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_use_anthropic_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_bedrock_batch_role_arn_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_bedrock_batch_role_arn_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_budget_override_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_budget_override_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_budget_override_anchor_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_budget_override_anchor_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_live_models_sync_interval_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_live_models_sync_interval_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_pricing_override_user_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_pricing_override_user_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_budget_reset_config_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_budget_reset_config_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_pending_oauth_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_pending_oauth_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration merge_oauth_token_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] merge_oauth_token_tables: creating table TableMCPOauthToken"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration merge_oauth_token_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration create_mcp_oauth_flows_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] create_mcp_oauth_flows_table: creating table TableMCPOauthFlow"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration create_mcp_oauth_flows_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_oauth_config_pkce_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_oauth_config_pkce_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_oauth_config_token_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_oauth_config_token_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_admin_auth_mode_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_admin_auth_mode_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_token_exchange_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_token_exchange_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_needs_session_stickiness_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_needs_session_stickiness_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_bedrock_endpoints_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_bedrock_endpoints_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_cost_per_request_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_cost_per_request_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration backfill_default_complexity_exemplars_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration backfill_default_complexity_exemplars_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_notifications_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_notifications_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_batch_jobs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_batch_jobs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_image_megapixel_tier_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_image_megapixel_tier_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_input_cost_per_query_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_input_cost_per_query_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_ultrafast_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_ultrafast_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_image_size_quality_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_image_size_quality_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_batch_jobs_attribution_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_batch_jobs_attribution_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_rotation_cooldown_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_rotation_cooldown_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_rotation_cooldown_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_rotation_cooldown_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration drop_legacy_oauth_user_fk_constraints"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration drop_legacy_oauth_user_fk_constraints"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_mcp_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_virtual_mcp_tables: creating table TableVirtualMCP"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] add_virtual_mcp_tables: creating table TableVirtualKeyVirtualMCP"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_mcp_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_video_resolution_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_video_resolution_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_provider_job_kind_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration swap_provider_job_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration swap_provider_job_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_provider_job_kind_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_compat_azure_deepseek_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_compat_azure_deepseek_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration clear_plugin_config_hashes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration clear_plugin_config_hashes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_oauth_token_status_reason_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_oauth_token_status_reason_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_databricks_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_databricks_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_endpoint_slug"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_endpoint_slug"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_allow_all_providers_to_virtual_key"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_allow_all_providers_to_virtual_key"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration backfill_vk_allow_all_providers_hash"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] backfill_vk_allow_all_providers_hash: processing 0 virtualKeys"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration backfill_vk_allow_all_providers_hash"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_prompt_cache_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_prompt_cache_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_hidden_request_types_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_hidden_request_types_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_use_openai_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_use_openai_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_time_of_day_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_time_of_day_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration migrate_vk_standalone_limits_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration migrate_vk_standalone_limits_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration widen_oauth2_client_controlled_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration widen_oauth2_client_controlled_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_key_business_unit_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_key_business_unit_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_discovered_instructions_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_discovered_instructions_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_instruction_cap_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_instruction_cap_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_max_instructions_length_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_max_instructions_length_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_require_public_target_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_require_public_target_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_config_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_config_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_api_key_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_api_key_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_history_retention_days_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_history_retention_days_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_log_embedding_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_log_embedding_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_temperature_reasoning_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_temperature_reasoning_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_key_disable_content_logging_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_key_disable_content_logging_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_ttft_timeout_ms_column_to_routing_targets"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_ttft_timeout_ms_column_to_routing_targets"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_web_search_cost_per_request_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_web_search_cost_per_request_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration move_pricing_override_search_context_to_web_search"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration move_pricing_override_search_context_to_web_search"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_additional_models_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_additional_models_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_provider_config_virtual_key_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_provider_config_virtual_key_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_value_hash_and_token_hash_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_value_hash_and_token_hash_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_mcp_configs_mcp_client_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_mcp_configs_mcp_client_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vk_provider_config_provider_and_key_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vk_provider_config_provider_and_key_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_keys_created_at_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_keys_created_at_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_batch_jobs_due_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_batch_jobs_due_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration make_mcp_oauth_flows_state_unique"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration make_mcp_oauth_flows_state_unique"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_ultrafast_above_272k_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_ultrafast_above_272k_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_priority_above_272k_cache_creation_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_priority_above_272k_cache_creation_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_code_mode_limits_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_code_mode_limits_client_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_compat_force_reasoning_only_models_to_responses_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_compat_force_reasoning_only_models_to_responses_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration backfill_compat_force_reasoning_only_models_to_responses"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration backfill_compat_force_reasoning_only_models_to_responses"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_ignore_provider_cost_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_ignore_provider_cost_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_100k_token_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_100k_token_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_decisions_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_decisions_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_injected_tools_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_injected_tools_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_compat_convert_decision_to_responses_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_compat_convert_decision_to_responses_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_cloudflare_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_cloudflare_key_config_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration move_config_json_vk_limits_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration move_config_json_vk_limits_to_model_configs"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_oauth_private_allowlist_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_oauth_private_allowlist_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_provider_objects_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_provider_objects_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_batch_jobs_file_id_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_batch_jobs_file_id_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_provider_objects_object_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_provider_objects_object_id_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_client_config_enforce_vk_object_ownership_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_client_config_enforce_vk_object_ownership_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_openapi_spec_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_openapi_spec_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_openapi_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_openapi_config_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_client_config_extra_fields_placement_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_client_config_extra_fields_placement_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_virtual_key_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_virtual_key_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_a2a_private_allowlist_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_a2a_private_allowlist_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_vertex_use_session_routing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_vertex_use_session_routing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_client_config_skip_access_profile_user_virtual_key_lifecycle_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_client_config_skip_access_profile_user_virtual_key_lifecycle_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_rss_feeds_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_rss_feeds_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_rss_feeds_icon_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_rss_feeds_icon_url_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_passthrough_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_passthrough_json_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_warp_topic_discovery_min_requests_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_warp_topic_discovery_min_requests_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_azure_use_speech_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_azure_use_speech_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_azure_use_voice_live_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_azure_use_voice_live_endpoints_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_sagemaker_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_sagemaker_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration widen_oauth2_client_id_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration widen_oauth2_client_id_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth2_refresh_token_client_display_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth2_refresh_token_client_display_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_max_protocol_version_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_max_protocol_version_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_discovered_resources_prompts_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_discovered_resources_prompts_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_expose_lists_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_expose_lists_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_oauth_issuer_binding_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_oauth_issuer_binding_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_mcp_client_discovered_tool_details_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_mcp_client_discovered_tool_details_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_video_token_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_video_token_pricing_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] starting migration add_voice_live_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[configstore] finished migration add_voice_live_pricing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"config store initialized (default SQLite)"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] pending migrations"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_update_object_column_values"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_parent_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_responses_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_cost_and_cache_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_guardrail_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_responses_input_history_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_number_of_retries_and_fallback_index_and_selected_key_and_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_performance_indexes_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_update_timestamp_format"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_raw_request_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_cost_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_generation_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_generation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_rule_id_and_routing_rule_name_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_engine_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_engines_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_list_models_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_rerank_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_engine_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : async_jobs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_histogram_composite_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_video_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_provider_histogram_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_large_payload_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_passthrough_request_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_passthrough_response_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_metadata_gin_index_v3"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_dashboard_enhancements"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_and_dashboard_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_variation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_alias_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_governance_context_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_matviews_with_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_ocr_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_attempt_trail_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_selected_prompt_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_user_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_ocr_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_stop_reason_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_safe_jsonb_function"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_dac_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_cluster_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_inc_number_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_filter_users_matview"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_multi_team_business_unit_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_multi_team_bu_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_filter_team_bu_matviews_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_customer_array_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_customer_array_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_filter_customers_matview_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_canonical_model_columns_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : webhook_deliveries_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : async_jobs_add_webhook_endpoint_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : async_jobs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : webhook_deliveries_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_content_hidden_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_server_side_fallback_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_billing_fidelity_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_user_agent_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_user_agent_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_matviews_with_app_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_endpoint_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_video_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_upstream_and_overhead_latency_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_complexity_routing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_session_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_batch_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_cost_breakdown_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_matviews_with_cost_breakdown"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_overhead_breakdown_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : webhook_deliveries_add_filter_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_video_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_served_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_tool_call_names_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_governance_snapshots"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_conversation_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_conversations_updated_at_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_message_outcome_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_embedding_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_owner_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_ranking_name_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_live_session_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : agent_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : agent_logs_add_raw_payload_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_matview_refresh_state_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_is_passthrough_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_topic_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_vector_deletes_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_method_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : add_relay_logs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : relay_logs_add_object_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] pending migrations"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_update_object_column_values"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_parent_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_responses_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_cost_and_cache_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_guardrail_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_responses_input_history_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_init_add_number_of_retries_and_fallback_index_and_selected_key_and_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_performance_indexes_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_update_timestamp_format"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_raw_request_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_cost_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_generation_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_generation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_rule_id_and_routing_rule_name_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_engine_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_engines_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_list_models_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_rerank_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_engine_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : async_jobs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_histogram_composite_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_video_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_provider_histogram_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_large_payload_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_passthrough_request_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_passthrough_response_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_metadata_gin_index_v3"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_dashboard_enhancements"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_and_dashboard_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_image_variation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_alias_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_governance_context_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_matviews_with_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_ocr_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_attempt_trail_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_selected_prompt_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_user_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_ocr_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_stop_reason_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_safe_jsonb_function"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_dac_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_cluster_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_inc_number_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_filter_users_matview"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_multi_team_business_unit_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_multi_team_bu_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_filter_team_bu_matviews_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_customer_array_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_customer_array_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_filter_customers_matview_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_canonical_model_columns_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : webhook_deliveries_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : async_jobs_add_webhook_endpoint_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : async_jobs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : webhook_deliveries_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_content_hidden_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_server_side_fallback_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_billing_fidelity_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_user_agent_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_user_agent_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_matviews_with_app_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_endpoint_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_video_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_upstream_and_overhead_latency_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_complexity_routing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_session_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_routing_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_batch_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_cost_breakdown_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_recreate_matviews_with_cost_breakdown"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_overhead_breakdown_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : webhook_deliveries_add_filter_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_video_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_served_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_tool_call_names_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_governance_snapshots"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_conversation_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_conversations_updated_at_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_message_outcome_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_embedding_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_owner_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_ranking_name_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_live_session_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : agent_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : agent_logs_add_raw_payload_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_matview_refresh_state_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_is_passthrough_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_topic_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : logs_add_warp_vector_deletes_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : mcp_tool_logs_add_method_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : add_relay_logs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] migration : relay_logs_add_object_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] logs_init: creating table Log"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init_update_object_column_values"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init_update_object_column_values"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init_add_parent_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init_add_parent_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init_add_responses_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init_add_responses_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init_add_cost_and_cache_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init_add_cost_and_cache_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_guardrail_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_guardrail_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init_add_responses_input_history_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init_add_responses_input_history_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_init_add_number_of_retries_and_fallback_index_and_selected_key_and_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_init_add_number_of_retries_and_fallback_index_and_selected_key_and_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_performance_indexes_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_performance_indexes_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_update_timestamp_format"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_update_timestamp_format"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_raw_request_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_raw_request_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] mcp_tool_logs_init: creating table MCPToolLog"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_cost_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_cost_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_image_generation_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_image_generation_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_image_generation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_image_generation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_routing_rule_id_and_routing_rule_name_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_routing_rule_id_and_routing_rule_name_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_virtual_key_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_routing_engine_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_routing_engine_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_routing_engines_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_routing_engines_used_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_list_models_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_list_models_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_rerank_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_rerank_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_routing_engine_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_routing_engine_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration async_jobs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] async_jobs_init: creating table AsyncJob"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration async_jobs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_histogram_composite_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_histogram_composite_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_video_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_video_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_provider_histogram_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_provider_histogram_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_large_payload_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_large_payload_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_passthrough_request_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_passthrough_request_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_passthrough_response_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_passthrough_response_body_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_metadata_gin_index_v3"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_metadata_gin_index_v3"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_dashboard_enhancements"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_dashboard_enhancements"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_and_dashboard_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_and_dashboard_performance_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_image_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_image_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_image_variation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_image_variation_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_alias_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_alias_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_governance_context_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_governance_context_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_recreate_matviews_with_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_recreate_matviews_with_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_ocr_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_ocr_output_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_has_object_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_attempt_trail_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_attempt_trail_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_selected_prompt_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_selected_prompt_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_user_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_user_name_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_ocr_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_ocr_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_stop_reason_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_stop_reason_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_safe_jsonb_function"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_safe_jsonb_function"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_dac_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_dac_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_cluster_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_cluster_governance_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_inc_number_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_inc_number_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_recreate_filter_users_matview"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_recreate_filter_users_matview"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_multi_team_business_unit_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_multi_team_business_unit_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_multi_team_bu_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_multi_team_bu_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_recreate_filter_team_bu_matviews_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_recreate_filter_team_bu_matviews_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_customer_array_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_customer_array_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_customer_array_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_customer_array_gin_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_recreate_filter_customers_matview_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_recreate_filter_customers_matview_multivalue"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_canonical_model_columns_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_canonical_model_columns_v2"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_redaction_mapping_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration webhook_deliveries_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] webhook_deliveries_init: creating table WebhookDelivery"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration webhook_deliveries_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration async_jobs_add_webhook_endpoint_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration async_jobs_add_webhook_endpoint_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration async_jobs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration async_jobs_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration webhook_deliveries_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration webhook_deliveries_add_request_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_content_hidden_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_content_hidden_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_server_side_fallback_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_server_side_fallback_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_billing_fidelity_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_billing_fidelity_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_endpoint_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_endpoint_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_plugin_logs_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_video_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_video_edit_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_upstream_and_overhead_latency_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_upstream_and_overhead_latency_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_complexity_routing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_complexity_routing_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_session_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_session_id_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_routing_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_routing_metadata_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_batch_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_batch_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_cost_breakdown_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_cost_breakdown_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_overhead_breakdown_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_overhead_breakdown_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration webhook_deliveries_add_filter_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration webhook_deliveries_add_filter_indexes_v1"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_video_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_video_debug_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_project_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_served_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_served_model_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_tool_call_names_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_tool_call_names_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_governance_snapshots"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_governance_snapshots"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_warp_conversation_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_warp_conversation_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_warp_conversations_updated_at_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_warp_conversations_updated_at_index"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_warp_message_outcome_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_warp_message_outcome_columns"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_embedding_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_embedding_input_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_owner_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_owner_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_ranking_name_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_ranking_name_timestamp_indexes"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_live_session_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_live_session_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration agent_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration agent_logs_init"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_matview_refresh_state_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_matview_refresh_state_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_is_passthrough_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_is_passthrough_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_warp_topic_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_warp_topic_tables"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration logs_add_warp_vector_deletes_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration logs_add_warp_vector_deletes_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration mcp_tool_logs_add_method_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration mcp_tool_logs_add_method_column"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] starting migration add_relay_logs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"[logstore] finished migration add_relay_logs_table"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"logs store initialized"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"Per-user OAuth sweep worker started (flow=1m0s, orphan=24h0m0s, retention=720h0m0s)"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"Per-user headers sweep worker started (orphan=24h0m0s, retention=720h0m0s, expired_flow=15m0s)"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"pricing sync interval set to 24h0m0s (scheduler checks every 5m0s)"}
+{"level":"info","time":"2026-11-01T09:04:21Z","message":"initializing model catalog..."}
+{"level":"info","time":"2026-11-01T09:04:28Z","message":"successfully synced 13645 model parameters records"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"MCP library sync completed: 126 entries synced from https://getbifrost.ai/mcp-library"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"initializing MCP catalog..."}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"log retention days: 365"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"log cleanup routine started"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"log retention cleaner initialized with 365 days retention"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"starting log cleanup: deleting logs older than 2025-11-01T09:04:30Z (retention: 365 days)"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"initializing logging writer settings: max_batch_size=1000 batch_interval=5s max_batch_bytes=314572800 write_queue_capacity=10000 deferred_usage_concurrency=5"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] GetVirtualKeys loaded 0 keys across 1 pages in 67.051µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] loadFromDatabase GetVirtualKeys loaded 0 keys in 85.609µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] loadFromDatabase rebuildInMemoryStructures took 6.901µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] loadFromDatabase total took 402.198µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"governance store initialized successfully"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] NewLocalGovernanceStore took 415.261µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] governance_startup_reset lock acquisition took 88.357µs (acquired=true)"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] PerformStartupResets in-memory reset of 0 rate limits took 15.523µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] PerformStartupResets in-memory reset of 0 budgets took 6.263µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[startup-timing] PerformStartupResets took 63.809µs"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"loading custom plugin from path /tmp/hello-world.so"}
+Init called
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"webhook dispatcher initialized"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"async job executor initialized"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[CODE MODE] Starlark code mode initialized with binding level: server, timeout: 30s"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[Bifrost MCP] tool manager initialized with tool execution timeout: 30s, max agent depth: 10, and code mode binding level: server"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"[Bifrost MCP] MCP Manager initialized"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"MCP integration initialized successfully"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"bifrost client initialized"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"listing all models and adding to model catalog"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"models added to catalog"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"temp-token sweep worker started (interval=5m0s)"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"================================================================"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"No admin account is configured for this Bifrost instance yet, and"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"no setup token is configured. Set setup_token in config.json (or"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"the BIFROST_SETUP_TOKEN environment variable) before creating the"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"first admin account — requests to create it will be rejected until"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"a setup token is configured."}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"================================================================"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"================================================================"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"No admin account is configured for this Bifrost instance yet."}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"The /api surface is locked and no setup token is configured. Set"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"setup_token in config.json (or the BIFROST_SETUP_TOKEN environment"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"variable) and restart to finish setup."}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"================================================================"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"agent gateway initialized: 0 registered agent(s), push notifications disabled (external client URL not configured)"}
+{"level":"warn","time":"2026-11-01T09:04:30Z","message":"git binary not found — Claude Code / Codex marketplace routes disabled"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"Token refresh worker started"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"request body buffer pool limit: 4194304 bytes (buffers above this are released after each request)"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"background live model refresh every 1h0m0s (jittered +/-10%)"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"Time spent in Bifrost server bootstrap 9171 ms"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: prompts - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: logging - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: governance - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: routing - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: compat - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: model-catalog-resolver - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: hello-world - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"plugin status: telemetry - active"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"skills orphan cleanup completed during startup: deleted_db_blobs=0 deleted_storage_objects=0"}
+{"level":"info","time":"2026-11-01T09:04:30Z","message":"successfully started bifrost, serving UI on http://127.0.0.1:8080"}
+HTTPTransportPreHook called
+HTTPTransportPostHook called
+HTTPTransportResponseHeadersHook called
+{"level":"info","http.method":"GET","http.target":"/v1/models","http.status_code":200,"http.request_duration_ms":3,"http.remote_addr":"127.0.0.1:36824","http.user_agent":"curl/8.23.0","trace_id":"85b1ed4be57e459ebc2706cb1454edac","request_id":"27a50f86-dfd2-48f6-9350-aa69cc09d988","time":"2026-11-01T09:04:31Z","message":"request completed"}
+HTTPTransportPreHook called
+HTTPTransportPostHook called
+HTTPTransportResponseHeadersHook called
+{"level":"info","http.method":"GET","http.target":"/v1/models","http.status_code":200,"http.request_duration_ms":0,"http.remote_addr":"127.0.0.1:36836","http.user_agent":"curl/8.23.0","trace_id":"9c7d65dc961e4ba3abb54c9cd5a3de18","request_id":"e9545e12-c393-424b-9e88-d4b3d63e5b95","time":"2026-11-01T09:04:31Z","message":"request completed"}
+HTTPTransportPreHook called
+HTTPTransportPostHook called
+HTTPTransportResponseHeadersHook called
+{"level":"warn","http.method":"POST","http.target":"/v1/chat/completions","http.status_code":400,"http.request_duration_ms":28,"http.remote_addr":"127.0.0.1:36838","http.user_agent":"curl/8.23.0","trace_id":"f0287bd25edf476fad96bb51b55cfc47","request_id":"cf6c751e-a2e4-4a3d-b89d-45b871ecf50c","time":"2026-11-01T09:04:31Z","message":"request completed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"received signal terminated, initiating graceful shutdown..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"closing realtime transport sessions..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"server gracefully shutdown"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"shutting down warp..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"warp shutdown completed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"closing agent gateway..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"shutting down bifrost client..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"closing all request channels..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"[Bifrost MCP] MCP cleanup completed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"got context cancel(), stopping webserver"}
+Cleanup called
+Cleanup called
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"all request channels closed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"bifrost client shutdown completed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"cleaning up storage engines..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping log retention cleaner..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping async job cleaner..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping webhook dispatcher..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping ws ticket store..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping temp-token sweep worker..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"temp-token sweep worker stopped"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping oauth2 sweep worker..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping sidekiq dispatcher..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping live model refresher..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"stopping sidekiq runner..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"closing websocket connection pool..."}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"log cleanup routine stopped"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"Token refresh worker stopped"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"Per-user OAuth sweep worker stopped"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"Per-user headers credential sweep worker stopped"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"storage engines cleanup completed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"cleanup completed"}
+{"level":"info","time":"2026-11-01T09:04:31Z","message":"🏁 server stopped"}
