@@ -52,7 +52,7 @@ def main() -> int:
 
     reset_fixture(slug)
     try:
-        step("1 first request", "normal", ("MISS_COLD", "HIT"))  # HIT if an earlier run already stored it
+        step("1 first request", "normal", ("MISS_COLD", "HIT", "REFUSE_SET_CHANGED"))  # HIT or REFUSE if run before
         step("2 same evidence", "normal", ("HIT",))
         inject_simulated_article(slug, mode="replay")
         step("3 newer article", "normal", ("REFUSE_NEWER_SOURCE",))

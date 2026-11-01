@@ -111,8 +111,9 @@ def generate_brief(
     reply = call(cache_mode)
     try:
         brief, removed = parse_and_validate(reply)
-        if reply.cache.hit and removed:
-            raise BriefParseError(f"cached brief failed validation ({len(removed)} item(s) removed)")
+        lost_claims = [r for r in removed if not r.ref.startswith("icebreaker")]
+        if reply.cache.hit and lost_claims:
+            raise BriefParseError(f"cached brief failed validation ({len(lost_claims)} claim(s) removed)")
     except BriefParseError as exc:
         if reply.cache.hit:
             result.notices.append("Cached brief failed checks, so it was regenerated.")
