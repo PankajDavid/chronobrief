@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -20,6 +20,21 @@ from chronobrief.fingerprint import Fingerprint, Source, fingerprint
 from chronobrief.gateway import CacheInfo, CacheMode, GatewayReply, chat
 from chronobrief.prompt import PROMPT_VERSION, BriefParseError, build_messages, parse_brief, screen_sources
 from chronobrief.retrieval import DEFAULT_FIXTURES_DIR, Mode, RetrievalResult, search
+
+
+def normalise_meeting_time(raw: str | None) -> str | None:
+    """Accept an ISO-8601 date-time (UTC assumed if no offset); return it as YYYY-MM-DDTHH:MM:SSZ."""
+    if raw is None or not raw.strip():
+        return None
+    text = raw.strip()[:40]
+    try:
+        dt = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise ValueError("Meeting time must look like 2026-11-03T10:00:00Z (UTC).") from exc
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+
 
 EMPTY_FINGERPRINT = Fingerprint(newest=None, count_at_newest=0, dated=0, undated=0, set_hash="")
 
@@ -73,6 +88,7 @@ def generate_brief(
     gateway_client: httpx.Client | None = None,
     tavily_client: httpx.Client | None = None,
 ) -> BriefResult:
+    meeting_time = normalise_meeting_time(meeting_time)
     retrieval = search(
         subject, mode=settings.mode, now=now, api_key=settings.tavily_api_key,
         client=tavily_client, window_days=settings.window_days, fixtures_dir=settings.fixtures_dir,
@@ -102,8 +118,7 @@ def generate_brief(
     def call(mode: CacheMode, repair_error: str | None = None) -> GatewayReply:
         result.calls += 1
         return chat(
-            build_messages(result.subject, ids, window_days=settings.window_days,
-                           meeting_time=meeting_time, repair_error=repair_error),
+            build_messages(result.subject, ids, window_days=settings.window_days, repair_error=repair_error),
             base_url=settings.bifrost_url, virtual_key=settings.virtual_key, model=settings.model,
             subject=result.subject, window_days=settings.window_days, prompt_version=PROMPT_VERSION,
             fingerprint_headers=fp.to_headers(), cache_mode=mode, client=gateway_client,

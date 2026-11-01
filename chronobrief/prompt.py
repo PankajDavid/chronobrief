@@ -6,6 +6,8 @@ tests/test_prompt.py fails if the text changes while the version stays the same.
 
 Changelog
 - brief-v1: first version.
+- brief-v2: meeting time removed from the user message. It is not part of the cache key, so it
+  must not change what the model sees; it is shown on the brief instead.
 """
 from __future__ import annotations
 
@@ -20,7 +22,7 @@ from pydantic import ValidationError
 from chronobrief.brief import Brief
 from chronobrief.fingerprint import Source
 
-PROMPT_VERSION = "brief-v1"
+PROMPT_VERSION = "brief-v2"
 GENERATION: dict[str, Any] = {"temperature": 0.2, "max_tokens": 1500}
 MAX_CLAIMS_PER_SECTION = 5
 MAX_ICEBREAKERS = 4
@@ -91,7 +93,6 @@ def build_messages(
     sources: dict[str, Source],
     *,
     window_days: int = 30,
-    meeting_time: str | None = None,
     repair_error: str | None = None,
 ) -> list[dict[str, str]]:
     """Chat messages for the gateway. `sources` is the S1..Sn mapping from brief.assign_ids."""
@@ -104,9 +105,8 @@ def build_messages(
             f'<source id="{sid}" published="{published}" publisher="{_publisher(s.url)}">\n'
             f"{_fence_safe(s.title, MAX_TITLE_CHARS)}\n{_fence_safe(s.snippet, MAX_SNIPPET_CHARS)}\n</source>"
         )
-    meeting = f"Meeting time (UTC): {meeting_time}\n" if meeting_time else ""
     user = (
-        f"Subject: {_fence_safe(subject, 200)}\n{meeting}"
+        f"Subject: {_fence_safe(subject, 200)}\n"
         f"Window: the last {window_days} days.\n"
         f"Sources ({len(sources)}):\n\n" + "\n\n".join(blocks)
     )

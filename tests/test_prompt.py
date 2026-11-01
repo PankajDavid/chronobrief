@@ -14,7 +14,7 @@ NOW = datetime(2026, 11, 1, 12, 0, tzinfo=UTC)
 
 # If this fails you changed the prompt or GENERATION: bump PROMPT_VERSION, add a changelog line,
 # then update the pinned digest for the new version.
-PINNED_DIGESTS = {"brief-v1": "bcba790d05712b62"}
+PINNED_DIGESTS = {"brief-v1": "bcba790d05712b62", "brief-v2": "bcba790d05712b62"}
 
 
 def _src(url: str, title: str, snippet: str, day: int | None = 30) -> Source:
@@ -31,11 +31,11 @@ def test_prompt_digest_is_pinned_to_version() -> None:
 
 def test_sources_are_fenced_with_ids_dates_and_publisher() -> None:
     ids = assign_ids([_src("https://www.example.com/a", "Acme raises $5M", "Acme raised $5M on Tuesday.")])
-    msgs = P.build_messages("Acme", ids, meeting_time="2026-11-03T10:00:00Z")
+    msgs = P.build_messages("Acme", ids)
     assert msgs[0]["role"] == "system" and msgs[0]["content"] == P.SYSTEM_PROMPT
     user = msgs[1]["content"]
     assert '<source id="S1" published="2026-10-30T09:00:00Z" publisher="example.com">' in user
-    assert "Meeting time (UTC): 2026-11-03T10:00:00Z" in user
+    assert "Meeting time" not in user  # not part of the cache key, so never part of the prompt
     assert "Acme raised $5M" not in msgs[0]["content"]  # source text never enters the system message
 
 
