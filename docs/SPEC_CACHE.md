@@ -128,7 +128,7 @@ Every request processed by the plugin appends a single JSON line to `/var/log/bi
 ```json
 {
   "timestamp": "2026-11-01T14:30:00Z",
-  "tenant_id": "vk-team-alpha-prod",
+  "tenant_id": "d7f9a1b2c3e4",
   "cache_key": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
   "decision": "HIT",
   "request_newest": "2026-10-31T20:15:00Z",

@@ -1,6 +1,8 @@
 package headers
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"strconv"
 	"strings"
 	"time"
@@ -11,7 +13,8 @@ import (
 
 // RequestHeaders contains the parsed and bounded headers from an inference request.
 type RequestHeaders struct {
-	TenantID      string
+	TenantID      string // sha256(vk)[:12] - safe hashed tenant identifier (never raw secret)
+	RawTenant     string // raw virtual key from x-bf-vk
 	Subject       string
 	Intent        string
 	WindowDays    int
@@ -19,6 +22,16 @@ type RequestHeaders struct {
 	Fingerprint   decide.Fingerprint
 	CacheMode     string
 	Refresh       bool
+}
+
+// HashTenant computes sha256(vk)[:12] for safe logging and tenant isolation
+// without exposing the raw secret virtual key in logs, memory, or cache keys.
+func HashTenant(vk string) string {
+	if vk == "" {
+		return ""
+	}
+	h := sha256.Sum256([]byte(vk))
+	return hex.EncodeToString(h[:])[:12]
 }
 
 func getHeader(req *schemas.HTTPRequest, key string) string {
@@ -52,7 +65,8 @@ func Parse(req *schemas.HTTPRequest) RequestHeaders {
 	if len(tenant) > 256 {
 		tenant = tenant[:256]
 	}
-	h.TenantID = tenant
+	h.RawTenant = tenant
+	h.TenantID = HashTenant(tenant)
 
 	// 2. Request metadata
 	sub := getHeader(req, "x-chrono-subject")

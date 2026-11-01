@@ -25,8 +25,12 @@ func TestParseValidHeaders(t *testing.T) {
 	}
 
 	h := Parse(req)
-	if h.TenantID != "vk-alpha-prod" {
-		t.Fatalf("expected tenant vk-alpha-prod, got %q", h.TenantID)
+	if h.RawTenant != "vk-alpha-prod" {
+		t.Fatalf("expected raw tenant vk-alpha-prod, got %q", h.RawTenant)
+	}
+	expectedHash := HashTenant("vk-alpha-prod")
+	if h.TenantID != expectedHash || len(h.TenantID) != 12 {
+		t.Fatalf("expected hashed tenant %q (len 12), got %q", expectedHash, h.TenantID)
 	}
 	if h.Subject != "Anthropic" {
 		t.Fatalf("expected subject Anthropic, got %q", h.Subject)

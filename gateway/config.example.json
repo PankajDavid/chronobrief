@@ -8,12 +8,12 @@
       {
         "id": "team-alpha",
         "name": "Team Alpha",
-        "value": "team-alpha"
+        "value": "${CHRONO_VK_ALPHA}"
       },
       {
         "id": "team-beta",
         "name": "Team Beta",
-        "value": "team-beta"
+        "value": "${CHRONO_VK_BETA}"
       }
     ]
   },

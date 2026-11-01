@@ -47,10 +47,12 @@ RUN mkdir -p /etc/bifrost/plugins /var/log/bifrost
 COPY --from=bifrost-builder /app/bifrost-http /usr/local/bin/bifrost-http
 COPY --from=plugin-builder /app/plugins/freshcache.so /etc/bifrost/plugins/freshcache.so
 
-# Copy gateway config
+# Copy gateway config and entrypoint
 COPY gateway/config.json /etc/bifrost/config.json
+COPY gateway/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/local/bin/bifrost-http"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["-app-dir", "/etc/bifrost", "-host", "0.0.0.0", "-port", "8080"]
