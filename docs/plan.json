@@ -155,7 +155,7 @@
       "o": 0.5,
       "m": 1.0,
       "p": 2.0,
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "T15",
@@ -166,7 +166,7 @@
       "o": 0.5,
       "m": 1.0,
       "p": 1.5,
-      "status": "todo"
+      "status": "done"
     }
   ]
 }

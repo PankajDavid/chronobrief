@@ -2,6 +2,7 @@ package audit
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -84,6 +85,7 @@ func (l *Logger) Log(rec Record) {
 
 	l.mu.Lock()
 	defer l.mu.Unlock()
+	_, _ = l.file.Seek(0, io.SeekEnd)
 	_, _ = l.file.Write(data)
 }
 
