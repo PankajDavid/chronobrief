@@ -63,31 +63,39 @@ func New(path string) (*Logger, error) {
 	if err != nil {
 		return nil, err
 	}
-	_ = os.Chmod(path, 0600)
+	if err := os.Chmod(path, 0600); err != nil {
+		_ = f.Close()
+		return nil, err
+	}
 	return &Logger{
 		file: f,
 		path: path,
 	}, nil
 }
 
-// Log writes an audit record. Append failure never blocks or fails request processing.
-func (l *Logger) Log(rec Record) {
+// Log writes an audit record. Append failure returns an error.
+func (l *Logger) Log(rec Record) error {
 	if l == nil || l.file == nil {
-		return
+		return nil
 	}
 	if rec.Timestamp == "" {
 		rec.Timestamp = time.Now().UTC().Format(time.RFC3339)
 	}
 	data, err := json.Marshal(rec)
 	if err != nil {
-		return
+		return err
 	}
 	data = append(data, '\n')
 
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	_, _ = l.file.Seek(0, io.SeekEnd)
-	_, _ = l.file.Write(data)
+	if _, err := l.file.Seek(0, io.SeekEnd); err != nil {
+		return err
+	}
+	if _, err := l.file.Write(data); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Close flushes and closes the audit file.

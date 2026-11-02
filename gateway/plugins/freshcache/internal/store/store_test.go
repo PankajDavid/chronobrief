@@ -228,6 +228,93 @@ func TestSnapshotFilePermissions0600(t *testing.T) {
 	}
 }
 
+func TestStorePutPreservesFirstSeenAcrossOverwrites(t *testing.T) {
+	s := New(10)
+	s.SetTTL(24 * time.Hour)
+
+	t0 := time.Date(2026, 11, 1, 10, 0, 0, 0, time.UTC)
+	fp1 := decide.Fingerprint{
+		Newest:        t0.Add(-48 * time.Hour),
+		CountAtNewest: 1,
+		Dated:         5,
+		Undated:       0,
+		SetHash:       "hash1",
+	}
+	content1 := "initial brief"
+	entry1 := &StoredEntry{
+		Fingerprint: fp1,
+		CreatedAt:   t0,
+		Response: &schemas.BifrostResponse{
+			ChatResponse: &schemas.BifrostChatResponse{
+				Choices: []schemas.BifrostResponseChoice{
+					{
+						ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+							Message: &schemas.ChatMessage{Content: &schemas.ChatMessageContent{ContentStr: &content1}},
+						},
+					},
+				},
+			},
+		},
+	}
+	s.Put("k1", entry1)
+
+	got1, ok := s.Get("k1")
+	if !ok || got1 == nil {
+		t.Fatal("entry1 was not retrieved")
+	}
+	if !got1.FirstSeenAt.Equal(t0) {
+		t.Fatalf("expected FirstSeenAt to be %v, got %v", t0, got1.FirstSeenAt)
+	}
+	if got1.FirstSeenFP.SetHash != "hash1" {
+		t.Fatalf("expected FirstSeenFP to have hash1, got %s", got1.FirstSeenFP.SetHash)
+	}
+
+	// 10 minutes later: overwrite with fp2
+	t10 := t0.Add(10 * time.Minute)
+	fp2 := decide.Fingerprint{
+		Newest:        t0.Add(-2 * time.Hour),
+		CountAtNewest: 1,
+		Dated:         6,
+		Undated:       0,
+		SetHash:       "hash2",
+	}
+	content2 := "updated brief"
+	entry2 := &StoredEntry{
+		Fingerprint: fp2,
+		CreatedAt:   t10,
+		Response: &schemas.BifrostResponse{
+			ChatResponse: &schemas.BifrostChatResponse{
+				Choices: []schemas.BifrostResponseChoice{
+					{
+						ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+							Message: &schemas.ChatMessage{Content: &schemas.ChatMessageContent{ContentStr: &content2}},
+						},
+					},
+				},
+			},
+		},
+	}
+	s.Put("k1", entry2)
+
+	got2, ok := s.Get("k1")
+	if !ok || got2 == nil {
+		t.Fatal("entry2 was not retrieved")
+	}
+	if !got2.CreatedAt.Equal(t10) {
+		t.Fatalf("expected CreatedAt to be %v, got %v", t10, got2.CreatedAt)
+	}
+	if got2.Fingerprint.SetHash != "hash2" {
+		t.Fatalf("expected Fingerprint to have hash2, got %s", got2.Fingerprint.SetHash)
+	}
+	// Crucial: FirstSeenAt and FirstSeenFP must remain the original t0 / fp1
+	if !got2.FirstSeenAt.Equal(t0) {
+		t.Fatalf("expected FirstSeenAt to stay preserved at %v, got %v", t0, got2.FirstSeenAt)
+	}
+	if got2.FirstSeenFP.SetHash != "hash1" {
+		t.Fatalf("expected FirstSeenFP to stay preserved as hash1, got %s", got2.FirstSeenFP.SetHash)
+	}
+}
+
 func BenchmarkStoreGetHit(b *testing.B) {
 	s := New(1000)
 	content := "cached response body"

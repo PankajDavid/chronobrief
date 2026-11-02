@@ -28,7 +28,9 @@ func TestAuditLogWriteAndRead(t *testing.T) {
 		SavedTokens:  150,
 	}
 
-	logger.Log(rec)
+	if err := logger.Log(rec); err != nil {
+		t.Fatalf("failed to log audit record: %v", err)
+	}
 	if err := logger.Close(); err != nil {
 		t.Fatalf("failed to close audit logger: %v", err)
 	}

@@ -18,6 +18,8 @@ type StoredEntry struct {
 	Response         *schemas.BifrostResponse `json:"response"`
 	Fingerprint      decide.Fingerprint       `json:"fingerprint"`
 	CreatedAt        time.Time                `json:"created_at"`
+	FirstSeenAt      time.Time                `json:"first_seen_at,omitempty"`
+	FirstSeenFP      decide.Fingerprint       `json:"first_seen_fp,omitempty"`
 	CostUSD          float64                  `json:"cost_usd"`
 	PromptTokens     int                      `json:"prompt_tokens"`
 	CompletionTokens int                      `json:"completion_tokens"`
@@ -32,6 +34,8 @@ func (e *StoredEntry) DeepCopy() *StoredEntry {
 	cp := &StoredEntry{
 		Fingerprint:      e.Fingerprint,
 		CreatedAt:        e.CreatedAt,
+		FirstSeenAt:      e.FirstSeenAt,
+		FirstSeenFP:      e.FirstSeenFP,
 		CostUSD:          e.CostUSD,
 		PromptTokens:     e.PromptTokens,
 		CompletionTokens: e.CompletionTokens,
@@ -79,6 +83,7 @@ type Store struct {
 	evictions    int64
 	items        map[string]*list.Element
 	evictList    *list.List
+	ttl          time.Duration
 }
 
 // New creates an LRU store with a given maximum capacity.
@@ -97,6 +102,13 @@ func New(maxEntries int, maxBytes ...int64) *Store {
 		items:      make(map[string]*list.Element),
 		evictList:  list.New(),
 	}
+}
+
+// SetTTL configures the baseline TTL window for FirstSeen preservation.
+func (s *Store) SetTTL(d time.Duration) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.ttl = d
 }
 
 // Get retrieves an entry by key, moving it to front, and returns a deep copy.
@@ -122,11 +134,27 @@ func (s *Store) Put(key string, entry *StoredEntry) {
 	defer s.mu.Unlock()
 
 	entryCopy := entry.DeepCopy()
-	itemSize := entryCopy.EstimatedSize(key)
+	if entryCopy.CreatedAt.IsZero() {
+		entryCopy.CreatedAt = time.Now().UTC()
+	}
+	now := entryCopy.CreatedAt
 
 	if elem, exists := s.items[key]; exists {
 		s.evictList.MoveToFront(elem)
 		oldItem := elem.Value.(*lruItem)
+		oldEntry := oldItem.entry
+		if oldEntry != nil && !oldEntry.FirstSeenAt.IsZero() && oldEntry.FirstSeenFP.Valid() && (s.ttl <= 0 || now.Sub(oldEntry.FirstSeenAt) <= s.ttl) {
+			entryCopy.FirstSeenAt = oldEntry.FirstSeenAt
+			entryCopy.FirstSeenFP = oldEntry.FirstSeenFP
+		} else if oldEntry != nil && !oldEntry.CreatedAt.IsZero() && oldEntry.Fingerprint.Valid() && (s.ttl <= 0 || now.Sub(oldEntry.CreatedAt) <= s.ttl) {
+			entryCopy.FirstSeenAt = oldEntry.CreatedAt
+			entryCopy.FirstSeenFP = oldEntry.Fingerprint
+		} else {
+			entryCopy.FirstSeenAt = entryCopy.CreatedAt
+			entryCopy.FirstSeenFP = entryCopy.Fingerprint
+		}
+
+		itemSize := entryCopy.EstimatedSize(key)
 		s.currentBytes -= oldItem.bytes
 		oldItem.entry = entryCopy
 		oldItem.bytes = itemSize
@@ -135,6 +163,11 @@ func (s *Store) Put(key string, entry *StoredEntry) {
 		return
 	}
 
+	if entryCopy.FirstSeenAt.IsZero() || !entryCopy.FirstSeenFP.Valid() {
+		entryCopy.FirstSeenAt = entryCopy.CreatedAt
+		entryCopy.FirstSeenFP = entryCopy.Fingerprint
+	}
+	itemSize := entryCopy.EstimatedSize(key)
 	elem := s.evictList.PushFront(&lruItem{key: key, entry: entryCopy, bytes: itemSize})
 	s.items[key] = elem
 	s.currentBytes += itemSize
@@ -205,7 +238,7 @@ func (s *Store) SaveSnapshot(path string) error {
 
 	dir := filepath.Dir(path)
 	if dir != "" && dir != "." {
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0700); err != nil {
 			return err
 		}
 	}
@@ -219,7 +252,9 @@ func (s *Store) SaveSnapshot(path string) error {
 	if err := os.WriteFile(tmpPath, data, 0600); err != nil {
 		return fmt.Errorf("failed to write tmp snapshot: %w", err)
 	}
-	_ = os.Chmod(tmpPath, 0600)
+	if err := os.Chmod(tmpPath, 0600); err != nil {
+		return fmt.Errorf("failed to chmod tmp snapshot: %w", err)
+	}
 
 	if err := os.Rename(tmpPath, path); err != nil {
 		return fmt.Errorf("failed to atomically rename snapshot: %w", err)

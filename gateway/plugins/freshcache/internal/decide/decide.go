@@ -24,8 +24,10 @@ func (f Fingerprint) Valid() bool {
 
 // Entry is what the cache remembers about a stored answer.
 type Entry struct {
-	FP        Fingerprint
-	CreatedAt time.Time
+	FP          Fingerprint
+	CreatedAt   time.Time
+	FirstSeenAt time.Time
+	FirstSeenFP Fingerprint
 }
 
 // Policy is the knob set the plugin reads from config.
@@ -81,8 +83,13 @@ func Decide(now time.Time, in Fingerprint, e *Entry, p Policy) Decision {
 	if in.Newest.After(e.FP.Newest) {
 		return RefuseNewerSource
 	}
-	if in.Newest.Equal(e.FP.Newest) && in.CountAtNewest > e.FP.CountAtNewest {
-		return RefuseNewerSource
+	if in.Newest.Equal(e.FP.Newest) {
+		if in.CountAtNewest > e.FP.CountAtNewest {
+			return RefuseNewerSource
+		}
+		if in.Dated != e.FP.Dated {
+			return RefuseSetChanged
+		}
 	}
 	if in.Undated != e.FP.Undated {
 		return RefuseSetChanged
@@ -134,19 +141,25 @@ type ShadowOutcomes struct {
 
 // DecideTTLShadow evaluates what a time-only TTL cache would have done on this lookup:
 // - "MISS_COLD" if e == nil
-// - "MISS_EXPIRED" if now.Sub(e.CreatedAt) > ttl
-// - "HIT_STALE" if within TTL (now.Sub(e.CreatedAt) <= ttl) BUT freshcache would have refused
-//   due to newer sources, changed set, invalid evidence, or future date.
-// - "HIT_FRESH" if within TTL and evidence is unchanged (freshcache returns Hit).
+// - "MISS_EXPIRED" if now.Sub(baseCreatedAt) > ttl
+// - "HIT_STALE" if within TTL (now.Sub(baseCreatedAt) <= ttl) BUT freshcache would have refused
+//   against the original baseline evidence due to newer sources, changed set, invalid evidence, or future date.
+// - "HIT_FRESH" if within TTL and evidence is unchanged against the baseline (freshcache returns Hit).
 func DecideTTLShadow(now time.Time, in Fingerprint, e *Entry, ttl time.Duration) string {
 	if e == nil {
 		return "MISS_COLD"
 	}
-	if ttl > 0 && now.Sub(e.CreatedAt) > ttl {
+	baseCreatedAt := e.CreatedAt
+	baseFP := e.FP
+	if !e.FirstSeenAt.IsZero() && e.FirstSeenFP.Valid() {
+		baseCreatedAt = e.FirstSeenAt
+		baseFP = e.FirstSeenFP
+	}
+	if ttl > 0 && now.Sub(baseCreatedAt) > ttl {
 		return "MISS_EXPIRED"
 	}
-	// Within TTL: check if evidence would refuse
-	realDecision := Decide(now, in, e, Policy{
+	// Within TTL: check if evidence would refuse against the baseline
+	realDecision := Decide(now, in, &Entry{FP: baseFP, CreatedAt: baseCreatedAt}, Policy{
 		TTL:        ttl,
 		FutureSkew: 24 * time.Hour,
 		ExactSet:   true,

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -39,6 +40,8 @@ type reqOutcome struct {
 	hookOverheadUS int64
 	shadowOutcomes decide.ShadowOutcomes
 	guardAction    headers.GuardAction
+	entryNewest    string
+	entryCount     int
 }
 
 var (
@@ -51,6 +54,7 @@ var (
 	pluginStartTime       time.Time
 	snapshotPath          string
 	snapshotEntriesLoaded int
+	snapshotErrors        uint64
 
 	reqCounter  uint64
 	reqOutcomes sync.Map // map[string]*reqOutcome
@@ -74,6 +78,7 @@ const (
 
 // pruneOldReqOutcomes removes reqOutcome entries older than reqOutcomeTTL,
 // and caps the map size at maxReqOutcomes to prevent unbounded memory growth (F4).
+// When over maxReqOutcomes, the oldest entries are evicted first.
 func pruneOldReqOutcomes(now time.Time) {
 	cutoff := now.Add(-reqOutcomeTTL)
 	count := 0
@@ -88,15 +93,26 @@ func pruneOldReqOutcomes(now time.Time) {
 		return true
 	})
 	if count > maxReqOutcomes {
-		excess := count - maxReqOutcomes
+		type outcomeItem struct {
+			key       any
+			createdAt time.Time
+		}
+		items := make([]outcomeItem, 0, count)
 		reqOutcomes.Range(func(k, v any) bool {
-			if excess <= 0 {
-				return false
+			if o, ok := v.(*reqOutcome); ok {
+				items = append(items, outcomeItem{key: k, createdAt: o.createdAt})
 			}
-			reqOutcomes.Delete(k)
-			excess--
 			return true
 		})
+		if len(items) > maxReqOutcomes {
+			sort.Slice(items, func(i, j int) bool {
+				return items[i].createdAt.Before(items[j].createdAt)
+			})
+			toRemove := len(items) - maxReqOutcomes
+			for i := 0; i < toRemove; i++ {
+				reqOutcomes.Delete(items[i].key)
+			}
+		}
 	}
 }
 
@@ -117,6 +133,7 @@ type metricsPayload struct {
 	CacheEvictions            int64   `json:"cache_evictions"`
 	SnapshotPath              string  `json:"snapshot_path"`
 	SnapshotEntriesLoaded     int     `json:"snapshot_entries_loaded"`
+	SnapshotErrors            uint64  `json:"snapshot_errors"`
 }
 
 func getMetricsJSON() []byte {
@@ -166,6 +183,7 @@ func getMetricsJSON() []byte {
 		CacheEvictions:            evictions,
 		SnapshotPath:              sp,
 		SnapshotEntriesLoaded:     sl,
+		SnapshotErrors:            atomic.LoadUint64(&snapshotErrors),
 	}
 
 	data, _ := json.MarshalIndent(payload, "", "  ")
@@ -229,6 +247,7 @@ func initPlugin(config any) error {
 	}
 	auditLogger = logger
 	cacheStore = store.New(maxEntries, maxBytes)
+	cacheStore.SetTTL(ttl)
 	cachePolicy = decide.Policy{
 		TTL:        ttl,
 		FutureSkew: futureSkew,
@@ -437,8 +456,14 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 	var decideEntry *decide.Entry
 	if storedEntry != nil {
 		decideEntry = &decide.Entry{
-			FP:        storedEntry.Fingerprint,
-			CreatedAt: storedEntry.CreatedAt,
+			FP:          storedEntry.Fingerprint,
+			CreatedAt:   storedEntry.CreatedAt,
+			FirstSeenAt: storedEntry.FirstSeenAt,
+			FirstSeenFP: storedEntry.FirstSeenFP,
+		}
+		if !storedEntry.Fingerprint.Newest.IsZero() {
+			outcome.entryNewest = storedEntry.Fingerprint.Newest.Format(time.RFC3339)
+			outcome.entryCount = storedEntry.Fingerprint.CountAtNewest
 		}
 	}
 
@@ -585,7 +610,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 			rec.SavedCostUSD = hitE.CostUSD
 		}
 		if al != nil {
-			al.Log(rec)
+			if err := al.Log(rec); err != nil {
+				fmt.Printf("[ERROR] freshcache audit write failed: %v\n", err)
+			}
 		}
 		if outcome != nil {
 			outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
@@ -617,7 +644,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 			PluginOverheadUS:     hookOverhead,
 		}
 		if al != nil {
-			al.Log(rec)
+			if err := al.Log(rec); err != nil {
+				fmt.Printf("[ERROR] freshcache audit write failed: %v\n", err)
+			}
 		}
 		if outcome != nil {
 			outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
@@ -652,7 +681,10 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		if st != nil {
 			st.Put(cacheK, newEntry)
 			if snapPath != "" {
-				_ = st.SaveSnapshot(snapPath)
+				if err := st.SaveSnapshot(snapPath); err != nil {
+					atomic.AddUint64(&snapshotErrors, 1)
+					fmt.Printf("[ERROR] freshcache SaveSnapshot(%s) failed: %v\n", snapPath, err)
+				}
 			}
 		}
 	}
@@ -684,7 +716,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		PluginOverheadUS:     hookOverhead,
 	}
 	if al != nil {
-		al.Log(rec)
+		if err := al.Log(rec); err != nil {
+			fmt.Printf("[ERROR] freshcache audit write failed: %v\n", err)
+		}
 	}
 
 	if outcome != nil {
@@ -791,10 +825,18 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 	}
 
 	if served && hitE != nil {
-		resp.Headers["x-chrono-cached-newest"] = hitE.Fingerprint.Newest.Format(time.RFC3339)
+		newestStr := hitE.Fingerprint.Newest.Format(time.RFC3339)
+		resp.Headers["x-chrono-cached-newest"] = newestStr
+		resp.Headers["x-chrono-entry-newest"] = newestStr
 		resp.Headers["x-chrono-cached-count"] = strconv.Itoa(hitE.Fingerprint.CountAtNewest)
+		resp.Headers["x-chrono-entry-count"] = strconv.Itoa(hitE.Fingerprint.CountAtNewest)
 		resp.Headers["x-chrono-saved-tokens"] = strconv.Itoa(hitE.TotalTokens)
 		resp.Headers["x-chrono-saved-cost-usd"] = fmt.Sprintf("%.6f", hitE.CostUSD)
+	} else if outcome != nil && outcome.entryNewest != "" {
+		resp.Headers["x-chrono-cached-newest"] = outcome.entryNewest
+		resp.Headers["x-chrono-entry-newest"] = outcome.entryNewest
+		resp.Headers["x-chrono-cached-count"] = strconv.Itoa(outcome.entryCount)
+		resp.Headers["x-chrono-entry-count"] = strconv.Itoa(outcome.entryCount)
 	}
 
 	return nil
@@ -812,7 +854,10 @@ func Cleanup() error {
 	defer pluginMu.Unlock()
 
 	if cacheStore != nil && snapshotPath != "" {
-		_ = cacheStore.SaveSnapshot(snapshotPath)
+		if err := cacheStore.SaveSnapshot(snapshotPath); err != nil {
+			atomic.AddUint64(&snapshotErrors, 1)
+			fmt.Printf("[ERROR] freshcache SaveSnapshot(%s) failed: %v\n", snapshotPath, err)
+		}
 	}
 
 	if auditLogger != nil {

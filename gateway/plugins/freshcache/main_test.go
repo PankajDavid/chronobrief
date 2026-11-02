@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -299,5 +300,54 @@ func TestHookPanicRecoveryFailOpen(t *testing.T) {
 	err = HTTPTransportPostHook(nil, nil, nil)
 	if err != nil {
 		t.Errorf("expected nil err on nil inputs, got %v", err)
+	}
+}
+
+func TestPruneOldReqOutcomesEvictsOldestUnderCap(t *testing.T) {
+	now := time.Now()
+	// Clear any existing
+	reqOutcomes.Range(func(k, v any) bool {
+		reqOutcomes.Delete(k)
+		return true
+	})
+
+	// Insert 5,010 entries with distinct timestamps within the 2-minute TTL
+	const total = 5010
+	for i := 0; i < total; i++ {
+		key := fmt.Sprintf("req-%05d", i)
+		// i=0 is oldest (50s ago), i=5009 is newest (0s ago)
+		created := now.Add(-time.Duration(50000-i*10) * time.Millisecond)
+		reqOutcomes.Store(key, &reqOutcome{
+			createdAt: created,
+		})
+	}
+
+	pruneOldReqOutcomes(now)
+
+	// Count remaining
+	remaining := 0
+	reqOutcomes.Range(func(k, v any) bool {
+		remaining++
+		return true
+	})
+
+	if remaining != maxReqOutcomes {
+		t.Fatalf("expected exactly %d remaining entries, got %d", maxReqOutcomes, remaining)
+	}
+
+	// The 10 oldest (req-00000 through req-00009) should have been evicted
+	for i := 0; i < 10; i++ {
+		key := fmt.Sprintf("req-%05d", i)
+		if _, ok := reqOutcomes.Load(key); ok {
+			t.Errorf("expected oldest entry %s to be evicted", key)
+		}
+	}
+
+	// Newer entries (e.g. req-00010 through req-00019) should still exist
+	for i := 10; i < 20; i++ {
+		key := fmt.Sprintf("req-%05d", i)
+		if _, ok := reqOutcomes.Load(key); !ok {
+			t.Errorf("expected newer entry %s to be preserved", key)
+		}
 	}
 }

@@ -31,6 +31,7 @@ func TestDecideTable(t *testing.T) {
 		{"same timestamp extra article refuses", fp(base.Newest, 2, 6, 0, "h2"), entry, pol, RefuseNewerSource},
 		{"older incoming newest still hits (entry already knows newer)", fp(base.Newest.Add(-24*time.Hour), 1, 4, 0, "h3"), entry, pol, Hit},
 		{"undated count changed refuses", fp(base.Newest, 1, 5, 1, "h1"), entry, pol, RefuseSetChanged},
+		{"dated count changed refuses (ExactSet: false)", fp(base.Newest, 1, 6, 0, "h1"), entry, pol, RefuseSetChanged},
 		{"exact policy: different set same newest refuses", fp(base.Newest, 1, 5, 0, "hX"), entry, Policy{TTL: pol.TTL, FutureSkew: pol.FutureSkew, ExactSet: true}, RefuseSetChanged},
 		{"newest_only policy: different set same newest hits", fp(base.Newest, 1, 5, 0, "hX"), entry, pol, Hit},
 		{"no dated sources refuses", fp(time.Time{}, 0, 0, 3, ""), entry, pol, RefuseNoFingerprint},
@@ -123,6 +124,40 @@ func TestTTLShadow(t *testing.T) {
 	// - 1h TTL: HIT_STALE! (blindly serves stale brief)
 	// - 24h TTL: HIT_STALE! (blindly serves stale brief)
 	shadows := ComputeShadowOutcomes(t0, newerIn, entry)
+	if shadows.TTL5m != "MISS_EXPIRED" {
+		t.Fatalf("expected TTL5m to be MISS_EXPIRED, got %s", shadows.TTL5m)
+	}
+	if shadows.TTL1h != "HIT_STALE" {
+		t.Fatalf("expected TTL1h to be HIT_STALE, got %s", shadows.TTL1h)
+	}
+	if shadows.TTL24h != "HIT_STALE" {
+		t.Fatalf("expected TTL24h to be HIT_STALE, got %s", shadows.TTL24h)
+	}
+	if !shadows.WouldServeStale24h {
+		t.Fatal("expected WouldServeStale24h to be true")
+	}
+}
+
+func TestShadowTTLAfterRefusalOverwrite(t *testing.T) {
+	fp1 := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
+	fp2 := fp(t0.Add(-2*time.Hour), 1, 6, 0, "h2")
+
+	// t0: Store initial entry with FP1 (CreatedAt: t0, FirstSeenAt: t0, FirstSeenFP: FP1)
+	// t0 + 10m: Refusal overwrite occurs with newer FP2
+	entry := &Entry{
+		FP:          fp2,
+		CreatedAt:   t0.Add(10 * time.Minute),
+		FirstSeenAt: t0,
+		FirstSeenFP: fp1,
+	}
+
+	// t0 + 15m: Request arrives with FP2
+	t15 := t0.Add(15 * time.Minute)
+	if dec := Decide(t15, fp2, entry, pol); dec != Hit {
+		t.Fatalf("expected freshcache to HIT for identical fp2, got %s", dec)
+	}
+
+	shadows := ComputeShadowOutcomes(t15, fp2, entry)
 	if shadows.TTL5m != "MISS_EXPIRED" {
 		t.Fatalf("expected TTL5m to be MISS_EXPIRED, got %s", shadows.TTL5m)
 	}
