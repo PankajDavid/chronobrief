@@ -41,7 +41,7 @@ sequenceDiagram
     Model-->>UI: 8 Claims, Brief rendered
     Judge->>UI: Request Stripe Brief again (Run 2)
     UI->>GW: POST /v1/chat/completions (Unchanged Fingerprint)
-    GW-->>UI: HIT (~1–2 ms live hook overhead, median 1.8 ms; 5,337 tokens saved)
+    GW-->>UI: HIT (~2 ms live hook overhead, median 2.0 ms; 5,337 tokens saved)
 
     Note over Judge,Model: Act 3: Simulated Breaking News Injection (30s)
     Judge->>UI: Inject Breaking Acquisition [SIMULATED]
@@ -62,11 +62,11 @@ sequenceDiagram
   *"A time-based cache expires answers on a clock—5 minutes, 1 hour, or 24 hours. But business truth does not expire on a clock. When an executive prepares for a meeting, in our 250-lookup synthetic simulation a 5-minute TTL cache recomputed 88.8% of lookups (222 of 250) even though nothing had changed. A 24-hour TTL cache saves tokens, but when breaking news arrives, it keeps serving the outdated answer for up to 24 hours.  
   ChronoBrief caches by evidence: generate once, reuse when the retrieved evidence is unchanged, regenerate when the retrieved facts move."*
 
-### Act 2: Cold Miss -> ~1–2 ms Warm Hit (25 seconds — Pankaj)
+### Act 2: Cold Miss -> ~2 ms Warm Hit (25 seconds — Pankaj)
 - **Visual**: Streamlit UI (`http://localhost:8501`) or CLI e2e runner querying `"Stripe"`.
 - **Spoken**:  
   *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 8 verifiable claims, and stores the response in our byte-bounded Go LRU.  
-  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 1–2 milliseconds of live hook overhead (median 1.8 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
+  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 2 milliseconds of live hook overhead (HIT median 2.0 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
 
 ### Act 3: Breaking News Injection & "The Stale-Cache Court" (30 seconds — Swarit & Pankaj)
 - **Visual**: Open Demo Controls in Streamlit, click **Simulate Breaking News**, click **Generate Brief**.

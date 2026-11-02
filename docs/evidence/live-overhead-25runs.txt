@@ -42,12 +42,13 @@ For each iteration i = 1..25:
 | 25 | `MISS_COLD` | 28798 µs | 28.80 ms | `HIT` | 2525 µs | 2.52 ms |
 
 ## Summary Statistics (25 Runs)
+Computed from the rows above by `scripts/check_evidence.py` (p90 = nearest-rank, mean rounded to 1 µs). The check fails if this table or any doc disagrees with the rows.
 | Metric | Live MISS Overhead (includes I/O) | Live HIT Overhead (in-memory) |
 |---|:---:|:---:|
 | **Min** | 15338 µs (15.34 ms) | 817 µs (0.82 ms) |
 | **Median** | 24675 µs (24.68 ms) | 1990 µs (1.99 ms) |
-| **Mean** | 33259 µs (33.26 ms) | 2350 µs (2.35 ms) |
-| **P90** | 64558 µs (64.56 ms) | 4356 µs (4.36 ms) |
+| **Mean** | 33260 µs (33.26 ms) | 2350 µs (2.35 ms) |
+| **P90** | 63466 µs (63.47 ms) | 3600 µs (3.60 ms) |
 | **Max** | 86435 µs (86.44 ms) | 7019 µs (7.02 ms) |
 
 ## Analysis

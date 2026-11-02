@@ -15,10 +15,13 @@ lint:
 typecheck:
 	mypy chronobrief
 
+evidence:          ## docs must quote live-overhead numbers computed from docs/evidence/live-overhead-25runs.txt
+	python scripts/check_evidence.py
+
 invariants:        ## static guards: plugin purity, no st.cache, no secrets, pack lint
 	python scripts/check_invariants.py
 
-check: invariants lint test go-test   ## run before claiming anything is done
+check: invariants evidence lint test go-test   ## run before claiming anything is done
 
 pert:              ## critical path and remaining time; HOURS=6 make pert
 	python scripts/pert.py $(if $(HOURS),--hours $(HOURS),)

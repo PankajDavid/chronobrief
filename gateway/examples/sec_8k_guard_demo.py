@@ -2,7 +2,7 @@
 
 Demonstrates the universal x-bf-freshness-* contract and native cache guard mode:
 1. Q1 10-Q filing query -> MISS_COLD (or stores initial filing data)
-2. Q1 10-Q repeated query -> HIT (served from freshcache, ~1–2 ms hook overhead)
+2. Q1 10-Q repeated query -> HIT (served from freshcache, ~2 ms hook overhead)
 3. Breaking 8-K material restatement arrives -> REFUSE_NEWER_SOURCE.
    Notice: A standard 24h TTL cache would have served false stale earnings restatement (HIT_STALE)!
 """
