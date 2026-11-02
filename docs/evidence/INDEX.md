@@ -9,7 +9,8 @@ This directory contains empirical, non-simulated proof artifacts demonstrating t
 | Artifact | Type | Description |
 |---|---|---|
 | [`ttl-frontier-report.md`](ttl-frontier-report.md) | Simulation Report | Deterministic 250-query 48h simulation (synthetic queries/news arrivals) proving truth-based caching beats time-based TTL (`93.2%` hit vs `6.4%` on 5m short TTL; `0.0%` stale vs `18.4%` on 24h TTL). |
-| [`gateway-benchmarks.txt`](gateway-benchmarks.txt) | Microbenchmarks & Live Hook Overhead | Go 1.27.3 microbenchmarks (`20.17 ns/op` decision engine, `11.36 µs/op` LRU hit, 122k fuzz iters) (in-memory, no disk I/O). Live Docker hook overhead (25 runs: HIT median `1.78 ms`, MISS median `32.39 ms`) is reported in `docs/SPEC_CACHE.md`; the raw 25-run output is not yet committed here. |
+| [`gateway-benchmarks.txt`](gateway-benchmarks.txt) | Microbenchmarks & Fuzzing | Go 1.27.3 microbenchmarks (`20.17 ns/op` decision engine, `11.36 µs/op` LRU hit, 122k fuzz iters) (in-memory, no disk I/O). |
+| [`live-overhead-25runs.txt`](live-overhead-25runs.txt) | Live Overhead Measurement | Raw 25-run live measurement against Docker gateway logging per-run `MISS_COLD` and `HIT` hook overheads verbatim. |
 | [`gateway-negative-tests.txt`](gateway-negative-tests.txt) | Regression Suite | Live gateway output testing 9 negative scenarios: missing fingerprint, future timestamps, streaming bypass, refresh bypass, ADR-006 tenant isolation, and ADR-005 headline changes. |
 | [`plugin-load.txt`](plugin-load.txt) | Docker Build Proof | Docker build log proving `freshcache.so` compiles with `CGO_ENABLED=1` and dynamically loads all 7 Bifrost plugin symbols without symbol mismatch. |
 | [`hello-world-load.txt`](hello-world-load.txt) | Upstream Baseline | Upstream Bifrost hello-world plugin build and symbol verification baseline from recon phase. |
