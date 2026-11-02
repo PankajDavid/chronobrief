@@ -101,6 +101,7 @@ def main() -> int:
         assert cache_dec3 in ("REFUSE_NEWER_SOURCE", "REFUSE_SET_DIVERGED"), f"Expected refusal, got {cache_dec3}"
         assert shadow_24h == "HIT_STALE", f"Expected shadow TTL 24h to be HIT_STALE, got {shadow_24h}"
         print("\n>>> PROOF SUCCESS: Freshcache protected against 24h stale financial hallucination! <<<")
+        print("[NOTE] Native x-bf-cache-key Guard Mode: header stamping/stripping is implemented and unit-tested inside freshcache, while end-to-end interaction with Bifrost's built-in semanticcache plugin is designed, not yet verified (as semanticcache is disabled in gateway/config.json).")
     except Exception as e:
         print(f"Request 3 error: {e}")
         return 1

@@ -59,10 +59,11 @@ func New(path string) (*Logger, error) {
 			return nil, err
 		}
 	}
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
 		return nil, err
 	}
+	_ = os.Chmod(path, 0600)
 	return &Logger{
 		file: f,
 		path: path,

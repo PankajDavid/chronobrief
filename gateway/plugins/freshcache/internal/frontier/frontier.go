@@ -145,7 +145,7 @@ func RunFrontierSimulation(seed int64) []PolicyResult {
 		ttl     time.Duration
 		isTruth bool
 	}{
-		{"TTL-5m", "Standard 5-minute TTL (Bifrost default)", 5 * time.Minute, false},
+		{"TTL-5m", "Standard 5-minute TTL (short TTL)", 5 * time.Minute, false},
 		{"TTL-1h", "Standard 1-hour TTL", 1 * time.Hour, false},
 		{"TTL-24h", "Standard 24-hour TTL", 24 * time.Hour, false},
 		{"freshcache", "ChronoBrief ExactSet + 24h ceiling", 24 * time.Hour, true},
@@ -243,11 +243,12 @@ func RunFrontierSimulation(seed int64) []PolicyResult {
 // GenerateFrontierMarkdown renders the comparative results into Markdown.
 func GenerateFrontierMarkdown(results []PolicyResult) string {
 	var sb strings.Builder
-	sb.WriteString("# ChronoBrief TTL Frontier Report: Truth-Based Caching vs. Time-Based TTL\n\n")
+	sb.WriteString("# ChronoBrief TTL Frontier Simulation: Truth-Based Caching vs. Time-Based TTL\n\n")
 	sb.WriteString("**Pitch Line**: *\"Bifrost caches by time. We cache by truth.\"*\n\n")
-	sb.WriteString("Generated deterministically by `gateway/plugins/freshcache/internal/frontier` over a 48-hour traffic stream (250 lookups, 5 companies, 15 stochastic news arrivals).\n\n")
+	sb.WriteString("> [!NOTE]\n")
+	sb.WriteString("> **Simulation (250 synthetic lookups, assumed news arrivals)**: Queries and news arrival intervals are synthetically generated (`math/rand` seed `20261102`), not recorded production traffic. This simulation illustrates the trade-off between time-based TTL expiration and evidence-based freshness over a 48-hour timeline across 5 tracked companies.\n\n")
 
-	sb.WriteString("## Policy Comparison Matrix\n\n")
+	sb.WriteString("## Simulation Results Matrix (250 Synthetic Lookups)\n\n")
 	sb.WriteString("| Strategy | Cache Decision Rule | Hit Rate | Stale Serves | Stale Serve Rate | False Misses | Tokens Saved | Cost Saved |\n")
 	sb.WriteString("|:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|\n")
 	for _, r := range results {
@@ -260,21 +261,19 @@ func GenerateFrontierMarkdown(results []PolicyResult) string {
 	sb.WriteString("```text\n")
 	sb.WriteString("Hit Rate (%)\n")
 	sb.WriteString("   ^\n")
-	sb.WriteString("70 |                                                  [TTL-24h] (High Stale Serve!)\n")
-	sb.WriteString("   |                                                 /\n")
-	sb.WriteString("60 |         [freshcache (Truth)]                   /\n")
-	sb.WriteString("   |         (High reuse, 0.0% stale)              /\n")
-	sb.WriteString("50 |                                              /\n")
-	sb.WriteString("   |                                            [TTL-1h]\n")
-	sb.WriteString("40 |                                           /\n")
-	sb.WriteString("   |                                          /\n")
-	sb.WriteString("30 |                                         /\n")
-	sb.WriteString("   |                                        /\n")
-	sb.WriteString("20 |                                       /\n")
-	sb.WriteString("   |   [TTL-5m]\n")
-	sb.WriteString("10 |   (High False Miss)\n")
-	sb.WriteString("   |--------------------------------------------------------------------> Stale Serve Rate (%)\n")
-	sb.WriteString("   0% (Invariant: Zero Stale Serves)                 15%            30%\n")
+	sb.WriteString("100| [freshcache (93.2% hit, 0.0% stale)]                  [TTL-24h (96.0% hit, 18.4% STALE)]\n")
+	sb.WriteString("   |  * Invariant: Zero Stale Serves                         * High risk: 46 stale answers served\n")
+	sb.WriteString("80 |\n")
+	sb.WriteString("   |\n")
+	sb.WriteString("60 |\n")
+	sb.WriteString("   |          [TTL-1h (52.4% hit, 2.0% STALE)]\n")
+	sb.WriteString("40 |\n")
+	sb.WriteString("   |\n")
+	sb.WriteString("20 |\n")
+	sb.WriteString("   | [TTL-5m (6.4% hit, 0.0% stale)]\n")
+	sb.WriteString(" 0 |   * 222 false misses (88.8% wasted queries)\n")
+	sb.WriteString("   +--------------------------------------------------------------------> Stale Serve Rate (%)\n")
+	sb.WriteString("   0%                                                10%            20%\n")
 	sb.WriteString("```\n\n")
 
 	sb.WriteString("## Key Architectural Findings\n\n")

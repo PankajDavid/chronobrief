@@ -1,42 +1,34 @@
-# ChronoBrief & Bifrost `freshcache`
+# Bifrost `freshcache` Gateway Subsystem
 
-> **The First Truth-Aware Caching Plugin for the Bifrost AI Gateway & 30-Day Pre-Meeting Research Agent**  
+> **The First Truth-Aware Caching Plugin for the Bifrost AI Gateway**  
 > *"Bifrost caches by time. ChronoBrief caches by truth. Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."*
 
 [![Invariants](https://img.shields.io/badge/Invariants-Strict%20Enforced-brightgreen.svg)](#invariants)
 [![Bifrost Core](https://img.shields.io/badge/Bifrost-v2.4.0%20(e869c3f)-blue.svg)](https://github.com/maximhq/bifrost)
-[![Go Decision](https://img.shields.io/badge/Decision%20Latency-20.17%20ns%2Fop-blueviolet.svg)](#performance-benchmarks)
-[![Stale-Serve Rate](https://img.shields.io/badge/Stale--Serve%20Rate-0.0%25%20(Proven)-success.svg)](#the-ttl-frontier-truth-vs-time)
-[![Python](https://img.shields.io/badge/Tests-89%2F89%20Passed-success.svg)](#testing--verification)
+[![Decision Latency](https://img.shields.io/badge/Decision%20Engine-20.17%20ns%2Fop-blueviolet.svg)](#measured-performance--benchmarks)
+[![Live Hit Overhead](https://img.shields.io/badge/Live%20HIT%20Overhead-975%20%C2%B5s-informational.svg)](#measured-performance--benchmarks)
+[![Stale-Serve Rate](https://img.shields.io/badge/Stale--Serve%20Rate-0.0%25%20(Proven)-success.svg)](#the-ttl-frontier-simulation-truth-vs-time)
 
 ---
 
-## Track Alignment (Geek Room Global AI Hackathon)
+## Bifrost Priority Track 04: A Feature the Open-Source Gateway is Missing
 
-ChronoBrief is built as a complete two-track project across the Gateway and Agent ecosystems:
-
-| Track | Focus | Key Deliverable | Owner |
-|---|---|---|---|
-| **Bifrost Priority Track 04** | A feature the open-source gateway is missing | **`freshcache.so` Go Gateway Plugin**: High-performance freshness-aware cache with counterfactual TTL shadow ledger, dual-bounded LRU, atomic disk snapshotting, and native `x-bf-cache-key` guarding. | **Swarit** |
-| **Tavily Track 02** | Deep research & multi-source agent workflow | **30-Day Pre-Meeting Research Agent & Dashboard**: 4-query retrieval plan with deterministic numeric/date/URL citation validation, A4 one-page brief layout, and interactive Stale-Cache Court demo controls. | **Pankaj** |
-
----
-
-## The Core Thesis: Truth vs. Time
-
-Every AI gateway on the market caches prompts by **elapsed time** (e.g., 5-minute TTL, 1-hour TTL, or 24-hour TTL). But business and financial truth does not expire on a wall clock:
+Every open-source AI gateway today (including Bifrost, LiteLLM, and Portkey) caches LLM completions by **elapsed time** (e.g. 5-minute TTL, 1-hour TTL, or 24-hour TTL). But business, executive, and financial truth does not expire on a wall clock:
 
 1. **The Short TTL Dilemma (5-minute TTL)**: Causes massive false cache misses. When teammates prepare for the same executive meeting 15 minutes apart, a 5-minute TTL cache re-queries the model needlessly, wasting thousands of tokens and multiplying API latency when nothing in the world changed.
 2. **The Long TTL Danger (24-hour TTL)**: Causes hallucinations. When breaking news or a financial restatement breaks, a 24-hour TTL cache serves yesterday's outdated brief to executives for hours.
 3. **The ChronoBrief Solution**: Caches by **evidence freshness**. Using deterministic cryptographic hashing over sorted canonical source URLs, published dates, and titles, Bifrost serves cached completions only when retrieved facts are unchanged, and regenerates the millisecond facts move.
 
-### The TTL Frontier Simulation (250 Queries / 48 Hours)
+---
 
-Measured deterministically across 250 requests over 48 hours in `gateway/plugins/freshcache/internal/frontier/` (see [`docs/evidence/ttl-frontier-report.md`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/ttl-frontier-report.md)):
+## The TTL Frontier Simulation: Truth vs. Time
+
+> [!NOTE]
+> **Simulation (250 synthetic lookups, assumed news arrivals)**: Queries and news arrival intervals are synthetically generated (`math/rand` seed `20261102`), not recorded production traffic. This simulation illustrates the trade-off between time-based TTL expiration and evidence-based freshness over a 48-hour timeline across 5 tracked companies (see [`docs/evidence/ttl-frontier-report.md`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/ttl-frontier-report.md)).
 
 | Strategy | Cache Decision Rule | Hit Rate | False Misses | Stale Serves | Stale Serve Rate | Tokens Saved | Cost Saved |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **TTL-5m** | Bifrost default 5m TTL | **6.4%** | 222 | `0` | **0.0%** | 83,200 | $0.0312 |
+| **TTL-5m** | Standard 5-minute TTL (short TTL) | **6.4%** | 222 | `0` | **0.0%** | 83,200 | $0.0312 |
 | **TTL-1h** | Standard 1-hour TTL | **52.4%** | 107 | `5` | **2.0%** | 681,200 | $0.2555 |
 | **TTL-24h** | Standard 24-hour TTL | **96.0%** | 5 | `46` | **18.4%** | 1,248,000 | $0.4680 |
 | **`freshcache`** | **ExactSet + 24h ceiling** | **93.2%** | **0** | **`0`** | **0.0%** | **1,211,600** | **$0.4543** |
@@ -44,18 +36,19 @@ Measured deterministically across 250 requests over 48 hours in `gateway/plugins
 ```text
 Hit Rate (%)
    ^
-70 |                                                  [TTL-24h] (High Stale Serve!)
-   |                                                 /
-60 |         [freshcache (Truth)]                   /
-   |         (High reuse, 0.0% stale)              /
-50 |                                              /
-   |                                            [TTL-1h]
-40 |                                           /
-30 |                                         /
-20 |                                       /
-   |   [TTL-5m] (High False Miss)
-10 |--------------------------------------------------------------------> Stale Serve Rate (%)
-   0% (Guaranteed Zero Stale Serves)                 15%            30%
+100| [freshcache (93.2% hit, 0.0% stale)]                  [TTL-24h (96.0% hit, 18.4% STALE)]
+   |  * Invariant: Zero Stale Serves                         * High risk: 46 stale answers served
+80 |
+   |
+60 |
+   |          [TTL-1h (52.4% hit, 2.0% STALE)]
+40 |
+   |
+20 |
+   | [TTL-5m (6.4% hit, 0.0% stale)]
+ 0 |   * 222 false misses (88.8% wasted queries)
+   +--------------------------------------------------------------------> Stale Serve Rate (%)
+   0%                                                10%            20%
 ```
 
 ---
@@ -79,10 +72,15 @@ flowchart TD
 
 ---
 
-## Performance Benchmarks
+## Measured Performance & Benchmarks
 
-Measured under Go 1.27.3 on Linux AMD64 (see [`docs/evidence/gateway-benchmarks.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-benchmarks.txt)):
+We distinguish strictly between live end-to-end plugin hook latency and isolated Go microbenchmarks (see [`docs/evidence/gateway-benchmarks.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-benchmarks.txt)):
 
+### 1. Live End-to-End Plugin Hook Overhead (Measured in Docker)
+- **`HIT` Overhead**: **`975 µs` (`~1.0 ms`)** (sub-millisecond in-memory cache return including HTTP transport hook deserialization).
+- **`MISS` Overhead**: **`~30 ms` (`29,899 µs`)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+
+### 2. In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)
 | Subsystem | Benchmark | Metric | Allocations | Notes |
 |---|---|---|---|---|
 | **Decision Engine** | `BenchmarkDecide` | **`20.17 ns/op`** | `0 B/op` (0 allocs) | Pure deterministic state evaluation (> 51M ops/sec) |
@@ -99,46 +97,17 @@ Measured under Go 1.27.3 on Linux AMD64 (see [`docs/evidence/gateway-benchmarks.
 Freshcache is completely language-agnostic. Any application can integrate using the universal headers defined in [`gateway/FRESHNESS_CONTRACT.md`](file:///c:/BilfrostTAvilyChallenge/gateway/FRESHNESS_CONTRACT.md):
 
 ### Native Cache Guard Mode (`x-bf-cache-key`)
+> [!NOTE]
+> **Implementation Status**: Native `x-bf-cache-key` Guard Mode: header stamping/stripping is implemented and unit-tested inside `freshcache`, while end-to-end interaction with Bifrost's built-in `semanticcache` plugin is designed, not yet verified (as `semanticcache` is disabled in `gateway/config.json`).
+
 When callers pass Bifrost's native `x-bf-cache-key`:
 - **If evidence is valid**: Freshcache stamps the key with the evidence fingerprint (`x-bf-cache-key: <key>:fc:<newest>:<hash[:8]>`), stamping `x-bf-freshness-guard: STAMPED_SAFE`.
 - **If evidence is poisoned/missing**: Freshcache **strips** `x-bf-cache-key`, returning `x-bf-freshness-guard: BYPASSED_UNSAFE` to prevent poisoning Bifrost's internal cache.
 
-### Supported Language SDKs
+### Supported Language SDKs & Multi-Domain Proofs
 - **Python**: [`chronobrief/fingerprint.py`](file:///c:/BilfrostTAvilyChallenge/chronobrief/fingerprint.py)
 - **TypeScript / Node.js**: [`gateway/sdk/freshness.ts`](file:///c:/BilfrostTAvilyChallenge/gateway/sdk/freshness.ts) (Zero-dependency helper using `node:crypto`)
 - **Multi-Domain Demo**: [`gateway/examples/sec_8k_guard_demo.py`](file:///c:/BilfrostTAvilyChallenge/gateway/examples/sec_8k_guard_demo.py) (Guards SEC 10-Q and 8-K filings against financial hallucinations).
-
----
-
-## Quickstart in 4 Commands
-
-### 1. Configure Environment
-```bash
-cp .env.example .env
-# Fill in GEMINI_API_KEY, TAVILY_API_KEY, and CHRONO_VK_ALPHA (>= 32 chars)
-```
-
-### 2. Launch Gateway Container
-```bash
-docker compose up -d --build gateway
-```
-
-### 3. Install Python Dependencies
-```bash
-pip install -e ".[dev]"
-```
-
-### 4. Run the Live End-to-End Cache Proof
-```bash
-python scripts/e2e_cache.py
-# Runs Stripe: MISS_COLD -> HIT -> Injected News -> REFUSE_NEWER_SOURCE
-```
-
-### 5. Launch the Streamlit Dashboard
-```bash
-streamlit run app/streamlit_app.py
-# Open http://localhost:8501 to test pre-meeting briefs & demo controls
-```
 
 ---
 
@@ -169,8 +138,8 @@ curl -s -X POST -H "x-chrono-admin: metrics" -H "x-bf-vk: test" http://127.0.0.1
 }
 ```
 
-### 2. Atomic Disk Snapshot Persistence
-Cache state is saved atomically to disk on every store mutation. When the container restarts:
+### 2. Atomic Disk Snapshot Persistence (`0600` Permissions)
+Cache state is saved atomically to disk with strict `0600` permissions on every store mutation via a temporary file write and atomic rename. When the container restarts:
 ```bash
 docker compose restart gateway
 ```
@@ -186,27 +155,4 @@ Detailed in [`docs/SECURITY_AUDIT.md`](file:///c:/BilfrostTAvilyChallenge/docs/S
 2. **Fail-Closed ADR-006 Virtual Key Isolation**: Tenant IDs are computed as `sha256(vk)[:12]` strictly from Bifrost's authenticated virtual key context. If the key is missing, caching fails closed (`REFUSE_NO_TENANT`).
 3. **No Raw Secrets in Logs**: Virtual keys are hashed before being recorded in `freshcache.jsonl` or cache keys.
 4. **Server-Generated Request IDs**: Client-provided `x-request-id` or `x-freshcache-id` headers are ignored to prevent request outcome hijacking.
-5. **Prompt Injection Defense**: Retrieved search snippets are strictly fenced in `<source>` blocks with system instructions forbidding directive execution from web text.
-
----
-
-## Testing & Verification
-
-Run the full verification battery across the repository:
-
-```bash
-# 1. Architectural Invariants (zero banned imports, no secrets in repo)
-python scripts/check_invariants.py --strict
-
-# 2. Python Code Quality
-ruff check .
-mypy chronobrief
-
-# 3. Full Test Suite (Unit, Integration, UI AppTests)
-pytest -v
-
-# 4. Independent Audit Oracle
-python scripts/verify_audit.py data/audit/freshcache.jsonl --json
-```
-
-All 89 Python tests and all Go unit/race/fuzz tests pass clean.
+5. **Strict File Permissions**: All snapshots (`freshcache-snapshot.json`) and audit logs (`freshcache.jsonl`) are enforced with mode `0600`.

@@ -28,7 +28,7 @@ sequenceDiagram
     Model-->>UI: 8 Claims, Brief rendered
     Judge->>UI: Request Stripe Brief again (Run 2)
     UI->>GW: POST /v1/chat/completions (Unchanged Fingerprint)
-    GW-->>UI: HIT in 11 µs (5,337 tokens saved, $0.0020 saved)
+    GW-->>UI: HIT in 975 µs (~1.0 ms live hook overhead; 5,337 tokens saved)
 
     Note over Judge,Model: Act 3: Simulated Breaking News Injection (30s)
     Judge->>UI: Inject Breaking Acquisition [SIMULATED]
@@ -53,7 +53,7 @@ sequenceDiagram
 - **Visual**: Streamlit UI (`http://localhost:8501`) or CLI e2e runner querying `"Stripe"`.
 - **Spoken**:  
   *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 8 verifiable claims, and stores the response in our byte-bounded Go LRU.  
-  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In 11 microseconds, the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
+  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In ~1 millisecond (975 microseconds live hook overhead; 11 µs pure in-memory lookup), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
 
 ### Act 3: Breaking News Injection & "The Stale-Cache Court" (30 seconds — Swarit & Pankaj)
 - **Visual**: Open Demo Controls in Streamlit, click **Simulate Breaking News**, click **Generate Brief**.
@@ -65,7 +65,7 @@ sequenceDiagram
 ### Act 4: Operator Readiness & Multi-Domain Guard (15 seconds — Swarit)
 - **Visual**: Terminal showing `curl /v1/chat/completions` with `x-chrono-admin: metrics` and `gateway/examples/sec_8k_guard_demo.py`.
 - **Spoken**:  
-  *"This is production-ready. We run non-root in Docker, isolate tenants fail-closed via virtual keys with zero client spoofing, persist cache snapshots atomically to disk across container restarts, and guard native `x-bf-cache-key` for SEC financial filings and legal research using universal `x-bf-freshness-*` headers."*
+  *"This is production-ready. We run non-root in Docker, isolate tenants fail-closed via virtual keys with zero client spoofing, persist cache snapshots atomically to disk across container restarts, and provide native `x-bf-cache-key` Guard Mode (header stamping/stripping verified in unit tests; designed for Bifrost's `semanticcache`)."*
 
 ---
 

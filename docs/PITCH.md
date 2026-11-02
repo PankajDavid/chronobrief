@@ -11,8 +11,8 @@
 ### 0:00–0:25 — The Problem: Why Time-Based Gateway Caches Fail
 *"Hello judges. Every open-source AI gateway today—including Bifrost, LiteLLM, and Portkey—caches LLM completions by time: 5-minute TTL, 1-hour TTL, or 24-hour TTL.  
 But in business and finance, facts do not expire on a clock.  
-We ran a deterministic 48-hour simulation across 250 real-world queries:
-- A **5-minute TTL cache** has a dismal **6.4% hit rate**, causing **222 false misses**—throwing away money and token bandwidth even when not a single fact changed.
+We ran a deterministic 48-hour simulation (250 synthetic lookups, assumed news arrivals):
+- A **5-minute TTL cache (short TTL)** has a dismal **6.4% hit rate**, causing **222 false misses**—throwing away money and token bandwidth even when not a single fact changed.
 - A **24-hour TTL cache** achieves a 96% hit rate, but suffers an unacceptable **18.4% stale-serve rate**—serving yesterday's earnings and pre-acquisition rumors for hours after breaking news broke.  
 Bifrost was missing a truth-aware caching primitive. That is why we built **`freshcache`**."*
 
@@ -20,14 +20,14 @@ Bifrost was missing a truth-aware caching primitive. That is why we built **`fre
 *"Freshcache is a compiled native Go plugin (`freshcache.so`) hooked into all 7 lifecycle stages of Bifrost:
 1. It introduces the **Counterfactual TTL Shadow Ledger**: on every single request, we evaluate in parallel what a 5m, 1h, and 24h TTL cache would have done.
 2. In our **Stale-Cache Court**, we prove live when a standard 24h cache would have served stale hallucinations.
-3. Our decision logic is mathematically proven: zero allocations, **20.17 nanoseconds per decision** (> 50 million ops/sec), and **11.36 microseconds** for dual-bounded LRU retrieval. In 300,000 property test iterations and 122,000 native fuzz executions, our stale-serve rate is exactly **zero**."*
+3. Our decision logic is mathematically proven: zero allocations, **20.17 nanoseconds per decision** (> 50 million ops/sec), and **11.36 microseconds** for in-memory LRU retrieval. In Docker, live end-to-end hook overhead is **975 µs** (`~1.0 ms`) on `HIT` and **~30 ms** on `MISS` (including synchronous JSONL audit flush and atomic disk snapshot write). In 300,000 property test iterations and 122,000 native fuzz executions, our stale-serve rate is exactly **zero**."*
 
 ### 0:55–1:30 — Production Operator Readiness & Native Guard Mode
 *"We built this for enterprise operations:
 - **Non-Root & Hardened**: Runs as `uid=100(bifrost)` in Docker; pinned to Bifrost commit `e869c3f9a`.
 - **Fail-Closed ADR-006 Virtual Key Isolation**: Tenants are strictly partitioned by `sha256(vk)[:12]` from Bifrost's authenticated context. If the key is missing, caching fails closed. No cross-tenant data leakage is physically possible.
 - **Atomic Snapshot Persistence**: Cache state survives abrupt container restarts via atomic disk snapshots.
-- **Native Cache Guard Mode**: When callers pass Bifrost's built-in `x-bf-cache-key`, freshcache stamps it with evidence provenance (`STAMPED_SAFE`) or strips it (`BYPASSED_UNSAFE`) to protect Bifrost's internal semantic cache from contamination. We provide both a multi-domain SEC 8-K financial demo and a zero-dependency TypeScript SDK helper.  
+- **Native Cache Guard Mode**: When callers pass Bifrost's built-in `x-bf-cache-key`, freshcache stamps it with evidence provenance (`STAMPED_SAFE`) or strips it (`BYPASSED_UNSAFE`) to protect Bifrost's internal cache from contamination (header stamping/stripping is unit-tested inside freshcache; designed for Bifrost's `semanticcache`). We provide both a multi-domain SEC 8-K financial demo and a zero-dependency TypeScript SDK helper.  
 Now over to Pankaj for the Tavily agent and live demonstration."*
 
 ---
@@ -47,7 +47,7 @@ Crucially, every single claim in our generated brief carries a deterministic sou
 *(Pankaj points to the live screen running Streamlit / CLI runner)*  
 *"Let's see it live on Stripe:
 - **Run 1 (Cold Miss)**: Tavily gathers the latest 30-day evidence. The gateway records `MISS_COLD`, Gemini 3.1 Flash generates the brief, and our citation validator verifies 8 claims.
-- **Run 2 (Warm Reuse)**: Another team member prepares for the same meeting 10 minutes later. They click Generate. Look at the top banner: **HIT in 11 microseconds**. It returns the verified brief instantly, saving **5,337 LLM tokens** and **100% of LLM cost**.
+- **Run 2 (Warm Reuse)**: Another team member prepares for the same meeting 10 minutes later. They click Generate. Look at the top banner: **HIT in ~1 millisecond (975 µs live overhead)**. It returns the verified brief instantly, saving **5,337 LLM tokens** and **100% of LLM cost**.
 - **Run 3 (Simulated Breaking News & Stale-Cache Court)**: Now, let's inject a breaking acquisition using our demo controls. We click Generate again.  
 Notice the verdict from the Stale-Cache Court: `shadow_ttl_24h` reports **`HIT_STALE`**—meaning any standard time-based cache would have served outdated information. But freshcache detects the newer source timestamp, returns **`REFUSE_NEWER_SOURCE`**, invokes Gemini upstream, and delivers the new brief with the acquisition cited."*
 

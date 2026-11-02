@@ -216,9 +216,10 @@ func (s *Store) SaveSnapshot(path string) error {
 	}
 
 	tmpPath := path + ".tmp"
-	if err := os.WriteFile(tmpPath, data, 0644); err != nil {
+	if err := os.WriteFile(tmpPath, data, 0600); err != nil {
 		return fmt.Errorf("failed to write tmp snapshot: %w", err)
 	}
+	_ = os.Chmod(tmpPath, 0600)
 
 	if err := os.Rename(tmpPath, path); err != nil {
 		return fmt.Errorf("failed to atomically rename snapshot: %w", err)

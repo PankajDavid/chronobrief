@@ -162,13 +162,14 @@ Every request processed by the plugin appends a single JSON line to `/var/log/bi
 
 ---
 
-## 7. Measured 4-Way Policy Comparison (TTL Frontier Simulation)
+## 7. TTL Frontier Simulation: Truth-Based Caching vs. Time-Based TTL
 
-Measured empirically across 250 queries over 48 hours in `internal/frontier` (see `docs/evidence/ttl-frontier-report.md`):
+> [!NOTE]
+> **Simulation (250 synthetic lookups, assumed news arrivals)**: Queries and news arrival intervals are synthetically generated (`math/rand` seed `20261102`), not recorded production traffic. This simulation illustrates the trade-off between time-based TTL expiration and evidence-based freshness over a 48-hour timeline across 5 tracked companies (see `docs/evidence/ttl-frontier-report.md`).
 
 | Strategy | Cache Decision Rule | Hit Rate | Stale Serves | Stale Serve Rate | False Misses | Tokens Saved | Cost Saved |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **TTL-5m** | Standard 5-minute TTL (Bifrost default) | **6.4%** | `0` | **0.0%** | 222 | 83,200 | $0.0312 |
+| **TTL-5m** | Standard 5-minute TTL (short TTL) | **6.4%** | `0` | **0.0%** | 222 | 83,200 | $0.0312 |
 | **TTL-1h** | Standard 1-hour TTL | **52.4%** | `5` | **2.0%** | 107 | 681,200 | $0.2555 |
 | **TTL-24h** | Standard 24-hour TTL | **96.0%** | `46` | **18.4%** | 5 | 1,248,000 | $0.4680 |
 | **freshcache** | ChronoBrief ExactSet + 24h ceiling | **93.2%** | `0` | **0.0%** | 0 | 1,211,600 | $0.4543 |
@@ -231,19 +232,26 @@ These outcomes are recorded in every JSONL audit record and stamped on response 
      - `x-bf-freshness-mode`, `x-bf-freshness-refresh`
    - Response headers mirror decision: `x-bf-freshness-cache: HIT | MISS_COLD | REFUSE_NEWER_SOURCE`.
 2. **Native Bifrost Cache Guard Mode**:
+   > [!NOTE]
+   > **Implementation Status**: Native `x-bf-cache-key` Guard Mode: header stamping/stripping is implemented and unit-tested inside `freshcache`, while end-to-end interaction with Bifrost's built-in `semanticcache` plugin is designed, not yet verified (as `semanticcache` is disabled in `gateway/config.json`).
+
    - When requests carry native `x-bf-cache-key`:
      - If evidence is valid: freshcache stamps the key with provenance hash: `<key>:fc:<newest_rfc3339>:<hash8>`, setting `x-bf-freshness-guard: STAMPED_SAFE`.
      - If evidence is invalid, missing, or poisoned: freshcache strips `x-bf-cache-key`, setting `x-bf-freshness-guard: BYPASSED_UNSAFE` to protect upstream semantic cache from contamination.
 
 ---
 
-## 11. Performance Benchmarks
+## 11. Measured Performance & Benchmarks
 
-Measured under Go 1.27.3 on Linux AMD64 (see `docs/evidence/gateway-benchmarks.txt`):
+We distinguish strictly between live end-to-end plugin hook latency and isolated Go microbenchmarks:
 
-- **Decision Engine (`BenchmarkDecide`)**: `20.17 ns/op` | `0 B/op` | `0 allocs/op` (> 50M ops/sec)
-- **Cache Key Generation (`BenchmarkKeyCompute`)**: `306.7 ns/op` | `160 B/op` | `3 allocs/op`
-- **Header Parsing (`BenchmarkParseHeaders`)**: `1.81 µs/op` | `128 B/op` | `2 allocs/op`
-- **LRU Store Access (`BenchmarkStoreGetHit`)**: `11.36 µs/op` (complete detached deep-copy safety)
-- **Native Header Fuzzing (`FuzzParseHeaders`)**: 122,383 executions across 24 concurrent workers with 0 panics / 0 crashes.
-- **Race Audit**: 0 data races detected across all packages under `go test -race`.
+- **Live End-to-End Plugin Hook Overhead (Measured in Docker)**:
+  - **`HIT` Overhead**: **`975 µs` (`~1.0 ms`)** (sub-millisecond in-memory cache return including HTTP transport hook deserialization).
+  - **`MISS` Overhead**: **`~30 ms` (`29,899 µs`)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+- **In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)**:
+  - **Decision Engine (`BenchmarkDecide`)**: `20.17 ns/op` | `0 B/op` | `0 allocs/op` (> 50M ops/sec)
+  - **Cache Key Generation (`BenchmarkKeyCompute`)**: `306.7 ns/op` | `160 B/op` | `3 allocs/op`
+  - **Header Parsing (`BenchmarkParseHeaders`)**: `1.81 µs/op` | `128 B/op` | `2 allocs/op`
+  - **LRU Store Access (`BenchmarkStoreGetHit`)**: `11.36 µs/op` (complete detached deep-copy safety)
+  - **Native Header Fuzzing (`FuzzParseHeaders`)**: 122,383 executions across 24 concurrent workers with 0 panics / 0 crashes.
+  - **Race Audit**: 0 data races detected across all packages under `go test -race`.

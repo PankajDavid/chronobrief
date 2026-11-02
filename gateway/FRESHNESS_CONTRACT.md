@@ -39,7 +39,7 @@ Every response returned by the gateway is annotated in `HTTPTransportPostHook` w
 | `x-chrono-shadow-ttl-5m` | `MISS_COLD`, `MISS_EXPIRED`, `HIT_FRESH`, `HIT_STALE` | Counterfactual outcome of a standard 5m TTL cache |
 | `x-chrono-shadow-ttl-1h` | `MISS_COLD`, `MISS_EXPIRED`, `HIT_FRESH`, `HIT_STALE` | Counterfactual outcome of a standard 1h TTL cache |
 | `x-chrono-shadow-ttl-24h` | `MISS_COLD`, `MISS_EXPIRED`, `HIT_FRESH`, `HIT_STALE` | Counterfactual outcome of a standard 24h TTL cache |
-| `x-chrono-plugin-overhead-us`| integer | Pure Go plugin overhead in microseconds (typically < 100 µs) |
+| `x-chrono-plugin-overhead-us`| integer | Live plugin overhead in microseconds: `975 µs` (`~1.0 ms`) on `HIT`, `~30 ms` on `MISS` (with audit flush & snapshot write); in-memory microbenchmarks `20.17 ns` to `11.36 µs` without I/O |
 | `x-bf-freshness-guard` | `STAMPED_SAFE`, `BYPASSED_UNSAFE` | State of native `x-bf-cache-key` guard |
 | `x-chrono-saved-tokens` | integer | Tokens saved from LLM generation on `HIT` |
 | `x-chrono-saved-cost-usd` | float (6 decimals) | USD cost saved from LLM generation on `HIT` |
@@ -77,6 +77,9 @@ $$\text{line} = \text{canonical\_url} \parallel \text{"|"} \parallel \text{times
 ---
 
 ## 4. Native Bifrost Cache Guard Mode
+
+> [!NOTE]
+> **Implementation Status**: Native `x-bf-cache-key` Guard Mode: header stamping/stripping is implemented and unit-tested inside `freshcache`, while end-to-end interaction with Bifrost's built-in `semanticcache` plugin is designed, not yet verified (as `semanticcache` is disabled in `gateway/config.json`).
 
 Bifrost includes native semantic and KV caching via the `x-bf-cache-key` header. However, native caching is **blind to source freshness**—if an upstream document moves or financial restatements break, a caller sending the same prompt would receive stale hallucinations from Bifrost's internal cache.
 

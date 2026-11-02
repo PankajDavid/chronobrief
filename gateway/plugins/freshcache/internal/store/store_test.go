@@ -1,7 +1,9 @@
 package store
 
 import (
+	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -184,6 +186,45 @@ func TestStoreSnapshotRoundtrip(t *testing.T) {
 	}
 	if entry.TotalTokens != 250 {
 		t.Fatalf("expected 250 tokens, got %d", entry.TotalTokens)
+	}
+}
+
+func TestSnapshotFilePermissions0600(t *testing.T) {
+	tmpDir := t.TempDir()
+	snapPath := filepath.Join(tmpDir, "snapshot.json")
+
+	s := New(10)
+	content := "test content"
+	s.Put("k1", &StoredEntry{
+		CreatedAt: time.Now().UTC(),
+		Response: &schemas.BifrostResponse{
+			ChatResponse: &schemas.BifrostChatResponse{
+				Choices: []schemas.BifrostResponseChoice{
+					{
+						ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+							Message: &schemas.ChatMessage{
+								Content: &schemas.ChatMessageContent{ContentStr: &content},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+
+	if err := s.SaveSnapshot(snapPath); err != nil {
+		t.Fatalf("SaveSnapshot failed: %v", err)
+	}
+
+	info, err := os.Stat(snapPath)
+	if err != nil {
+		t.Fatalf("os.Stat failed: %v", err)
+	}
+
+	if runtime.GOOS != "windows" {
+		if perm := info.Mode().Perm(); perm != 0600 {
+			t.Fatalf("expected snapshot permissions 0600, got %#o", perm)
+		}
 	}
 }
 

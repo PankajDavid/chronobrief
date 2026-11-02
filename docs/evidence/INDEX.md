@@ -8,8 +8,8 @@ This directory contains empirical, non-simulated proof artifacts demonstrating t
 
 | Artifact | Type | Description |
 |---|---|---|
-| [`ttl-frontier-report.md`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/ttl-frontier-report.md) | Benchmark Report | 250-query 48h simulation proving truth-based caching beats time-based TTL (`93.2%` hit vs `6.4%` on 5m TTL; `0.0%` stale vs `18.4%` on 24h TTL). |
-| [`gateway-benchmarks.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-benchmarks.txt) | Microbenchmarks & Fuzzing | Go 1.27.3 benchmarks: `20.17 ns/op` decision engine, `11.36 µs/op` LRU hit, 122,383 native fuzz iterations, and 0 data races under `-race`. |
+| [`ttl-frontier-report.md`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/ttl-frontier-report.md) | Simulation Report | Deterministic 250-query 48h simulation (synthetic queries/news arrivals) proving truth-based caching beats time-based TTL (`93.2%` hit vs `6.4%` on 5m short TTL; `0.0%` stale vs `18.4%` on 24h TTL). |
+| [`gateway-benchmarks.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-benchmarks.txt) | Microbenchmarks & Live Hook Overhead | Go 1.27.3 microbenchmarks (`20.17 ns/op` decision engine, `11.36 µs/op` LRU hit, 122k fuzz iters) vs live Docker hook overhead (`975 µs` HIT / `~30 ms` MISS with JSONL/snapshot I/O). |
 | [`gateway-negative-tests.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-negative-tests.txt) | Regression Suite | Live gateway output testing 9 negative scenarios: missing fingerprint, future timestamps, streaming bypass, refresh bypass, ADR-006 tenant isolation, and ADR-005 headline changes. |
 | [`plugin-load.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/plugin-load.txt) | Docker Build Proof | Docker build log proving `freshcache.so` compiles with `CGO_ENABLED=1` and dynamically loads all 7 Bifrost plugin symbols without symbol mismatch. |
 | [`hello-world-load.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/hello-world-load.txt) | Upstream Baseline | Upstream Bifrost hello-world plugin build and symbol verification baseline from recon phase. |
