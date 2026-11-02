@@ -172,7 +172,7 @@ Every request processed by the plugin appends a single JSON line to `/var/log/bi
 | **TTL-5m** | Standard 5-minute TTL (short TTL) | **6.4%** | `0` | **0.0%** | 222 | 83,200 | $0.0312 |
 | **TTL-1h** | Standard 1-hour TTL | **52.4%** | `5` | **2.0%** | 107 | 681,200 | $0.2555 |
 | **TTL-24h** | Standard 24-hour TTL | **96.0%** | `46` | **18.4%** | 5 | 1,248,000 | $0.4680 |
-| **freshcache** | ChronoBrief ExactSet + 24h ceiling | **93.2%** | `0` | **0.0%** | 0 | 1,211,600 | $0.4543 |
+| **freshcache** | ChronoBrief ExactSet + 24h ceiling | **93.2%** | `0` | **0.0%** | 5 | 1,211,600 | $0.4543 |
 
 ---
 
@@ -182,9 +182,9 @@ Every cache lookup in `freshcache` evaluates what a standard time-based TTL cach
 - **`shadow_ttl_5m`**: `"MISS_COLD"`, `"MISS_EXPIRED"`, `"HIT_FRESH"`, or `"HIT_STALE"`
 - **`shadow_ttl_1h`**: `"MISS_COLD"`, `"MISS_EXPIRED"`, `"HIT_FRESH"`, or `"HIT_STALE"`
 - **`shadow_ttl_24h`**: `"MISS_COLD"`, `"MISS_EXPIRED"`, `"HIT_FRESH"`, or `"HIT_STALE"`
-- **`would_serve_stale_24h`**: boolean indicating if a 24h TTL cache would have hallucinated stale evidence.
+- **`would_serve_stale_24h`**: boolean indicating if a 24h TTL cache would have served a stale answer.
 
-These outcomes are recorded in every JSONL audit record and stamped on response headers (`x-chrono-shadow-ttl-*`), enabling the Stale-Cache Court to prove false cache misses prevented and hallucinations averted in real time.
+These outcomes are recorded in every JSONL audit record and stamped on response headers (`x-chrono-shadow-ttl-*`), enabling the Stale-Cache Court to show, per request, which false misses were avoided and which stale serves a TTL cache would have made.
 
 ---
 
@@ -246,8 +246,8 @@ These outcomes are recorded in every JSONL audit record and stamped on response 
 We distinguish strictly between live end-to-end plugin hook latency and isolated Go microbenchmarks:
 
 - **Live End-to-End Plugin Hook Overhead (Measured in Docker)**:
-  - **`HIT` Overhead**: **`975 µs` (`~1.0 ms`)** (sub-millisecond in-memory cache return including HTTP transport hook deserialization).
-  - **`MISS` Overhead**: **`~30 ms` (`29,899 µs`)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+  - **`HIT` Overhead**: **`~1–2 ms` (median `1.78 ms`, min `0.90 ms`, mean `2.40 ms`; n=25 live runs in Docker, 2026-11-02)** (in-memory cache return including HTTP transport hook deserialization).
+  - **`MISS` Overhead**: **`~30 ms` (median `32.39 ms`, mean `29.81 ms`, min `15.43 ms`, p90 `43.57 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
 - **In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)**:
   - **Decision Engine (`BenchmarkDecide`)**: `20.17 ns/op` | `0 B/op` | `0 allocs/op` (> 50M ops/sec)
   - **Cache Key Generation (`BenchmarkKeyCompute`)**: `306.7 ns/op` | `160 B/op` | `3 allocs/op`

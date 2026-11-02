@@ -2,7 +2,7 @@
 
 Demonstrates the universal x-bf-freshness-* contract and native cache guard mode:
 1. Q1 10-Q filing query -> MISS_COLD (or stores initial filing data)
-2. Q1 10-Q repeated query -> HIT (sub-millisecond served from freshcache)
+2. Q1 10-Q repeated query -> HIT (served from freshcache, ~1–2 ms hook overhead)
 3. Breaking 8-K material restatement arrives -> REFUSE_NEWER_SOURCE.
    Notice: A standard 24h TTL cache would have served false stale earnings restatement (HIT_STALE)!
 """
@@ -69,6 +69,10 @@ def main() -> int:
         cache_dec1 = resp1.headers.get("x-bf-freshness-cache", resp1.headers.get("x-chrono-cache", "UNKNOWN"))
         overhead1 = resp1.headers.get("x-chrono-plugin-overhead-us", "0")
         print(f"Status: {resp1.status_code} | Decision: {cache_dec1} | Plugin Overhead: {overhead1} us")
+        if cache_dec1 != "MISS_COLD":
+            print("[WARN] Step 1 should be MISS_COLD. The cache still holds state from an earlier run "
+                  "(in memory or in data/audit/freshcache-snapshot.json). Reset before demoing: "
+                  "docker compose stop gateway && rm -f data/audit/freshcache-snapshot.json && docker compose up -d gateway")
     except Exception as e:
         print(f"Request 1 error: {e}")
         return 1
@@ -96,11 +100,11 @@ def main() -> int:
         cache_dec3 = resp3.headers.get("x-bf-freshness-cache", resp3.headers.get("x-chrono-cache", "UNKNOWN"))
         shadow_24h = resp3.headers.get("x-chrono-shadow-ttl-24h", "UNKNOWN")
         guard = resp3.headers.get("x-bf-freshness-guard", "UNKNOWN")
-        print(f"Status: {resp3.status_code} | Decision: {cache_dec3} | Native Guard: {guard}")
+        print(f"Status: {resp3.status_code} | Decision: {cache_dec3} | x-bf-freshness-guard (set by freshcache): {guard}")
         print(f"[STALE-CACHE COURT] Counterfactual 24h TTL would have done: {shadow_24h}")
-        assert cache_dec3 in ("REFUSE_NEWER_SOURCE", "REFUSE_SET_DIVERGED"), f"Expected refusal, got {cache_dec3}"
+        assert cache_dec3 in ("REFUSE_NEWER_SOURCE", "REFUSE_SET_CHANGED"), f"Expected refusal, got {cache_dec3}"
         assert shadow_24h == "HIT_STALE", f"Expected shadow TTL 24h to be HIT_STALE, got {shadow_24h}"
-        print("\n>>> PROOF SUCCESS: Freshcache protected against 24h stale financial hallucination! <<<")
+        print("\n>>> RESULT: freshcache refused the stale answer; a 24h TTL cache would have served it (HIT_STALE). <<<")
         print("[NOTE] Native x-bf-cache-key Guard Mode: header stamping/stripping is implemented and unit-tested inside freshcache, while end-to-end interaction with Bifrost's built-in semanticcache plugin is designed, not yet verified (as semanticcache is disabled in gateway/config.json).")
     except Exception as e:
         print(f"Request 3 error: {e}")

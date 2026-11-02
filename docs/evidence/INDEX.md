@@ -8,11 +8,11 @@ This directory contains empirical, non-simulated proof artifacts demonstrating t
 
 | Artifact | Type | Description |
 |---|---|---|
-| [`ttl-frontier-report.md`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/ttl-frontier-report.md) | Simulation Report | Deterministic 250-query 48h simulation (synthetic queries/news arrivals) proving truth-based caching beats time-based TTL (`93.2%` hit vs `6.4%` on 5m short TTL; `0.0%` stale vs `18.4%` on 24h TTL). |
-| [`gateway-benchmarks.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-benchmarks.txt) | Microbenchmarks & Live Hook Overhead | Go 1.27.3 microbenchmarks (`20.17 ns/op` decision engine, `11.36 µs/op` LRU hit, 122k fuzz iters) vs live Docker hook overhead (`975 µs` HIT / `~30 ms` MISS with JSONL/snapshot I/O). |
-| [`gateway-negative-tests.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/gateway-negative-tests.txt) | Regression Suite | Live gateway output testing 9 negative scenarios: missing fingerprint, future timestamps, streaming bypass, refresh bypass, ADR-006 tenant isolation, and ADR-005 headline changes. |
-| [`plugin-load.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/plugin-load.txt) | Docker Build Proof | Docker build log proving `freshcache.so` compiles with `CGO_ENABLED=1` and dynamically loads all 7 Bifrost plugin symbols without symbol mismatch. |
-| [`hello-world-load.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/hello-world-load.txt) | Upstream Baseline | Upstream Bifrost hello-world plugin build and symbol verification baseline from recon phase. |
+| [`ttl-frontier-report.md`](ttl-frontier-report.md) | Simulation Report | Deterministic 250-query 48h simulation (synthetic queries/news arrivals) proving truth-based caching beats time-based TTL (`93.2%` hit vs `6.4%` on 5m short TTL; `0.0%` stale vs `18.4%` on 24h TTL). |
+| [`gateway-benchmarks.txt`](gateway-benchmarks.txt) | Microbenchmarks & Live Hook Overhead | Go 1.27.3 microbenchmarks (`20.17 ns/op` decision engine, `11.36 µs/op` LRU hit, 122k fuzz iters) (in-memory, no disk I/O). Live Docker hook overhead (25 runs: HIT median `1.78 ms`, MISS median `32.39 ms`) is reported in `docs/SPEC_CACHE.md`; the raw 25-run output is not yet committed here. |
+| [`gateway-negative-tests.txt`](gateway-negative-tests.txt) | Regression Suite | Live gateway output testing 9 negative scenarios: missing fingerprint, future timestamps, streaming bypass, refresh bypass, ADR-006 tenant isolation, and ADR-005 headline changes. |
+| [`plugin-load.txt`](plugin-load.txt) | Docker Build Proof | Docker build log proving `freshcache.so` compiles with `CGO_ENABLED=1` and dynamically loads all 7 Bifrost plugin symbols without symbol mismatch. |
+| [`hello-world-load.txt`](hello-world-load.txt) | Upstream Baseline | Upstream Bifrost hello-world plugin build and symbol verification baseline from recon phase. |
 
 ---
 
@@ -20,10 +20,10 @@ This directory contains empirical, non-simulated proof artifacts demonstrating t
 
 | Artifact | Type | Description |
 |---|---|---|
-| [`e2e-cache-20261102T013824Z.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/e2e-cache-20261102T013824Z.txt) | Live E2E Proof | Live proof cycle against `http://localhost:8080`: `MISS_COLD` -> `HIT` -> Simulated Breaking News -> `REFUSE_NEWER_SOURCE`. |
-| [`e2e-cache-20261102T014939Z.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/e2e-cache-20261102T014939Z.txt) | Rehearsal Run 1 | Demo rehearsal pass 1 confirming exact same evidence yields `HIT` and injected news triggers instant refusal. |
-| [`e2e-cache-20261102T014950Z.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/e2e-cache-20261102T014950Z.txt) | Rehearsal Run 2 | Demo rehearsal pass 2 measuring timing (10.61s) and token savings. |
-| [`e2e-cache-20261102T015001Z.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/e2e-cache-20261102T015001Z.txt) | Rehearsal Run 3 | Demo rehearsal pass 3 validating 0 stale serves and consistent claim citation verification. |
+| [`e2e-cache-20261102T013824Z.txt`](e2e-cache-20261102T013824Z.txt) | Live E2E Proof | Live proof cycle against `http://localhost:8080`: `MISS_COLD` -> `HIT` -> Simulated Breaking News -> `REFUSE_NEWER_SOURCE`. |
+| [`e2e-cache-20261102T014939Z.txt`](e2e-cache-20261102T014939Z.txt) | Rehearsal Run 1 | Demo rehearsal pass 1 confirming exact same evidence yields `HIT` and injected news triggers instant refusal. |
+| [`e2e-cache-20261102T014950Z.txt`](e2e-cache-20261102T014950Z.txt) | Rehearsal Run 2 | Demo rehearsal pass 2 measuring timing (10.61s) and token savings. |
+| [`e2e-cache-20261102T015001Z.txt`](e2e-cache-20261102T015001Z.txt) | Rehearsal Run 3 | Demo rehearsal pass 3 validating 0 stale serves and consistent claim citation verification. |
 
 ---
 
@@ -31,6 +31,6 @@ This directory contains empirical, non-simulated proof artifacts demonstrating t
 
 | Artifact | Type | Description |
 |---|---|---|
-| [`tavily-probe-2026-11-01.json`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/tavily-probe-2026-11-01.json) | Retrieval Probe | Raw capture from Tavily 30-day search API demonstrating real published dates, source URLs, and title shapes. |
-| [`t11-dashboard-proof.txt`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/t11-dashboard-proof.txt) | UI Verification | Test run confirming all 12 Streamlit `AppTest` cases and strict accessibility invariants pass without warnings. |
-| [`ui-walkthrough/`](file:///c:/BilfrostTAvilyChallenge/docs/evidence/ui-walkthrough/) | Screenshot Gallery | Visual walkthrough images of Streamlit UI: brief view, executive summary, claim cards, cache status badges, and cache scoreboard. |
+| [`tavily-probe-2026-11-01.json`](tavily-probe-2026-11-01.json) | Retrieval Probe | Raw capture from Tavily 30-day search API demonstrating real published dates, source URLs, and title shapes. |
+| [`t11-dashboard-proof.txt`](t11-dashboard-proof.txt) | UI Verification | Test run confirming all 12 Streamlit `AppTest` cases and strict accessibility invariants pass without warnings. |
+| [`ui-walkthrough/`](ui-walkthrough) | Screenshot Gallery | Visual walkthrough images of Streamlit UI: brief view, executive summary, claim cards, cache status badges, and cache scoreboard. |

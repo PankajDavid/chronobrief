@@ -2,7 +2,20 @@
 
 > **Target Time**: 90 seconds (Lightning Demo) / 3 minutes (Full Technical Presentation)  
 > **Tracks Covered**: Bifrost Priority Track 04 (Swarit) + Tavily Track 02 (Pankaj)  
-> **Canonical Pitch**: *"Bifrost caches by time. We cache by truth. Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."*
+> **Canonical Pitch**: *"Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."*
+
+---
+
+## 0. Before Every Demo Run: Reset the Cache
+
+The cache deliberately survives restarts (in memory, and in `data/audit/freshcache-snapshot.json` via the `Cleanup()` flush). A second demo run therefore starts warm: Step 1 of `sec_8k_guard_demo.py` returns `REFUSE_SET_CHANGED` instead of `MISS_COLD`, because the stored entry already holds the newer 8-K evidence from the previous run. Reset first:
+
+```bash
+docker compose stop gateway && rm -f data/audit/freshcache-snapshot.json && docker compose up -d gateway
+python gateway/examples/sec_8k_guard_demo.py   # Step 1 must print MISS_COLD
+```
+
+The demo script now prints a `[WARN]` line if Step 1 is not `MISS_COLD`.
 
 ---
 
@@ -28,7 +41,7 @@ sequenceDiagram
     Model-->>UI: 8 Claims, Brief rendered
     Judge->>UI: Request Stripe Brief again (Run 2)
     UI->>GW: POST /v1/chat/completions (Unchanged Fingerprint)
-    GW-->>UI: HIT in 975 µs (~1.0 ms live hook overhead; 5,337 tokens saved)
+    GW-->>UI: HIT (~1–2 ms live hook overhead, median 1.8 ms; 5,337 tokens saved)
 
     Note over Judge,Model: Act 3: Simulated Breaking News Injection (30s)
     Judge->>UI: Inject Breaking Acquisition [SIMULATED]
@@ -46,14 +59,14 @@ sequenceDiagram
 ### Act 1: The Thesis & The Pareto Frontier (20 seconds — Swarit)
 - **Visual**: Show the TTL Frontier simulation table (`docs/evidence/ttl-frontier-report.md`) on screen.
 - **Spoken**:  
-  *"Every AI gateway on the market today caches prompts by time—5 minutes, 1 hour, or 24 hours. But business truth does not expire on a clock. When an executive prepares for a meeting, a 5-minute TTL cache suffers a 93% false-miss rate, throwing away tokens when nothing changed. A 24-hour TTL cache saves tokens, but when breaking news arrives, it serves outdated hallucinations for up to 24 hours.  
-  Bifrost caches by time. ChronoBrief caches by truth: generate once, reuse when retrieved evidence is unchanged, regenerate the millisecond facts move."*
+  *"A time-based cache expires answers on a clock—5 minutes, 1 hour, or 24 hours. But business truth does not expire on a clock. When an executive prepares for a meeting, in our 250-lookup synthetic simulation a 5-minute TTL cache recomputed 88.8% of lookups (222 of 250) even though nothing had changed. A 24-hour TTL cache saves tokens, but when breaking news arrives, it keeps serving the outdated answer for up to 24 hours.  
+  ChronoBrief caches by evidence: generate once, reuse when the retrieved evidence is unchanged, regenerate when the retrieved facts move."*
 
-### Act 2: Cold Miss -> Sub-Millisecond Warm Hit (25 seconds — Pankaj)
+### Act 2: Cold Miss -> ~1–2 ms Warm Hit (25 seconds — Pankaj)
 - **Visual**: Streamlit UI (`http://localhost:8501`) or CLI e2e runner querying `"Stripe"`.
 - **Spoken**:  
   *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 8 verifiable claims, and stores the response in our byte-bounded Go LRU.  
-  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In ~1 millisecond (975 microseconds live hook overhead; 11 µs pure in-memory lookup), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
+  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 1–2 milliseconds of live hook overhead (median 1.8 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
 
 ### Act 3: Breaking News Injection & "The Stale-Cache Court" (30 seconds — Swarit & Pankaj)
 - **Visual**: Open Demo Controls in Streamlit, click **Simulate Breaking News**, click **Generate Brief**.
@@ -65,7 +78,7 @@ sequenceDiagram
 ### Act 4: Operator Readiness & Multi-Domain Guard (15 seconds — Swarit)
 - **Visual**: Terminal showing `curl /v1/chat/completions` with `x-chrono-admin: metrics` and `gateway/examples/sec_8k_guard_demo.py`.
 - **Spoken**:  
-  *"This is production-ready. We run non-root in Docker, isolate tenants fail-closed via virtual keys with zero client spoofing, persist cache snapshots atomically to disk across container restarts, and provide native `x-bf-cache-key` Guard Mode (header stamping/stripping verified in unit tests; designed for Bifrost's `semanticcache`)."*
+  *"We built it to production habits: we run non-root in Docker, isolate tenants fail-closed via virtual keys with zero client spoofing, persist cache snapshots atomically to disk across container restarts, and provide native `x-bf-cache-key` Guard Mode (header stamping/stripping verified in unit tests; end-to-end interaction with Bifrost's `semanticcache` is designed, not yet verified)."*
 
 ---
 
