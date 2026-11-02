@@ -85,6 +85,68 @@ func TestStorableWithTenant(t *testing.T) {
 	}
 }
 
+func TestTTLShadow(t *testing.T) {
+	// Base entry created 10 minutes ago
+	entryTime := t0.Add(-10 * time.Minute)
+	base := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
+	entry := &Entry{FP: base, CreatedAt: entryTime}
+
+	// 1. Cold miss
+	if got := DecideTTLShadow(t0, base, nil, 5*time.Minute); got != "MISS_COLD" {
+		t.Fatalf("expected MISS_COLD, got %s", got)
+	}
+
+	// 2. Unchanged evidence after 10m:
+	// - 5m TTL: MISS_EXPIRED
+	// - 1h TTL: HIT_FRESH
+	// - 24h TTL: HIT_FRESH
+	if got := DecideTTLShadow(t0, base, entry, 5*time.Minute); got != "MISS_EXPIRED" {
+		t.Fatalf("expected MISS_EXPIRED for 5m TTL, got %s", got)
+	}
+	if got := DecideTTLShadow(t0, base, entry, 1*time.Hour); got != "HIT_FRESH" {
+		t.Fatalf("expected HIT_FRESH for 1h TTL, got %s", got)
+	}
+	if got := DecideTTLShadow(t0, base, entry, 24*time.Hour); got != "HIT_FRESH" {
+		t.Fatalf("expected HIT_FRESH for 24h TTL, got %s", got)
+	}
+
+	// 3. New article arrives! (Newest is 5 minutes ago)
+	newerIn := fp(t0.Add(-5*time.Minute), 1, 6, 0, "h2")
+
+	// Freshcache refuses stale:
+	if dec := Decide(t0, newerIn, entry, pol); dec != RefuseNewerSource {
+		t.Fatalf("expected REFUSE_NEWER_SOURCE from freshcache, got %s", dec)
+	}
+
+	// But TTL shadow evaluator shows:
+	// - 5m TTL: MISS_EXPIRED
+	// - 1h TTL: HIT_STALE! (blindly serves stale brief)
+	// - 24h TTL: HIT_STALE! (blindly serves stale brief)
+	shadows := ComputeShadowOutcomes(t0, newerIn, entry)
+	if shadows.TTL5m != "MISS_EXPIRED" {
+		t.Fatalf("expected TTL5m to be MISS_EXPIRED, got %s", shadows.TTL5m)
+	}
+	if shadows.TTL1h != "HIT_STALE" {
+		t.Fatalf("expected TTL1h to be HIT_STALE, got %s", shadows.TTL1h)
+	}
+	if shadows.TTL24h != "HIT_STALE" {
+		t.Fatalf("expected TTL24h to be HIT_STALE, got %s", shadows.TTL24h)
+	}
+	if !shadows.WouldServeStale24h {
+		t.Fatal("expected WouldServeStale24h to be true")
+	}
+}
+
+func BenchmarkDecide(b *testing.B) {
+	base := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
+	entry := &Entry{FP: base, CreatedAt: t0.Add(-1 * time.Hour)}
+	b.ResetTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_ = Decide(t0, base, entry, pol)
+	}
+}
+
 // The headline invariant: whenever Decide serves from cache, the request is NOT newer than
 // the entry. Checked over a few hundred thousand random fingerprint pairs.
 func TestNoStaleServeInvariant(t *testing.T) {

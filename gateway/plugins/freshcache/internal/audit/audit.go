@@ -31,6 +31,13 @@ type Record struct {
 	CostUSD              float64 `json:"cost_usd"`
 	SavedCostUSD         float64 `json:"saved_cost_usd"`
 	LatencyMS            int64   `json:"latency_ms"`
+
+	// Stage 1: Counterfactual TTL Shadow Ledger & Overhead (additive fields)
+	ShadowTTL5m        string `json:"shadow_ttl_5m,omitempty"`
+	ShadowTTL1h        string `json:"shadow_ttl_1h,omitempty"`
+	ShadowTTL24h       string `json:"shadow_ttl_24h,omitempty"`
+	WouldServeStale24h bool   `json:"would_serve_stale_24h"`
+	PluginOverheadUS   int64  `json:"plugin_overhead_us,omitempty"`
 }
 
 // Logger manages the thread-safe JSONL audit log file.

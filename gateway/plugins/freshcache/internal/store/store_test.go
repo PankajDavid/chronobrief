@@ -1,6 +1,7 @@
 package store
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -82,5 +83,163 @@ func TestStoreLRUEviction(t *testing.T) {
 	}
 	if _, ok := s.Get("k3"); !ok {
 		t.Fatal("expected k3 to be present")
+	}
+}
+
+func TestStoreMaxBytesEviction(t *testing.T) {
+	// Byte ceiling: 1000 bytes (each entry is ~458 bytes: 258 base + 200 content)
+	s := New(10, 1000)
+
+	contentLarge := string(make([]byte, 200))
+	makeEntry := func() *StoredEntry {
+		c := contentLarge
+		return &StoredEntry{
+			CreatedAt: time.Now().UTC(),
+			Response: &schemas.BifrostResponse{
+				ChatResponse: &schemas.BifrostChatResponse{
+					Choices: []schemas.BifrostResponseChoice{
+						{
+							ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+								Message: &schemas.ChatMessage{
+									Content: &schemas.ChatMessageContent{ContentStr: &c},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+	}
+
+	s.Put("k1", makeEntry())
+	s.Put("k2", makeEntry())
+	if s.Len() != 2 {
+		t.Fatalf("expected 2 items, got %d", s.Len())
+	}
+
+	// Adding k3 exceeds 600 bytes, evicts oldest (k1)
+	s.Put("k3", makeEntry())
+	if _, ok := s.Get("k1"); ok {
+		t.Fatal("expected k1 to be evicted by byte limit")
+	}
+	if s.Evictions() < 1 {
+		t.Fatalf("expected at least 1 eviction, got %d", s.Evictions())
+	}
+}
+
+func TestStoreSnapshotRoundtrip(t *testing.T) {
+	tmpDir := t.TempDir()
+	snapPath := filepath.Join(tmpDir, "snapshot.json")
+
+	s1 := New(10)
+	now := time.Now().UTC()
+
+	content := "persisted answer"
+	resp := &schemas.BifrostResponse{
+		ChatResponse: &schemas.BifrostChatResponse{
+			Choices: []schemas.BifrostResponseChoice{
+				{
+					ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+						Message: &schemas.ChatMessage{
+							Role:    schemas.ChatMessageRoleAssistant,
+							Content: &schemas.ChatMessageContent{ContentStr: &content},
+						},
+					},
+				},
+			},
+		},
+	}
+	s1.Put("key-fresh", &StoredEntry{
+		Response:    resp,
+		CreatedAt:   now.Add(-10 * time.Minute),
+		TotalTokens: 250,
+	})
+	s1.Put("key-expired", &StoredEntry{
+		Response:    resp,
+		CreatedAt:   now.Add(-2 * time.Hour),
+		TotalTokens: 250,
+	})
+
+	if err := s1.SaveSnapshot(snapPath); err != nil {
+		t.Fatalf("SaveSnapshot failed: %v", err)
+	}
+
+	// Create fresh store s2 and load snapshot with 1h TTL
+	s2 := New(10)
+	loaded, err := s2.LoadSnapshot(snapPath, now, 1*time.Hour)
+	if err != nil {
+		t.Fatalf("LoadSnapshot failed: %v", err)
+	}
+	if loaded != 1 {
+		t.Fatalf("expected 1 loaded entry (non-expired), got %d", loaded)
+	}
+
+	if _, ok := s2.Get("key-expired"); ok {
+		t.Fatal("expired entry should not have been restored")
+	}
+
+	entry, ok := s2.Get("key-fresh")
+	if !ok || entry == nil {
+		t.Fatal("fresh entry was not restored")
+	}
+	if entry.TotalTokens != 250 {
+		t.Fatalf("expected 250 tokens, got %d", entry.TotalTokens)
+	}
+}
+
+func BenchmarkStoreGetHit(b *testing.B) {
+	s := New(1000)
+	content := "cached response body"
+	entry := &StoredEntry{
+		CreatedAt:   time.Now().UTC(),
+		TotalTokens: 500,
+		Response: &schemas.BifrostResponse{
+			ChatResponse: &schemas.BifrostChatResponse{
+				Choices: []schemas.BifrostResponseChoice{
+					{
+						ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+							Message: &schemas.ChatMessage{
+								Content: &schemas.ChatMessageContent{ContentStr: &content},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	s.Put("bench-key", entry)
+
+	b.ResetTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = s.Get("bench-key")
+	}
+}
+
+func BenchmarkStorePut(b *testing.B) {
+	s := New(10000)
+	content := "cached response body"
+	entry := &StoredEntry{
+		CreatedAt:   time.Now().UTC(),
+		TotalTokens: 500,
+		Response: &schemas.BifrostResponse{
+			ChatResponse: &schemas.BifrostChatResponse{
+				Choices: []schemas.BifrostResponseChoice{
+					{
+						ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+							Message: &schemas.ChatMessage{
+								Content: &schemas.ChatMessageContent{ContentStr: &content},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	b.ResetTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		s.Put("bench-key", entry)
 	}
 }

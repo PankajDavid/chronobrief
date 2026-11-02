@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -14,13 +15,16 @@ import (
 func setupTestPlugin(t *testing.T) {
 	tmpDir := t.TempDir()
 	auditPath := filepath.Join(tmpDir, "test-audit.jsonl")
+	snapPath := filepath.Join(tmpDir, "test-snapshot.json")
 
 	cfg := map[string]any{
-		"audit_path": auditPath,
-		"max_entries": float64(100),
-		"ttl_seconds": float64(3600),
+		"audit_path":          auditPath,
+		"snapshot_path":       snapPath,
+		"max_entries":         float64(100),
+		"max_bytes":           float64(10 * 1024 * 1024),
+		"ttl_seconds":         float64(3600),
 		"future_skew_seconds": float64(3600),
-		"exact_set": true,
+		"exact_set":           true,
 	}
 	if err := Init(cfg); err != nil {
 		t.Fatalf("Init failed: %v", err)
@@ -125,6 +129,12 @@ func TestPluginLifecycle(t *testing.T) {
 	if httpResp.Headers["x-chrono-cache"] != "MISS_COLD" {
 		t.Fatalf("expected x-chrono-cache MISS_COLD, got %q", httpResp.Headers["x-chrono-cache"])
 	}
+	if httpResp.Headers["x-bf-freshness-cache"] != "MISS_COLD" {
+		t.Fatalf("expected x-bf-freshness-cache alias MISS_COLD, got %q", httpResp.Headers["x-bf-freshness-cache"])
+	}
+	if httpResp.Headers["x-chrono-shadow-ttl-5m"] != "MISS_COLD" {
+		t.Fatalf("expected shadow TTL-5m MISS_COLD, got %q", httpResp.Headers["x-chrono-shadow-ttl-5m"])
+	}
 
 	// 3. Second Identical Request -> Cache HIT
 	bCtx3 := schemas.NewBifrostContext(context.Background(), schemas.NoDeadline)
@@ -152,8 +162,17 @@ func TestPluginLifecycle(t *testing.T) {
 	if httpRespHit.Headers["x-chrono-cache"] != "HIT" {
 		t.Fatalf("expected x-chrono-cache HIT, got %q", httpRespHit.Headers["x-chrono-cache"])
 	}
+	if httpRespHit.Headers["x-bf-freshness-cache"] != "HIT" {
+		t.Fatalf("expected x-bf-freshness-cache HIT, got %q", httpRespHit.Headers["x-bf-freshness-cache"])
+	}
 	if httpRespHit.Headers["x-chrono-saved-tokens"] != "150" {
 		t.Fatalf("expected saved tokens 150, got %q", httpRespHit.Headers["x-chrono-saved-tokens"])
+	}
+	if httpRespHit.Headers["x-chrono-shadow-ttl-24h"] != "HIT_FRESH" {
+		t.Fatalf("expected shadow TTL-24h HIT_FRESH, got %q", httpRespHit.Headers["x-chrono-shadow-ttl-24h"])
+	}
+	if httpRespHit.Headers["x-chrono-plugin-overhead-us"] == "" {
+		t.Fatal("expected x-chrono-plugin-overhead-us to be populated")
 	}
 
 	// 4. Cleanup
@@ -225,3 +244,60 @@ func TestPruneOldReqOutcomes(t *testing.T) {
 	}
 }
 
+func TestMetricsEndpoint(t *testing.T) {
+	setupTestPlugin(t)
+
+	bCtx := schemas.NewBifrostContext(context.Background(), schemas.NoDeadline)
+	req := &schemas.HTTPRequest{
+		Path:    "/x-chrono/metrics",
+		Headers: map[string]string{},
+	}
+
+	resp, err := HTTPTransportPreHook(bCtx, req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if resp == nil {
+		t.Fatal("expected short-circuit HTTPResponse for metrics endpoint")
+	}
+	if resp.StatusCode != 200 {
+		t.Fatalf("expected status 200, got %d", resp.StatusCode)
+	}
+	if resp.Headers["content-type"] != "application/json" {
+		t.Fatalf("expected json content-type, got %s", resp.Headers["content-type"])
+	}
+
+	var payload metricsPayload
+	if err := json.Unmarshal(resp.Body, &payload); err != nil {
+		t.Fatalf("failed to decode metrics payload: %v", err)
+	}
+	if payload.Status != "healthy" {
+		t.Fatalf("expected status healthy, got %s", payload.Status)
+	}
+}
+
+func TestHookPanicRecoveryFailOpen(t *testing.T) {
+	// Hooks must never panic or crash the Bifrost process
+	resp, err := HTTPTransportPreHook(nil, nil)
+	if err != nil || resp != nil {
+		t.Errorf("expected nil resp and nil err on nil inputs, got %v, %v", resp, err)
+	}
+
+	bReq, shortCircuit, err := PreLLMHook(nil, nil)
+	if err != nil || shortCircuit != nil {
+		t.Errorf("expected nil shortCircuit and nil err on nil inputs, got %v, %v", shortCircuit, err)
+	}
+	if bReq != nil {
+		t.Errorf("expected bReq to pass through")
+	}
+
+	bResp, bErr, err := PostLLMHook(nil, nil, nil)
+	if err != nil || bResp != nil || bErr != nil {
+		t.Errorf("expected clean return on nil inputs, got %v, %v, %v", bResp, bErr, err)
+	}
+
+	err = HTTPTransportPostHook(nil, nil, nil)
+	if err != nil {
+		t.Errorf("expected nil err on nil inputs, got %v", err)
+	}
+}

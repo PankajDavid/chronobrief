@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -29,12 +30,15 @@ const (
 )
 
 type reqOutcome struct {
-	decision  decide.Decision
-	cacheKey  string
-	served    bool
-	hitEntry  *store.StoredEntry
-	startTime time.Time
-	createdAt time.Time
+	decision       decide.Decision
+	cacheKey       string
+	served         bool
+	hitEntry       *store.StoredEntry
+	startTime      time.Time
+	createdAt      time.Time
+	hookOverheadUS int64
+	shadowOutcomes decide.ShadowOutcomes
+	guardAction    headers.GuardAction
 }
 
 var (
@@ -44,8 +48,23 @@ var (
 	cachePolicy decide.Policy
 	isInitDone  bool
 
+	pluginStartTime       time.Time
+	snapshotPath          string
+	snapshotEntriesLoaded int
+
 	reqCounter  uint64
 	reqOutcomes sync.Map // map[string]*reqOutcome
+
+	lookupsTotal        uint64
+	hitsTotal           uint64
+	stalePreventedTotal uint64
+	courtTTL24hStale    uint64
+	courtTTL1hStale     uint64
+	courtTTL5mMisses    uint64
+
+	totalOverheadUS uint64
+	overheadCount   uint64
+	maxOverheadUS   int64
 )
 
 const (
@@ -81,12 +100,100 @@ func pruneOldReqOutcomes(now time.Time) {
 	}
 }
 
+type metricsPayload struct {
+	Status                    string  `json:"status"`
+	UptimeSeconds             int64   `json:"uptime_seconds"`
+	LookupsTotal              uint64  `json:"lookups_total"`
+	HitsTotal                 uint64  `json:"hits_total"`
+	StalePreventedTotal       uint64  `json:"stale_prevented_total"`
+	CourtStalePreventedTTL24h uint64  `json:"court_stale_prevented_ttl_24h"`
+	CourtStalePreventedTTL1h  uint64  `json:"court_stale_prevented_ttl_1h"`
+	CourtTTL5mFalseMisses     uint64  `json:"court_ttl_5m_false_misses"`
+	OverheadUSAvg             float64 `json:"overhead_us_avg"`
+	OverheadUSMax             int64   `json:"overhead_us_max"`
+	CacheEntries              int     `json:"cache_entries"`
+	CacheBytes                int64   `json:"cache_bytes"`
+	CacheMaxBytes             int64   `json:"cache_max_bytes"`
+	CacheEvictions            int64   `json:"cache_evictions"`
+	SnapshotPath              string  `json:"snapshot_path"`
+	SnapshotEntriesLoaded     int     `json:"snapshot_entries_loaded"`
+}
+
+func getMetricsJSON() []byte {
+	pluginMu.RLock()
+	st := cacheStore
+	sp := snapshotPath
+	sl := snapshotEntriesLoaded
+	pluginMu.RUnlock()
+
+	entries := 0
+	bytes := int64(0)
+	maxBytes := int64(0)
+	evictions := int64(0)
+	if st != nil {
+		entries = st.Len()
+		bytes = st.CurrentBytes()
+		maxBytes = st.MaxBytes()
+		evictions = st.Evictions()
+	}
+
+	totOverhead := atomic.LoadUint64(&totalOverheadUS)
+	cnt := atomic.LoadUint64(&overheadCount)
+	avgOverhead := 0.0
+	if cnt > 0 {
+		avgOverhead = float64(totOverhead) / float64(cnt)
+	}
+
+	uptime := int64(0)
+	if !pluginStartTime.IsZero() {
+		uptime = int64(time.Since(pluginStartTime).Seconds())
+	}
+
+	payload := metricsPayload{
+		Status:                    "healthy",
+		UptimeSeconds:             uptime,
+		LookupsTotal:              atomic.LoadUint64(&lookupsTotal),
+		HitsTotal:                 atomic.LoadUint64(&hitsTotal),
+		StalePreventedTotal:       atomic.LoadUint64(&stalePreventedTotal),
+		CourtStalePreventedTTL24h: atomic.LoadUint64(&courtTTL24hStale),
+		CourtStalePreventedTTL1h:  atomic.LoadUint64(&courtTTL1hStale),
+		CourtTTL5mFalseMisses:     atomic.LoadUint64(&courtTTL5mMisses),
+		OverheadUSAvg:             avgOverhead,
+		OverheadUSMax:             atomic.LoadInt64(&maxOverheadUS),
+		CacheEntries:              entries,
+		CacheBytes:                bytes,
+		CacheMaxBytes:             maxBytes,
+		CacheEvictions:            evictions,
+		SnapshotPath:              sp,
+		SnapshotEntriesLoaded:     sl,
+	}
+
+	data, _ := json.MarshalIndent(payload, "", "  ")
+	return data
+}
+
+func recordOverhead(overheadUS int64) {
+	if overheadUS <= 0 {
+		return
+	}
+	atomic.AddUint64(&totalOverheadUS, uint64(overheadUS))
+	atomic.AddUint64(&overheadCount, 1)
+	for {
+		currMax := atomic.LoadInt64(&maxOverheadUS)
+		if overheadUS <= currMax || atomic.CompareAndSwapInt64(&maxOverheadUS, currMax, overheadUS) {
+			break
+		}
+	}
+}
+
 func initPlugin(config any) error {
 	pluginMu.Lock()
 	defer pluginMu.Unlock()
 
 	auditPath := "/var/log/bifrost/freshcache.jsonl"
+	snapPath := "/var/log/bifrost/freshcache-snapshot.json"
 	maxEntries := 1000
+	maxBytes := int64(64 * 1024 * 1024) // 64 MB
 	ttl := 24 * time.Hour
 	futureSkew := 24 * time.Hour
 	exactSet := true
@@ -95,8 +202,14 @@ func initPlugin(config any) error {
 		if ap, ok := cfgMap["audit_path"].(string); ok && ap != "" {
 			auditPath = ap
 		}
+		if sp, ok := cfgMap["snapshot_path"].(string); ok && sp != "" {
+			snapPath = sp
+		}
 		if me, ok := cfgMap["max_entries"].(float64); ok && me > 0 {
 			maxEntries = int(me)
+		}
+		if mb, ok := cfgMap["max_bytes"].(float64); ok && mb > 0 {
+			maxBytes = int64(mb)
 		}
 		if ttlSec, ok := cfgMap["ttl_seconds"].(float64); ok && ttlSec > 0 {
 			ttl = time.Duration(ttlSec) * time.Second
@@ -115,12 +228,23 @@ func initPlugin(config any) error {
 		logger, _ = audit.New("")
 	}
 	auditLogger = logger
-	cacheStore = store.New(maxEntries)
+	cacheStore = store.New(maxEntries, maxBytes)
 	cachePolicy = decide.Policy{
 		TTL:        ttl,
 		FutureSkew: futureSkew,
 		ExactSet:   exactSet,
 	}
+
+	snapshotPath = snapPath
+	snapshotEntriesLoaded = 0
+	if snapPath != "" {
+		if loaded, err := cacheStore.LoadSnapshot(snapPath, time.Now().UTC(), ttl); err == nil {
+			snapshotEntriesLoaded = loaded
+			fmt.Printf("[INFO] freshcache loaded %d entries from snapshot %s\n", loaded, snapPath)
+		}
+	}
+
+	pluginStartTime = time.Now().UTC()
 	isInitDone = true
 	return nil
 }
@@ -135,7 +259,7 @@ func GetName() string {
 	return "freshcache"
 }
 
-// HTTPTransportPreHook extracts and strictly parses the x-chrono-* headers and x-bf-vk tenant ID.
+// HTTPTransportPreHook extracts headers, routes metrics endpoints, and applies native cache guarding.
 func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest) (*schemas.HTTPResponse, error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -143,10 +267,35 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 		}
 	}()
 
+	hookStart := time.Now()
+
+	// Short-circuit Stale-Cache Court / telemetry metrics endpoint
+	if req != nil {
+		trimmedPath := strings.TrimSuffix(req.Path, "/")
+		if trimmedPath == "/x-chrono/metrics" ||
+			req.Headers["x-chrono-admin"] == "metrics" ||
+			req.CaseInsensitiveHeaderLookup("x-chrono-admin") == "metrics" {
+			data := getMetricsJSON()
+			return &schemas.HTTPResponse{
+				StatusCode: 200,
+				Headers: map[string]string{
+					"content-type":  "application/json",
+					"cache-control": "no-store",
+				},
+				Body: data,
+			}, nil
+		}
+	}
+
 	parsed := headers.Parse(req)
-	now := time.Now()
-	ctx.SetValue(keyParsedHeaders, parsed)
-	ctx.SetValue(keyStartTime, now)
+	now := time.Now().UTC()
+	if ctx != nil {
+		ctx.SetValue(keyParsedHeaders, parsed)
+		ctx.SetValue(keyStartTime, hookStart)
+	}
+
+	// Apply Native Bifrost Cache Guard (Stage 3)
+	headers.ApplyNativeCacheGuard(req, &parsed, now)
 
 	// Always generate request ID server-side; ignore client headers (F4)
 	id := atomic.AddUint64(&reqCounter, 1)
@@ -157,17 +306,23 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 		}
 		req.Headers["x-freshcache-id"] = reqID
 	}
-	ctx.SetValue(keyReqID, reqID)
+	if ctx != nil {
+		ctx.SetValue(keyReqID, reqID)
+	}
 
 	// Prune old entries to prevent unbounded memory growth (F4)
 	pruneOldReqOutcomes(now)
 
 	initialOutcome := &reqOutcome{
-		startTime: now,
-		createdAt: now,
+		startTime:      hookStart,
+		createdAt:      hookStart,
+		guardAction:    parsed.GuardAction,
+		hookOverheadUS: time.Since(hookStart).Microseconds(),
 	}
 	if parsed.TenantID == "" {
-		ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+		if ctx != nil {
+			ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+		}
 		initialOutcome.decision = decide.RefuseNoTenant
 	}
 	reqOutcomes.Store(reqID, initialOutcome)
@@ -175,7 +330,7 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 	return nil, nil
 }
 
-// PreLLMHook evaluates the freshness decision. On HIT, it returns a deep copy short-circuit.
+// PreLLMHook evaluates the freshness decision and computes counterfactual shadow TTLs.
 func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*schemas.BifrostRequest, *schemas.LLMPluginShortCircuit, error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -183,12 +338,20 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 		}
 	}()
 
-	parsed, ok := ctx.Value(keyParsedHeaders).(headers.RequestHeaders)
-	if !ok {
-		parsed = headers.RequestHeaders{}
+	hookStart := time.Now()
+	atomic.AddUint64(&lookupsTotal, 1)
+
+	var parsed headers.RequestHeaders
+	var reqID string
+	if ctx != nil {
+		if p, ok := ctx.Value(keyParsedHeaders).(headers.RequestHeaders); ok {
+			parsed = p
+		}
+		if id, ok := ctx.Value(keyReqID).(string); ok {
+			reqID = id
+		}
 	}
 
-	reqID, _ := ctx.Value(keyReqID).(string)
 	var outcome *reqOutcome
 	if reqID != "" {
 		if v, ok := reqOutcomes.Load(reqID); ok {
@@ -216,33 +379,48 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 
 	// 1. Streaming bypass
 	if req != nil && (req.RequestType == schemas.ChatCompletionStreamRequest || strings.Contains(strings.ToLower(string(req.RequestType)), "stream")) {
-		ctx.SetValue(keyDecision, decide.BypassStream)
+		if ctx != nil {
+			ctx.SetValue(keyDecision, decide.BypassStream)
+		}
 		outcome.decision = decide.BypassStream
+		outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
 		return req, nil, nil
 	}
 
 	// 2. Missing Virtual Key -> Fail Closed (ADR-006)
 	if parsed.TenantID == "" {
-		ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+		if ctx != nil {
+			ctx.SetValue(keyDecision, decide.RefuseNoTenant)
+		}
 		outcome.decision = decide.RefuseNoTenant
+		outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
 		return req, nil, nil
 	}
 
 	// 3. Compute Cache Key (needed for lookup AND for storing refresh results in PostLLMHook)
-	_, model, _ := req.GetRequestFields()
-	if model == "" && req.ChatRequest != nil {
-		model = req.ChatRequest.Model
+	var model string
+	if req != nil {
+		_, model, _ = req.GetRequestFields()
+		if model == "" && req.ChatRequest != nil {
+			model = req.ChatRequest.Model
+		}
 	}
 	cacheK := key.Compute(parsed.TenantID, parsed.Subject, parsed.Intent, parsed.WindowDays, parsed.PromptVersion, model)
-	ctx.SetValue(keyCacheKey, cacheK)
+	if ctx != nil {
+		ctx.SetValue(keyCacheKey, cacheK)
+	}
 	outcome.cacheKey = cacheK
 
 	// 4. Client bypass (refresh): skip lookup, proceed to model, store result in PostLLMHook
 	if parsed.Refresh {
-		ctx.SetValue(keyDecision, decide.BypassRefresh)
+		if ctx != nil {
+			ctx.SetValue(keyDecision, decide.BypassRefresh)
+		}
 		outcome.decision = decide.BypassRefresh
+		outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
 		return req, nil, nil
 	}
+
 	// 5. Lookup Entry in Store
 	pluginMu.RLock()
 	st := cacheStore
@@ -266,18 +444,44 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 
 	now := time.Now().UTC()
 	decision := decide.Decide(now, parsed.Fingerprint, decideEntry, pol)
-	ctx.SetValue(keyDecision, decision)
+	if ctx != nil {
+		ctx.SetValue(keyDecision, decision)
+	}
 	outcome.decision = decision
+
+	// Compute Counterfactual TTL Shadow Ledger (Stage 1)
+	shadows := decide.ComputeShadowOutcomes(now, parsed.Fingerprint, decideEntry)
+	outcome.shadowOutcomes = shadows
+
+	// Update Stale-Cache Court & Telemetry counters
+	if decision.Serves() {
+		atomic.AddUint64(&hitsTotal, 1)
+		if shadows.TTL5m == "MISS_EXPIRED" {
+			atomic.AddUint64(&courtTTL5mMisses, 1)
+		}
+	} else if strings.HasPrefix(string(decision), "REFUSE_") {
+		atomic.AddUint64(&stalePreventedTotal, 1)
+		if shadows.TTL24h == "HIT_STALE" {
+			atomic.AddUint64(&courtTTL24hStale, 1)
+		}
+		if shadows.TTL1h == "HIT_STALE" {
+			atomic.AddUint64(&courtTTL1hStale, 1)
+		}
+	}
 
 	// 6. Handle HIT
 	if decision.Serves() && storedEntry != nil && storedEntry.Response != nil {
-		ctx.SetValue(keyServed, true)
-		ctx.SetValue(keyHitEntry, storedEntry)
+		if ctx != nil {
+			ctx.SetValue(keyServed, true)
+			ctx.SetValue(keyHitEntry, storedEntry)
+		}
 		outcome.served = true
 		outcome.hitEntry = storedEntry
+		outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
 		return req, &schemas.LLMPluginShortCircuit{Response: storedEntry.Response}, nil
 	}
 
+	outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
 	return req, nil, nil
 }
 
@@ -289,11 +493,29 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		}
 	}()
 
-	parsed, _ := ctx.Value(keyParsedHeaders).(headers.RequestHeaders)
-	cacheK, _ := ctx.Value(keyCacheKey).(string)
-	dec, _ := ctx.Value(keyDecision).(decide.Decision)
-	served, _ := ctx.Value(keyServed).(bool)
-	startT, _ := ctx.Value(keyStartTime).(time.Time)
+	hookStart := time.Now()
+
+	var parsed headers.RequestHeaders
+	var cacheK string
+	var dec decide.Decision
+	var served bool
+	var startT time.Time
+
+	if ctx != nil {
+		parsed, _ = ctx.Value(keyParsedHeaders).(headers.RequestHeaders)
+		cacheK, _ = ctx.Value(keyCacheKey).(string)
+		dec, _ = ctx.Value(keyDecision).(decide.Decision)
+		served, _ = ctx.Value(keyServed).(bool)
+		startT, _ = ctx.Value(keyStartTime).(time.Time)
+	}
+
+	reqID, _ := ctx.Value(keyReqID).(string)
+	var outcome *reqOutcome
+	if reqID != "" {
+		if v, ok := reqOutcomes.Load(reqID); ok {
+			outcome = v.(*reqOutcome)
+		}
+	}
 
 	latencyMS := int64(0)
 	if !startT.IsZero() {
@@ -304,11 +526,26 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 	st := cacheStore
 	al := auditLogger
 	pol := cachePolicy
+	snapPath := snapshotPath
 	pluginMu.RUnlock()
+
+	var shadows decide.ShadowOutcomes
+	hookOverhead := int64(0)
+	if outcome != nil {
+		shadows = outcome.shadowOutcomes
+		hookOverhead = outcome.hookOverheadUS
+	}
 
 	// 1. If served from cache (HIT)
 	if served {
-		hitE, _ := ctx.Value(keyHitEntry).(*store.StoredEntry)
+		var hitE *store.StoredEntry
+		if ctx != nil {
+			hitE, _ = ctx.Value(keyHitEntry).(*store.StoredEntry)
+		}
+		if hitE == nil && outcome != nil {
+			hitE = outcome.hitEntry
+		}
+
 		reqNewest := ""
 		if !parsed.Fingerprint.Newest.IsZero() {
 			reqNewest = parsed.Fingerprint.Newest.Format(time.RFC3339)
@@ -324,6 +561,11 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 			IncomingCount:        parsed.Fingerprint.CountAtNewest,
 			RequestSetHash:       parsed.Fingerprint.SetHash,
 			LatencyMS:            latencyMS,
+			ShadowTTL5m:          shadows.TTL5m,
+			ShadowTTL1h:          shadows.TTL1h,
+			ShadowTTL24h:         shadows.TTL24h,
+			WouldServeStale24h:   shadows.WouldServeStale24h,
+			PluginOverheadUS:     hookOverhead,
 		}
 		if hitE != nil {
 			cachedNewest := ""
@@ -345,6 +587,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		if al != nil {
 			al.Log(rec)
 		}
+		if outcome != nil {
+			outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
+		}
 		return resp, bifrostErr, nil
 	}
 
@@ -365,15 +610,26 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 			IncomingCount:        parsed.Fingerprint.CountAtNewest,
 			RequestSetHash:       parsed.Fingerprint.SetHash,
 			LatencyMS:            latencyMS,
+			ShadowTTL5m:          shadows.TTL5m,
+			ShadowTTL1h:          shadows.TTL1h,
+			ShadowTTL24h:         shadows.TTL24h,
+			WouldServeStale24h:   shadows.WouldServeStale24h,
+			PluginOverheadUS:     hookOverhead,
 		}
 		if al != nil {
 			al.Log(rec)
+		}
+		if outcome != nil {
+			outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
 		}
 		return resp, bifrostErr, nil
 	}
 
 	// 3. Synchronous cost calculation & token accounting
-	cost := ctx.CalculateCost(resp)
+	cost := 0.0
+	if ctx != nil {
+		cost = ctx.CalculateCost(resp)
+	}
 	pt, ct, tt := 0, 0, 0
 	if resp.ChatResponse.Usage != nil {
 		pt = resp.ChatResponse.Usage.PromptTokens
@@ -381,7 +637,7 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		tt = resp.ChatResponse.Usage.TotalTokens
 	}
 
-	// 4. Store newly generated response if eligible
+	// 4. Store newly generated response if eligible & save atomic snapshot
 	now := time.Now().UTC()
 	if parsed.TenantID != "" && cacheK != "" && decide.Storable(now, parsed.Fingerprint, pol) {
 		newEntry := &store.StoredEntry{
@@ -395,6 +651,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		}
 		if st != nil {
 			st.Put(cacheK, newEntry)
+			if snapPath != "" {
+				_ = st.SaveSnapshot(snapPath)
+			}
 		}
 	}
 
@@ -418,21 +677,31 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		TotalTokens:          tt,
 		CostUSD:              cost,
 		LatencyMS:            latencyMS,
+		ShadowTTL5m:          shadows.TTL5m,
+		ShadowTTL1h:          shadows.TTL1h,
+		ShadowTTL24h:         shadows.TTL24h,
+		WouldServeStale24h:   shadows.WouldServeStale24h,
+		PluginOverheadUS:     hookOverhead,
 	}
 	if al != nil {
 		al.Log(rec)
 	}
 
+	if outcome != nil {
+		outcome.hookOverheadUS += time.Since(hookStart).Microseconds()
+	}
 	return resp, bifrostErr, nil
 }
 
-// HTTPTransportPostHook sets client-facing response headers (e.g. x-chrono-cache).
+// HTTPTransportPostHook sets client-facing response headers (e.g. x-chrono-cache, shadow TTLs, overhead).
 func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest, resp *schemas.HTTPResponse) error {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("freshcache HTTPTransportPostHook recovered from panic: %v\n", r)
 		}
 	}()
+
+	hookStart := time.Now()
 
 	if resp == nil {
 		return nil
@@ -441,7 +710,10 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 		resp.Headers = make(map[string]string)
 	}
 
-	reqID, _ := ctx.Value(keyReqID).(string)
+	var reqID string
+	if ctx != nil {
+		reqID, _ = ctx.Value(keyReqID).(string)
+	}
 
 	var outcome *reqOutcome
 	if reqID != "" {
@@ -481,7 +753,7 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 		cacheK = outcome.cacheKey
 		hitE = outcome.hitEntry
 		served = outcome.served
-	} else {
+	} else if ctx != nil {
 		if d, ok := ctx.Value(keyDecision).(decide.Decision); ok && d != "" {
 			dec = d
 		}
@@ -497,10 +769,26 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 	}
 
 	resp.Headers["x-chrono-cache"] = string(dec)
+	resp.Headers["x-bf-freshness-cache"] = string(dec)
 	if cacheK != "" {
 		resp.Headers["x-chrono-cache-key"] = cacheK
 	}
 	resp.Headers["x-chrono-served-at"] = time.Now().UTC().Format(time.RFC3339)
+
+	if outcome != nil {
+		if outcome.shadowOutcomes.TTL5m != "" {
+			resp.Headers["x-chrono-shadow-ttl-5m"] = outcome.shadowOutcomes.TTL5m
+			resp.Headers["x-chrono-shadow-ttl-1h"] = outcome.shadowOutcomes.TTL1h
+			resp.Headers["x-chrono-shadow-ttl-24h"] = outcome.shadowOutcomes.TTL24h
+		}
+		if outcome.guardAction != "" {
+			resp.Headers["x-bf-freshness-guard"] = string(outcome.guardAction)
+		}
+		// Finalize overhead calculation
+		overhead := outcome.hookOverheadUS + time.Since(hookStart).Microseconds()
+		recordOverhead(overhead)
+		resp.Headers["x-chrono-plugin-overhead-us"] = strconv.FormatInt(overhead, 10)
+	}
 
 	if served && hitE != nil {
 		resp.Headers["x-chrono-cached-newest"] = hitE.Fingerprint.Newest.Format(time.RFC3339)
@@ -512,7 +800,7 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 	return nil
 }
 
-// Cleanup flushes and closes open file descriptors on gateway shutdown.
+// Cleanup flushes audit logs and saves disk snapshot on gateway shutdown.
 func Cleanup() error {
 	defer func() {
 		if r := recover(); r != nil {
@@ -522,6 +810,10 @@ func Cleanup() error {
 
 	pluginMu.Lock()
 	defer pluginMu.Unlock()
+
+	if cacheStore != nil && snapshotPath != "" {
+		_ = cacheStore.SaveSnapshot(snapshotPath)
+	}
 
 	if auditLogger != nil {
 		_ = auditLogger.Close()
