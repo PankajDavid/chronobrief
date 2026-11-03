@@ -197,7 +197,7 @@ These outcomes are recorded in every JSONL audit record and stamped on response 
    - Cache state is serialized to disk atomically via temporary file rename (`freshcache-snapshot.json.tmp` -> `freshcache-snapshot.json`).
    - On container restart or gateway boot, valid non-expired entries are restored immediately.
 3. **Live Telemetry & Stale-Cache Court Endpoint (`/x-chrono/metrics`)**:
-   - Built directly into `HTTPTransportPreHook`, short-circuiting administrative requests without forwarding to upstream providers:
+   - Built directly into `HTTPTransportPreHook`, short-circuiting administrative requests without forwarding to upstream providers. Response shape (illustrative example values, not a measurement):
    ```json
    {
      "status": "healthy",

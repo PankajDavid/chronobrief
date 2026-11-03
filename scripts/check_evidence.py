@@ -11,6 +11,9 @@ numbers. It:
    that follows a HIT or MISS label must equal the computed value (rounded to
    the number of decimals the doc wrote).
 5. Fails if a doc still quotes a retired number from an unsaved run.
+6. Pasted output (e2e PASS/FAIL rows, verify_audit reports, metrics JSON) in README.md and
+   docs/*.md must either link a docs/evidence/ file in the lines just above the code block, with
+   every line of the block present in that file, or be labelled "illustrative" just above it.
 
 Usage: python scripts/check_evidence.py      (exit 1 on any mismatch)
        python scripts/check_evidence.py --print   (show computed stats)
@@ -81,6 +84,61 @@ def matches(written: str, unit: str, true_us: float) -> bool:
     return round(true, decimals) == value
 
 
+OUTPUT_SIGNATURES = re.compile(
+    r"^(PASS|FAIL)  |stale serves \d|saved \(LLM only\)|\"stale_answers_prevented\"|\"lookups_total\"|court_"
+)
+EVIDENCE_LINK = re.compile(r"(?:docs/)?evidence/([\w.\-]+\.(?:txt|json|md))")
+LOOKBACK = 8
+
+
+def _norm(line: str) -> str:
+    return " ".join(line.split())
+
+
+def check_quoted_output() -> list[str]:
+    errors: list[str] = []
+    files = [ROOT / "README.md", *sorted((ROOT / "docs").glob("*.md"))]
+    for path in files:
+        if not path.exists():
+            continue
+        rel = path.relative_to(ROOT).as_posix()
+        lines = path.read_text(encoding="utf-8").splitlines()
+        i = 0
+        prev_end = -1
+        while i < len(lines):
+            if not lines[i].lstrip().startswith("```"):
+                i += 1
+                continue
+            start = i
+            j = i + 1
+            while j < len(lines) and not lines[j].lstrip().startswith("```"):
+                j += 1
+            block = [ln for ln in lines[start + 1 : j] if ln.strip()]
+            context = "\n".join(lines[max(prev_end + 1, start - LOOKBACK) : start])
+            prev_end = j
+            i = j + 1
+            if not any(OUTPUT_SIGNATURES.search(ln.strip()) for ln in block):
+                continue
+            if "illustrative" in context.lower():
+                continue  # explicitly labelled as an example, not a measurement
+            link = EVIDENCE_LINK.search(context)
+            if link:
+                ev = ROOT / "docs" / "evidence" / link.group(1)
+                if not ev.exists():
+                    errors.append(f"{rel}:{start + 1}: cites {link.group(1)}, which does not exist")
+                    continue
+                have = {_norm(x) for x in ev.read_text(encoding="utf-8").splitlines()}
+                for k, ln in enumerate(lines[start + 1 : j], start + 2):
+                    if ln.strip() and _norm(ln) not in have:
+                        errors.append(f"{rel}:{k}: quoted line not in {link.group(1)}: {ln.strip()[:70]}")
+            else:
+                errors.append(
+                    f"{rel}:{start + 1}: pasted output with no evidence file linked above it "
+                    "(link docs/evidence/<file>, or label it 'illustrative' if it is only an example)"
+                )
+    return errors
+
+
 def main() -> int:
     errors: list[str] = []
     miss, hit, ev_lines = load_runs()
@@ -132,6 +190,8 @@ def main() -> int:
                             f"{rel}:{n}: {current} {sm.group(1)} written as {sm.group(2)} {sm.group(3)}, "
                             f"evidence gives {true_us / 1000:.2f} ms"
                         )
+
+    errors += check_quoted_output()
 
     if errors:
         print("evidence check FAILED:")

@@ -125,6 +125,7 @@ Inspect live gateway statistics and Stale-Cache Court counters without touching 
 ```bash
 curl -s -X POST -H "x-chrono-admin: metrics" -H "x-bf-vk: test" http://127.0.0.1:8080/v1/chat/completions
 ```
+Response shape (illustrative example values, not a measurement; live overhead is in [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt)):
 ```json
 {
   "status": "healthy",

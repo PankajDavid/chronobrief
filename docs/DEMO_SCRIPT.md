@@ -96,30 +96,31 @@ Three consecutive rehearsal runs were conducted end-to-end against the live Bifr
 
 ## 3. Independent Oracle Audit Ledger (`verify_audit.py --json`)
 
-The independent audit log validator (`scripts/verify_audit.py`) verified all records in `data/audit/freshcache.jsonl` produced across the live rehearsals:
+The independent audit log validator (`scripts/verify_audit.py`) re-checks every audit record without trusting the plugin. Saved output from the live dashboard run ([`t11-dashboard-proof.txt`](evidence/t11-dashboard-proof.txt); no breaking news in that run):
 
 ```json
 {
-  "lookups": 15,
-  "hits": 5,
-  "hit_rate": 0.3333,
+  "lookups": 4,
+  "hits": 2,
+  "hit_rate": 0.5,
   "decisions": {
     "MISS_COLD": 1,
-    "HIT": 5,
-    "REFUSE_NEWER_SOURCE": 5,
-    "REFUSE_SET_CHANGED": 4
+    "HIT": 2,
+    "BYPASS_REFRESH": 1
   },
   "stale_serves": 0,
   "stale_serve_rate": 0.0,
   "served_without_evidence": 0,
-  "stale_answers_prevented": 5,
-  "saved_tokens": 21603,
-  "saved_cost_usd": 0.007361,
+  "stale_answers_prevented": 0,
+  "saved_tokens": 10306,
+  "saved_cost_usd": 0.002852,
   "malformed_lines": 0
 }
 ```
 
+Every `python scripts/e2e_cache.py` run now appends the same oracle report, computed over that run's own audit lines and stamped with the git commit, to its `docs/evidence/e2e-cache-<timestamp>.txt` file. Quote numbers for the demo from the latest such file.
+
 ### Key Invariant Verified
-- **Stale Serves**: **`0`** (Invariant 2 holds across 100% of live runs).
-- **Stale Answers Prevented**: **`5`** (Demonstrated live in Stale-Cache Court).
+- **Stale Serves**: **`0`** in every saved oracle report.
+- **Stale Answers Prevented**: the `REFUSE_NEWER_SOURCE` step in each saved e2e run (e.g. [`e2e-cache-20261101T170801Z.txt`](evidence/e2e-cache-20261101T170801Z.txt)).
 - **Malformed Lines**: **`0`** (Clean atomic append log).
