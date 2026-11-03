@@ -73,12 +73,13 @@ PASS  2 same evidence      HIT                    9 claims, 1 call(s)
 PASS  3 newer article      REFUSE_NEWER_SOURCE    9 claims, 1 call(s)
 ```
 
-**Independent audit oracle:** `scripts/verify_audit.py` recomputes staleness from the dates in the audit log rather than trusting the plugin's own label:
+**Independent audit oracle:** `scripts/verify_audit.py` recomputes staleness from the dates in the audit log rather than trusting the plugin's own label. Saved output from the live dashboard run ([`t11-dashboard-proof.txt`](docs/evidence/t11-dashboard-proof.txt): miss, hit, regenerate, hit; no breaking news in that run, so nothing needed refusing):
 ```
-stale serves 0  (stale answers prevented: 1)
-saved (LLM only): 5391 tokens  $0.0021
+lookups 4  hits 2  hit rate 50.0%
+stale serves 0  (stale answers prevented: 0)
+saved (LLM only): 10306 tokens  $0.0029
 ```
-(latest brief-v2 run, 2 Nov 2026)
+`scripts/e2e_cache.py` now runs this oracle on its own audit lines and saves the report, with the git commit, in the same evidence file as the MISS → HIT → REFUSE rows.
 
 **Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **1.99 ms**; MISS median **24.68 ms**, before the model call itself.
 

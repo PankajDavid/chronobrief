@@ -26,25 +26,44 @@ import argparse
 import json
 import sys
 from collections import Counter
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 
-def is_newer(rec: dict) -> bool:
+def _ts(value: str) -> datetime | None:
+    """Parse an RFC 3339 timestamp; None if unparseable. Aware, UTC."""
+    try:
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return dt if dt.tzinfo else dt.replace(tzinfo=UTC)
+
+
+def is_newer(rec: dict[str, Any]) -> bool:
     inc, ent = rec.get("incoming_newest"), rec.get("entry_newest")
     if not inc or not ent:
         return False
-    if inc > ent:  # RFC3339 UTC strings of identical shape compare correctly as text
+    # Compare as instants, not text: "...Z", "...+00:00" and fractional seconds must agree.
+    inc_t, ent_t = _ts(str(inc)), _ts(str(ent))
+    if inc_t is None or ent_t is None:
+        return str(inc) > str(ent)  # unparseable: fall back to the old text comparison
+    if inc_t > ent_t:
         return True
-    return inc == ent and int(rec.get("incoming_count", 0)) > int(rec.get("entry_count", 0))
+    return inc_t == ent_t and int(rec.get("incoming_count", 0)) > int(rec.get("entry_count", 0))
 
 
-def summarise(path: Path) -> dict:
+def summarise(path: Path) -> dict[str, Any]:
+    return summarise_text(path.read_text(encoding="utf-8"))
+
+
+def summarise_text(text: str) -> dict[str, Any]:
     decisions: Counter[str] = Counter()
     stale = malformed = 0
     saved_tokens = 0
     saved_cost = 0.0
     served_without_evidence = 0
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in text.splitlines():
         if not line.strip():
             continue
         try:
@@ -78,6 +97,22 @@ def summarise(path: Path) -> dict:
     }
 
 
+def format_summary(s: dict[str, Any]) -> list[str]:
+    """The human-readable oracle report. e2e_cache.py saves exactly these lines as evidence."""
+    lines = [
+        f"lookups {s['lookups']}  hits {s['hits']}  hit rate {s['hit_rate']:.1%}",
+        f"stale serves {s['stale_serves']}  (stale answers prevented: {s['stale_answers_prevented']})",
+        f"saved (LLM only): {s['saved_tokens']} tokens  ${s['saved_cost_usd']:.4f}",
+        f"decisions {s['decisions']}",
+        "benchmark (expected until measured against audit log): "
+        "5-min TTL (high false miss) vs 24h TTL (high stale serve) vs ChronoBrief (0% stale serve)",
+        'pitch: "Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."',
+    ]
+    if s["malformed_lines"]:
+        lines.append(f"WARNING {s['malformed_lines']} malformed line(s)")
+    return lines
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("log", type=Path)
@@ -90,17 +125,7 @@ def main() -> int:
     if args.json:
         print(json.dumps(s, indent=2))
     else:
-        print(f"lookups {s['lookups']}  hits {s['hits']}  hit rate {s['hit_rate']:.1%}")
-        print(f"stale serves {s['stale_serves']}  (stale answers prevented: {s['stale_answers_prevented']})")
-        print(f"saved (LLM only): {s['saved_tokens']} tokens  ${s['saved_cost_usd']:.4f}")
-        print(f"decisions {s['decisions']}")
-        print(
-            "benchmark (expected until measured against audit log): "
-            "5-min TTL (high false miss) vs 24h TTL (high stale serve) vs ChronoBrief (0% stale serve)"
-        )
-        print('pitch: "Generate once, reuse when the evidence is unchanged, regenerate when the retrieved facts move."')
-        if s["malformed_lines"]:
-            print(f"WARNING {s['malformed_lines']} malformed line(s)")
+        print("\n".join(format_summary(s)))
     return 1 if s["stale_serves"] or s["served_without_evidence"] or s["malformed_lines"] else 0
 
 
