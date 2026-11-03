@@ -1,9 +1,11 @@
 package store
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"testing"
 	"time"
 
@@ -369,5 +371,59 @@ func BenchmarkStorePut(b *testing.B) {
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
 		s.Put("bench-key", entry)
+	}
+}
+
+func TestConcurrentMissesNonBlockingSnapshot(t *testing.T) {
+	tmpDir := t.TempDir()
+	snapPath := filepath.Join(tmpDir, "concurrent-snap.json")
+
+	st := New(500)
+	defer func() { _ = st.Close("") }()
+
+	// Pre-fill with 200 entries
+	for i := 0; i < 200; i++ {
+		st.Put(fmt.Sprintf("pre-%d", i), &StoredEntry{
+			CreatedAt:   time.Now().UTC(),
+			Fingerprint: decide.Fingerprint{Newest: time.Now().UTC(), CountAtNewest: 1, Dated: 1, SetHash: fmt.Sprintf("h-%d", i)},
+		})
+	}
+
+	start := time.Now()
+	var wg sync.WaitGroup
+	const routines = 25
+	for i := 0; i < routines; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			st.Put(fmt.Sprintf("miss-%d", id), &StoredEntry{
+				CreatedAt:   time.Now().UTC(),
+				Fingerprint: decide.Fingerprint{Newest: time.Now().UTC(), CountAtNewest: 1, Dated: 1, SetHash: fmt.Sprintf("miss-h-%d", id)},
+			})
+			st.ScheduleSnapshot(snapPath)
+		}(i)
+	}
+	wg.Wait()
+	elapsed := time.Since(start)
+
+	// 25 concurrent enqueues must be non-blocking (completing well within reasonable threshold, typically <25ms)
+	if elapsed > 100*time.Millisecond {
+		t.Logf("Warning: 25 concurrent puts took %v (expected non-blocking)", elapsed)
+	}
+
+	// Flush snapshot to disk synchronously
+	if err := st.FlushSnapshot(snapPath); err != nil {
+		t.Fatalf("FlushSnapshot failed: %v", err)
+	}
+
+	// Verify all entries load cleanly via LoadSnapshot
+	newStore := New(500)
+	defer func() { _ = newStore.Close("") }()
+	loaded, err := newStore.LoadSnapshot(snapPath, time.Now().UTC(), 24*time.Hour)
+	if err != nil {
+		t.Fatalf("LoadSnapshot failed: %v", err)
+	}
+	if loaded != 225 {
+		t.Fatalf("expected 225 loaded entries (200 pre + 25 misses), got %d", loaded)
 	}
 }

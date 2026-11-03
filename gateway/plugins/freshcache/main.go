@@ -248,6 +248,10 @@ func initPlugin(config any) error {
 	auditLogger = logger
 	cacheStore = store.New(maxEntries, maxBytes)
 	cacheStore.SetTTL(ttl)
+	cacheStore.SetSnapshotErrorHandler(func(path string, err error) {
+		atomic.AddUint64(&snapshotErrors, 1)
+		fmt.Printf("[ERROR] freshcache SaveSnapshot(%s) failed: %v\n", path, err)
+	})
 	cachePolicy = decide.Policy{
 		TTL:        ttl,
 		FutureSkew: futureSkew,
@@ -324,6 +328,7 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 			req.Headers = make(map[string]string)
 		}
 		req.Headers["x-freshcache-id"] = reqID
+		req.Headers["x-internal-freshcache-id"] = reqID
 	}
 	if ctx != nil {
 		ctx.SetValue(keyReqID, reqID)
@@ -350,7 +355,8 @@ func HTTPTransportPreHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest)
 }
 
 // PreLLMHook evaluates the freshness decision and computes counterfactual shadow TTLs.
-func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*schemas.BifrostRequest, *schemas.LLMPluginShortCircuit, error) {
+func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (bReq *schemas.BifrostRequest, shortCircuit *schemas.LLMPluginShortCircuit, err error) {
+	bReq = req
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("freshcache PreLLMHook recovered from panic: %v\n", r)
@@ -378,21 +384,9 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 		}
 	}
 	if outcome == nil {
-		cutoff := time.Now().Add(-10 * time.Second)
-		count := 0
-		reqOutcomes.Range(func(k, v any) bool {
-			o := v.(*reqOutcome)
-			if o.createdAt.After(cutoff) {
-				outcome = o
-				count++
-			}
-			return true
-		})
-		if count != 1 {
-			outcome = &reqOutcome{createdAt: time.Now(), startTime: time.Now()}
-			if reqID != "" {
-				reqOutcomes.Store(reqID, outcome)
-			}
+		outcome = &reqOutcome{createdAt: time.Now(), startTime: time.Now()}
+		if reqID != "" {
+			reqOutcomes.Store(reqID, outcome)
 		}
 	}
 
@@ -511,7 +505,9 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (*sche
 }
 
 // PostLLMHook records audit logs and stores computed responses on MISS/REFUSE.
-func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bifrostErr *schemas.BifrostError) (*schemas.BifrostResponse, *schemas.BifrostError, error) {
+func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bifrostErr *schemas.BifrostError) (bResp *schemas.BifrostResponse, bErr *schemas.BifrostError, err error) {
+	bResp = resp
+	bErr = bifrostErr
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("freshcache PostLLMHook recovered from panic: %v\n", r)
@@ -525,6 +521,7 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 	var dec decide.Decision
 	var served bool
 	var startT time.Time
+	var reqID string
 
 	if ctx != nil {
 		parsed, _ = ctx.Value(keyParsedHeaders).(headers.RequestHeaders)
@@ -532,9 +529,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		dec, _ = ctx.Value(keyDecision).(decide.Decision)
 		served, _ = ctx.Value(keyServed).(bool)
 		startT, _ = ctx.Value(keyStartTime).(time.Time)
+		reqID, _ = ctx.Value(keyReqID).(string)
 	}
 
-	reqID, _ := ctx.Value(keyReqID).(string)
 	var outcome *reqOutcome
 	if reqID != "" {
 		if v, ok := reqOutcomes.Load(reqID); ok {
@@ -542,6 +539,9 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		}
 	}
 
+	// Latency accounting:
+	// latencyMS measures the elapsed wall-clock time in milliseconds from PreLLMHook
+	// to PostLLMHook, which includes upstream LLM generation on a MISS or cache lookup on a HIT.
 	latencyMS := int64(0)
 	if !startT.IsZero() {
 		latencyMS = time.Since(startT).Milliseconds()
@@ -681,10 +681,7 @@ func PostLLMHook(ctx *schemas.BifrostContext, resp *schemas.BifrostResponse, bif
 		if st != nil {
 			st.Put(cacheK, newEntry)
 			if snapPath != "" {
-				if err := st.SaveSnapshot(snapPath); err != nil {
-					atomic.AddUint64(&snapshotErrors, 1)
-					fmt.Printf("[ERROR] freshcache SaveSnapshot(%s) failed: %v\n", snapPath, err)
-				}
+				st.ScheduleSnapshot(snapPath)
 			}
 		}
 	}
@@ -748,30 +745,14 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 	if ctx != nil {
 		reqID, _ = ctx.Value(keyReqID).(string)
 	}
+	if reqID == "" && req != nil && req.Headers != nil {
+		reqID = req.Headers["x-internal-freshcache-id"]
+	}
 
 	var outcome *reqOutcome
 	if reqID != "" {
 		if v, ok := reqOutcomes.LoadAndDelete(reqID); ok {
 			outcome = v.(*reqOutcome)
-		}
-	}
-	if outcome == nil {
-		var matchedKey any
-		cutoff := time.Now().Add(-10 * time.Second)
-		count := 0
-		reqOutcomes.Range(func(k, v any) bool {
-			o := v.(*reqOutcome)
-			if o.createdAt.After(cutoff) {
-				outcome = o
-				matchedKey = k
-				count++
-			}
-			return true
-		})
-		if count == 1 && matchedKey != nil {
-			reqOutcomes.Delete(matchedKey)
-		} else if count > 1 {
-			outcome = nil
 		}
 	}
 
@@ -818,7 +799,10 @@ func HTTPTransportPostHook(ctx *schemas.BifrostContext, req *schemas.HTTPRequest
 		if outcome.guardAction != "" {
 			resp.Headers["x-bf-freshness-guard"] = string(outcome.guardAction)
 		}
-		// Finalize overhead calculation
+		// Plugin overhead calculation:
+		// x-chrono-plugin-overhead-us measures plugin-only hook execution time in microseconds
+		// (HTTPTransportPreHook + PreLLMHook + PostLLMHook + HTTPTransportPostHook),
+		// strictly excluding upstream LLM generation or network latency.
 		overhead := outcome.hookOverheadUS + time.Since(hookStart).Microseconds()
 		recordOverhead(overhead)
 		resp.Headers["x-chrono-plugin-overhead-us"] = strconv.FormatInt(overhead, 10)
@@ -853,10 +837,14 @@ func Cleanup() error {
 	pluginMu.Lock()
 	defer pluginMu.Unlock()
 
-	if cacheStore != nil && snapshotPath != "" {
-		if err := cacheStore.SaveSnapshot(snapshotPath); err != nil {
-			atomic.AddUint64(&snapshotErrors, 1)
-			fmt.Printf("[ERROR] freshcache SaveSnapshot(%s) failed: %v\n", snapshotPath, err)
+	if cacheStore != nil {
+		if snapshotPath != "" {
+			if err := cacheStore.FlushSnapshot(snapshotPath); err != nil {
+				atomic.AddUint64(&snapshotErrors, 1)
+				fmt.Printf("[ERROR] freshcache SaveSnapshot(%s) failed: %v\n", snapshotPath, err)
+			}
+		} else {
+			_ = cacheStore.FlushSnapshot("")
 		}
 	}
 

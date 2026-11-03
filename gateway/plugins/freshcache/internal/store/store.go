@@ -84,6 +84,13 @@ type Store struct {
 	items        map[string]*list.Element
 	evictList    *list.List
 	ttl          time.Duration
+
+	snapCh    chan string
+	stopCh    chan struct{}
+	stopOnce  sync.Once
+	wg        sync.WaitGroup
+	onSnapErr func(string, error)
+	errMu     sync.RWMutex
 }
 
 // New creates an LRU store with a given maximum capacity.
@@ -96,12 +103,89 @@ func New(maxEntries int, maxBytes ...int64) *Store {
 	if len(maxBytes) > 0 && maxBytes[0] > 0 {
 		mb = maxBytes[0]
 	}
-	return &Store{
+	s := &Store{
 		maxEntries: maxEntries,
 		maxBytes:   mb,
 		items:      make(map[string]*list.Element),
 		evictList:  list.New(),
+		snapCh:     make(chan string, 1),
+		stopCh:     make(chan struct{}),
 	}
+	s.wg.Add(1)
+	go s.snapshotWorker()
+	return s
+}
+
+func (s *Store) snapshotWorker() {
+	defer s.wg.Done()
+	for {
+		select {
+		case <-s.stopCh:
+			// Drain any queued snapshot write before exiting
+			select {
+			case path := <-s.snapCh:
+				if err := s.SaveSnapshot(path); err != nil {
+					s.handleSnapErr(path, err)
+				}
+			default:
+			}
+			return
+		case path := <-s.snapCh:
+			if err := s.SaveSnapshot(path); err != nil {
+				s.handleSnapErr(path, err)
+			}
+		}
+	}
+}
+
+func (s *Store) handleSnapErr(path string, err error) {
+	s.errMu.RLock()
+	cb := s.onSnapErr
+	s.errMu.RUnlock()
+	if cb != nil {
+		cb(path, err)
+	}
+}
+
+// SetSnapshotErrorHandler registers an optional error callback for asynchronous snapshot writes.
+func (s *Store) SetSnapshotErrorHandler(fn func(string, error)) {
+	s.errMu.Lock()
+	defer s.errMu.Unlock()
+	s.onSnapErr = fn
+}
+
+// ScheduleSnapshot enqueues a non-blocking snapshot write coalescing concurrent bursts.
+func (s *Store) ScheduleSnapshot(path string) {
+	if path == "" {
+		return
+	}
+	select {
+	case <-s.stopCh:
+		return
+	default:
+	}
+	select {
+	case s.snapCh <- path:
+	default:
+		// A snapshot write is already queued; coalescing burst misses
+	}
+}
+
+// FlushSnapshot drains the background worker and executes a final synchronous SaveSnapshot.
+func (s *Store) FlushSnapshot(path string) error {
+	s.stopOnce.Do(func() {
+		close(s.stopCh)
+		s.wg.Wait()
+	})
+	if path == "" {
+		return nil
+	}
+	return s.SaveSnapshot(path)
+}
+
+// Close is an alias for FlushSnapshot.
+func (s *Store) Close(path string) error {
+	return s.FlushSnapshot(path)
 }
 
 // SetTTL configures the baseline TTL window for FirstSeen preservation.

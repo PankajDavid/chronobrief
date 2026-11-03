@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -284,17 +285,22 @@ func TestHookPanicRecoveryFailOpen(t *testing.T) {
 		t.Errorf("expected nil resp and nil err on nil inputs, got %v, %v", resp, err)
 	}
 
-	bReq, shortCircuit, err := PreLLMHook(nil, nil)
+	dummyReq := &schemas.BifrostRequest{ChatRequest: &schemas.BifrostChatRequest{Model: "gemini-test"}}
+	bReq, shortCircuit, err := PreLLMHook(nil, dummyReq)
 	if err != nil || shortCircuit != nil {
 		t.Errorf("expected nil shortCircuit and nil err on nil inputs, got %v, %v", shortCircuit, err)
 	}
-	if bReq != nil {
-		t.Errorf("expected bReq to pass through")
+	if bReq != dummyReq {
+		t.Errorf("expected bReq to be preserved intact, got %v", bReq)
 	}
 
-	bResp, bErr, err := PostLLMHook(nil, nil, nil)
-	if err != nil || bResp != nil || bErr != nil {
-		t.Errorf("expected clean return on nil inputs, got %v, %v, %v", bResp, bErr, err)
+	dummyResp := &schemas.BifrostResponse{}
+	bResp, bErr, err := PostLLMHook(nil, dummyResp, nil)
+	if err != nil || bErr != nil {
+		t.Errorf("expected nil bErr and nil err on nil inputs, got %v, %v", bErr, err)
+	}
+	if bResp != dummyResp {
+		t.Errorf("expected bResp to be preserved intact, got %v", bResp)
 	}
 
 	err = HTTPTransportPostHook(nil, nil, nil)
@@ -349,5 +355,177 @@ func TestPruneOldReqOutcomesEvictsOldestUnderCap(t *testing.T) {
 		if _, ok := reqOutcomes.Load(key); !ok {
 			t.Errorf("expected newer entry %s to be preserved", key)
 		}
+	}
+}
+
+func TestConcurrentReqOutcomesIsolation(t *testing.T) {
+	setupTestPlugin(t)
+	defer func() { _ = Cleanup() }()
+
+	fixedHash := "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+	// Pre-seed a cache entry for "HIT-Subject"
+	hitCtx := schemas.NewBifrostContext(context.Background(), schemas.NoDeadline)
+	hitReq := &schemas.HTTPRequest{
+		Headers: map[string]string{
+			"x-bf-vk":                  "team-alpha",
+			"x-chrono-subject":         "HIT-Subject",
+			"x-chrono-intent":          "pre-meeting",
+			"x-chrono-window-days":     "30",
+			"x-chrono-prompt-version":  "v1",
+			"x-chrono-newest":          "2026-10-31T20:15:00Z",
+			"x-chrono-count-at-newest": "1",
+			"x-chrono-dated":           "5",
+			"x-chrono-undated":         "0",
+			"x-chrono-set-hash":        fixedHash,
+			"x-chrono-cache-mode":      "replay",
+		},
+	}
+	_, _ = HTTPTransportPreHook(hitCtx, hitReq)
+	bifrostHitReq := &schemas.BifrostRequest{ChatRequest: &schemas.BifrostChatRequest{Model: "gemini-2.5-flash"}}
+	_, _, _ = PreLLMHook(hitCtx, bifrostHitReq)
+	content := "hit brief content"
+	dummyResp := &schemas.BifrostResponse{
+		ChatResponse: &schemas.BifrostChatResponse{
+			Choices: []schemas.BifrostResponseChoice{
+				{
+					ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+						Message: &schemas.ChatMessage{
+							Role:    schemas.ChatMessageRoleAssistant,
+							Content: &schemas.ChatMessageContent{ContentStr: &content},
+						},
+					},
+				},
+			},
+			Usage: &schemas.BifrostLLMUsage{TotalTokens: 100},
+		},
+	}
+	_, _, _ = PostLLMHook(hitCtx, dummyResp, nil)
+	httpRespHit := &schemas.HTTPResponse{Headers: make(map[string]string)}
+	_ = HTTPTransportPostHook(hitCtx, hitReq, httpRespHit)
+	if httpRespHit.Headers["x-chrono-cache"] != "MISS_COLD" {
+		t.Fatalf("setup: expected MISS_COLD on seed, got %s", httpRespHit.Headers["x-chrono-cache"])
+	}
+
+	// Now run 30 concurrent requests with mixed types
+	const goroutines = 30
+	var wg sync.WaitGroup
+	errs := make(chan error, goroutines)
+
+	for i := 0; i < goroutines; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			bCtx := schemas.NewBifrostContext(context.Background(), schemas.NoDeadline)
+			reqType := id % 3
+
+			var expectedDecision string
+			var httpReq *schemas.HTTPRequest
+
+			switch reqType {
+			case 0: // Missing tenant -> REFUSE_NO_TENANT
+				expectedDecision = "REFUSE_NO_TENANT"
+				httpReq = &schemas.HTTPRequest{
+					Headers: map[string]string{
+						"x-chrono-subject": fmt.Sprintf("NoTenant-%d", id),
+					},
+				}
+			case 1: // Identical to pre-seeded entry -> HIT
+				expectedDecision = "HIT"
+				httpReq = &schemas.HTTPRequest{
+					Headers: map[string]string{
+						"x-bf-vk":                  "team-alpha",
+						"x-chrono-subject":         "HIT-Subject",
+						"x-chrono-intent":          "pre-meeting",
+						"x-chrono-window-days":     "30",
+						"x-chrono-prompt-version":  "v1",
+						"x-chrono-newest":          "2026-10-31T20:15:00Z",
+						"x-chrono-count-at-newest": "1",
+						"x-chrono-dated":           "5",
+						"x-chrono-undated":         "0",
+						"x-chrono-set-hash":        fixedHash,
+						"x-chrono-cache-mode":      "replay",
+					},
+				}
+			case 2: // Unique subject and hash -> MISS_COLD
+				expectedDecision = "MISS_COLD"
+				httpReq = &schemas.HTTPRequest{
+					Headers: map[string]string{
+						"x-bf-vk":                  "team-alpha",
+						"x-chrono-subject":         fmt.Sprintf("Unique-Subject-%d", id),
+						"x-chrono-intent":          "pre-meeting",
+						"x-chrono-window-days":     "30",
+						"x-chrono-prompt-version":  "v1",
+						"x-chrono-newest":          "2026-10-31T20:15:00Z",
+						"x-chrono-count-at-newest": "1",
+						"x-chrono-dated":           "5",
+						"x-chrono-undated":         "0",
+						"x-chrono-set-hash":        fmt.Sprintf("%064x", id+1),
+						"x-chrono-cache-mode":      "replay",
+					},
+				}
+			}
+
+			_, err := HTTPTransportPreHook(bCtx, httpReq)
+			if err != nil {
+				errs <- fmt.Errorf("[%d] HTTPTransportPreHook: %w", id, err)
+				return
+			}
+
+			bReq := &schemas.BifrostRequest{
+				ChatRequest: &schemas.BifrostChatRequest{Model: "gemini-2.5-flash"},
+			}
+			_, shortCircuit, err := PreLLMHook(bCtx, bReq)
+			if err != nil {
+				errs <- fmt.Errorf("[%d] PreLLMHook: %w", id, err)
+				return
+			}
+
+			if shortCircuit != nil {
+				_, _, err = PostLLMHook(bCtx, shortCircuit.Response, nil)
+			} else {
+				respContent := fmt.Sprintf("content-%d", id)
+				llmResp := &schemas.BifrostResponse{
+					ChatResponse: &schemas.BifrostChatResponse{
+						Choices: []schemas.BifrostResponseChoice{
+							{
+								ChatNonStreamResponseChoice: &schemas.ChatNonStreamResponseChoice{
+									Message: &schemas.ChatMessage{
+										Role:    schemas.ChatMessageRoleAssistant,
+										Content: &schemas.ChatMessageContent{ContentStr: &respContent},
+									},
+								},
+							},
+						},
+						Usage: &schemas.BifrostLLMUsage{TotalTokens: 100},
+					},
+				}
+				_, _, err = PostLLMHook(bCtx, llmResp, nil)
+			}
+			if err != nil {
+				errs <- fmt.Errorf("[%d] PostLLMHook: %w", id, err)
+				return
+			}
+
+			httpResp := &schemas.HTTPResponse{Headers: make(map[string]string)}
+			err = HTTPTransportPostHook(bCtx, httpReq, httpResp)
+			if err != nil {
+				errs <- fmt.Errorf("[%d] HTTPTransportPostHook: %w", id, err)
+				return
+			}
+
+			gotDecision := httpResp.Headers["x-chrono-cache"]
+			if gotDecision != expectedDecision {
+				errs <- fmt.Errorf("[%d] expected decision %s, got %s (subject=%s)", id, expectedDecision, gotDecision, httpReq.Headers["x-chrono-subject"])
+				return
+			}
+		}(i)
+	}
+
+	wg.Wait()
+	close(errs)
+
+	for err := range errs {
+		t.Errorf("concurrency error: %v", err)
 	}
 }
