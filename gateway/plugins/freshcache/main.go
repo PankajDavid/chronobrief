@@ -246,6 +246,11 @@ func initPlugin(config any) error {
 		logger, _ = audit.New("")
 	}
 	auditLogger = logger
+	if cacheStore != nil {
+		if err := cacheStore.FlushSnapshot(""); err != nil {
+			fmt.Printf("[ERROR] freshcache FlushSnapshot on re-init failed: %v\n", err)
+		}
+	}
 	cacheStore = store.New(maxEntries, maxBytes)
 	cacheStore.SetTTL(ttl)
 	cacheStore.SetSnapshotErrorHandler(func(path string, err error) {
