@@ -86,89 +86,134 @@ func TestStorableWithTenant(t *testing.T) {
 	}
 }
 
-func TestTTLShadow(t *testing.T) {
-	// Base entry created 10 minutes ago
-	entryTime := t0.Add(-10 * time.Minute)
+type ttlCacheSimulator struct {
+	ttl      time.Duration
+	storedAt time.Time
+	fp       Fingerprint
+	occupied bool
+}
+
+func newTTLCacheSimulator(ttl time.Duration) *ttlCacheSimulator {
+	return &ttlCacheSimulator{ttl: ttl}
+}
+
+func (s *ttlCacheSimulator) Lookup(now time.Time, in Fingerprint) string {
+	if !s.occupied {
+		s.storedAt = now
+		s.fp = in
+		s.occupied = true
+		return "MISS_COLD"
+	}
+	if s.ttl > 0 && now.Sub(s.storedAt) > s.ttl {
+		s.storedAt = now
+		s.fp = in
+		return "MISS_EXPIRED"
+	}
+	dec := Decide(now, in, &Entry{FP: s.fp, CreatedAt: s.storedAt}, Policy{
+		TTL:        s.ttl,
+		FutureSkew: 24 * time.Hour,
+		ExactSet:   true,
+	})
+	if dec == Hit {
+		return "HIT_FRESH"
+	}
+	return "HIT_STALE"
+}
+
+func TestShadowSlotTransitions(t *testing.T) {
 	base := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
-	entry := &Entry{FP: base, CreatedAt: entryTime}
+	newer := fp(t0.Add(-2*time.Hour), 1, 6, 0, "h2")
 
-	// 1. Cold miss
-	if got := DecideTTLShadow(t0, base, nil, 5*time.Minute); got != "MISS_COLD" {
-		t.Fatalf("expected MISS_COLD, got %s", got)
+	// 1. Empty slot -> MISS_COLD
+	out, slot := AdvanceShadowSlot(t0, base, ShadowSlot{}, 5*time.Minute)
+	if out != "MISS_COLD" {
+		t.Fatalf("expected MISS_COLD, got %s", out)
 	}
-
-	// 2. Unchanged evidence after 10m:
-	// - 5m TTL: MISS_EXPIRED
-	// - 1h TTL: HIT_FRESH
-	// - 24h TTL: HIT_FRESH
-	if got := DecideTTLShadow(t0, base, entry, 5*time.Minute); got != "MISS_EXPIRED" {
-		t.Fatalf("expected MISS_EXPIRED for 5m TTL, got %s", got)
-	}
-	if got := DecideTTLShadow(t0, base, entry, 1*time.Hour); got != "HIT_FRESH" {
-		t.Fatalf("expected HIT_FRESH for 1h TTL, got %s", got)
-	}
-	if got := DecideTTLShadow(t0, base, entry, 24*time.Hour); got != "HIT_FRESH" {
-		t.Fatalf("expected HIT_FRESH for 24h TTL, got %s", got)
+	if !slot.StoredAt.Equal(t0) || slot.FP.SetHash != "h1" {
+		t.Fatalf("slot not initialized properly: %+v", slot)
 	}
 
-	// 3. New article arrives! (Newest is 5 minutes ago)
-	newerIn := fp(t0.Add(-5*time.Minute), 1, 6, 0, "h2")
-
-	// Freshcache refuses stale:
-	if dec := Decide(t0, newerIn, entry, pol); dec != RefuseNewerSource {
-		t.Fatalf("expected REFUSE_NEWER_SOURCE from freshcache, got %s", dec)
+	// 2. Lookup within TTL with identical FP -> HIT_FRESH (slot unchanged)
+	t2m := t0.Add(2 * time.Minute)
+	out2, slot2 := AdvanceShadowSlot(t2m, base, slot, 5*time.Minute)
+	if out2 != "HIT_FRESH" {
+		t.Fatalf("expected HIT_FRESH, got %s", out2)
+	}
+	if !slot2.StoredAt.Equal(t0) {
+		t.Fatalf("slot StoredAt mutated: %v", slot2.StoredAt)
 	}
 
-	// But TTL shadow evaluator shows:
-	// - 5m TTL: MISS_EXPIRED
-	// - 1h TTL: HIT_STALE! (blindly serves stale brief)
-	// - 24h TTL: HIT_STALE! (blindly serves stale brief)
-	shadows := ComputeShadowOutcomes(t0, newerIn, entry)
-	if shadows.TTL5m != "MISS_EXPIRED" {
-		t.Fatalf("expected TTL5m to be MISS_EXPIRED, got %s", shadows.TTL5m)
+	// 3. Lookup within TTL with newer FP -> HIT_STALE (slot unchanged)
+	out3, slot3 := AdvanceShadowSlot(t2m, newer, slot, 5*time.Minute)
+	if out3 != "HIT_STALE" {
+		t.Fatalf("expected HIT_STALE, got %s", out3)
 	}
-	if shadows.TTL1h != "HIT_STALE" {
-		t.Fatalf("expected TTL1h to be HIT_STALE, got %s", shadows.TTL1h)
+	if !slot3.StoredAt.Equal(t0) {
+		t.Fatalf("slot StoredAt mutated: %v", slot3.StoredAt)
 	}
-	if shadows.TTL24h != "HIT_STALE" {
-		t.Fatalf("expected TTL24h to be HIT_STALE, got %s", shadows.TTL24h)
+
+	// 4. Lookup past TTL -> MISS_EXPIRED (slot reset)
+	t10m := t0.Add(10 * time.Minute)
+	out4, slot4 := AdvanceShadowSlot(t10m, newer, slot, 5*time.Minute)
+	if out4 != "MISS_EXPIRED" {
+		t.Fatalf("expected MISS_EXPIRED, got %s", out4)
 	}
-	if !shadows.WouldServeStale24h {
-		t.Fatal("expected WouldServeStale24h to be true")
+	if !slot4.StoredAt.Equal(t10m) || slot4.FP.SetHash != "h2" {
+		t.Fatalf("slot not updated on expiry: %+v", slot4)
 	}
 }
 
-func TestShadowTTLAfterRefusalOverwrite(t *testing.T) {
-	fp1 := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
-	fp2 := fp(t0.Add(-2*time.Hour), 1, 6, 0, "h2")
+func TestShadowParitySequenceA(t *testing.T) {
+	baseFP := fp(t0.Add(-48*time.Hour), 1, 5, 0, "h1")
+	sim5m := newTTLCacheSimulator(5 * time.Minute)
+	sim1h := newTTLCacheSimulator(1 * time.Hour)
+	sim24h := newTTLCacheSimulator(24 * time.Hour)
 
-	// t0: Store initial entry with FP1 (CreatedAt: t0, FirstSeenAt: t0, FirstSeenFP: FP1)
-	// t0 + 10m: Refusal overwrite occurs with newer FP2
-	entry := &Entry{
-		FP:          fp2,
-		CreatedAt:   t0.Add(10 * time.Minute),
-		FirstSeenAt: t0,
-		FirstSeenFP: fp1,
+	var state ShadowState
+	var outcomes5m []string
+
+	offsets := []time.Duration{
+		0,
+		6 * time.Minute,
+		8 * time.Minute,
+		10 * time.Minute,
+		30 * time.Minute,
+		32 * time.Minute,
 	}
 
-	// t0 + 15m: Request arrives with FP2
-	t15 := t0.Add(15 * time.Minute)
-	if dec := Decide(t15, fp2, entry, pol); dec != Hit {
-		t.Fatalf("expected freshcache to HIT for identical fp2, got %s", dec)
+	for i, offset := range offsets {
+		now := t0.Add(offset)
+		outcomes, nextState := AdvanceShadowState(now, baseFP, state)
+		state = nextState
+
+		want5m := sim5m.Lookup(now, baseFP)
+		want1h := sim1h.Lookup(now, baseFP)
+		want24h := sim24h.Lookup(now, baseFP)
+
+		if outcomes.TTL5m != want5m {
+			t.Fatalf("step %d (+%v): 5m got %s, want %s", i, offset, outcomes.TTL5m, want5m)
+		}
+		if outcomes.TTL1h != want1h {
+			t.Fatalf("step %d (+%v): 1h got %s, want %s", i, offset, outcomes.TTL1h, want1h)
+		}
+		if outcomes.TTL24h != want24h {
+			t.Fatalf("step %d (+%v): 24h got %s, want %s", i, offset, outcomes.TTL24h, want24h)
+		}
+		if outcomes.WouldServeStale24h != (want24h == "HIT_STALE") {
+			t.Fatalf("step %d (+%v): WouldServeStale24h got %v, want %v", i, offset, outcomes.WouldServeStale24h, want24h == "HIT_STALE")
+		}
+
+		outcomes5m = append(outcomes5m, outcomes.TTL5m)
 	}
 
-	shadows := ComputeShadowOutcomes(t15, fp2, entry)
-	if shadows.TTL5m != "MISS_EXPIRED" {
-		t.Fatalf("expected TTL5m to be MISS_EXPIRED, got %s", shadows.TTL5m)
+	expected5m := []string{"MISS_COLD", "MISS_EXPIRED", "HIT_FRESH", "HIT_FRESH", "MISS_EXPIRED", "HIT_FRESH"}
+	if len(outcomes5m) != len(expected5m) {
+		t.Fatalf("expected %d 5m outcomes, got %d", len(expected5m), len(outcomes5m))
 	}
-	if shadows.TTL1h != "HIT_STALE" {
-		t.Fatalf("expected TTL1h to be HIT_STALE, got %s", shadows.TTL1h)
-	}
-	if shadows.TTL24h != "HIT_STALE" {
-		t.Fatalf("expected TTL24h to be HIT_STALE, got %s", shadows.TTL24h)
-	}
-	if !shadows.WouldServeStale24h {
-		t.Fatal("expected WouldServeStale24h to be true")
+	for i, exp := range expected5m {
+		if outcomes5m[i] != exp {
+			t.Fatalf("step %d: expected 5m outcome %s, got %s", i, exp, outcomes5m[i])
+		}
 	}
 }
 

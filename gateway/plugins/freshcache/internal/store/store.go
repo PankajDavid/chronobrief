@@ -18,12 +18,12 @@ type StoredEntry struct {
 	Response         *schemas.BifrostResponse `json:"response"`
 	Fingerprint      decide.Fingerprint       `json:"fingerprint"`
 	CreatedAt        time.Time                `json:"created_at"`
-	FirstSeenAt      time.Time                `json:"first_seen_at,omitempty"`
-	FirstSeenFP      decide.Fingerprint       `json:"first_seen_fp,omitempty"`
+	Shadow           decide.ShadowState       `json:"shadow,omitempty"`
 	CostUSD          float64                  `json:"cost_usd"`
 	PromptTokens     int                      `json:"prompt_tokens"`
 	CompletionTokens int                      `json:"completion_tokens"`
 	TotalTokens      int                      `json:"total_tokens"`
+	shadowOnly       bool
 }
 
 // DeepCopy clones a StoredEntry including a fully detached BifrostResponse.
@@ -34,12 +34,12 @@ func (e *StoredEntry) DeepCopy() *StoredEntry {
 	cp := &StoredEntry{
 		Fingerprint:      e.Fingerprint,
 		CreatedAt:        e.CreatedAt,
-		FirstSeenAt:      e.FirstSeenAt,
-		FirstSeenFP:      e.FirstSeenFP,
+		Shadow:           e.Shadow,
 		CostUSD:          e.CostUSD,
 		PromptTokens:     e.PromptTokens,
 		CompletionTokens: e.CompletionTokens,
 		TotalTokens:      e.TotalTokens,
+		shadowOnly:       e.shadowOnly,
 	}
 	if e.Response != nil {
 		if data, err := json.Marshal(e.Response); err == nil {
@@ -196,6 +196,7 @@ func (s *Store) SetTTL(d time.Duration) {
 }
 
 // Get retrieves an entry by key, moving it to front, and returns a deep copy.
+// If an entry exists only to hold shadow slots (Response == nil), Get returns (nil, false).
 func (s *Store) Get(key string) (*StoredEntry, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -204,9 +205,52 @@ func (s *Store) Get(key string) (*StoredEntry, bool) {
 	if !exists {
 		return nil, false
 	}
-	s.evictList.MoveToFront(elem)
 	item := elem.Value.(*lruItem)
+	if item.entry == nil || item.entry.shadowOnly || (item.entry.Response == nil && item.entry.shadowOnly) {
+		return nil, false
+	}
+	s.evictList.MoveToFront(elem)
 	return item.entry.DeepCopy(), true
+}
+
+// GetShadow returns the shadow state for a key if present in the store.
+func (s *Store) GetShadow(key string) (decide.ShadowState, bool) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	elem, exists := s.items[key]
+	if !exists || elem.Value.(*lruItem).entry == nil {
+		return decide.ShadowState{}, false
+	}
+	return elem.Value.(*lruItem).entry.Shadow, true
+}
+
+// AdvanceShadow updates the per-TTL shadow slots for a cache key and returns the shadow outcomes.
+// It is called on EVERY lookup in PreLLMHook, regardless of whether the freshcache lookup is a hit, miss, refusal, or refresh.
+func (s *Store) AdvanceShadow(key string, now time.Time, in decide.Fingerprint) decide.ShadowOutcomes {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if elem, exists := s.items[key]; exists {
+		s.evictList.MoveToFront(elem)
+		item := elem.Value.(*lruItem)
+		outcomes, newState := decide.AdvanceShadowState(now, in, item.entry.Shadow)
+		item.entry.Shadow = newState
+		return outcomes
+	}
+
+	var emptyState decide.ShadowState
+	outcomes, newState := decide.AdvanceShadowState(now, in, emptyState)
+	entry := &StoredEntry{
+		CreatedAt:  now,
+		Shadow:     newState,
+		shadowOnly: true,
+	}
+	itemSize := entry.EstimatedSize(key)
+	elem := s.evictList.PushFront(&lruItem{key: key, entry: entry, bytes: itemSize})
+	s.items[key] = elem
+	s.currentBytes += itemSize
+	s.evictToLimits()
+	return outcomes
 }
 
 // Put inserts or updates an entry, evicting the oldest if capacity or byte limit is exceeded.
@@ -218,24 +262,23 @@ func (s *Store) Put(key string, entry *StoredEntry) {
 	defer s.mu.Unlock()
 
 	entryCopy := entry.DeepCopy()
+	entryCopy.shadowOnly = false
 	if entryCopy.CreatedAt.IsZero() {
 		entryCopy.CreatedAt = time.Now().UTC()
 	}
-	now := entryCopy.CreatedAt
 
 	if elem, exists := s.items[key]; exists {
 		s.evictList.MoveToFront(elem)
 		oldItem := elem.Value.(*lruItem)
 		oldEntry := oldItem.entry
-		if oldEntry != nil && !oldEntry.FirstSeenAt.IsZero() && oldEntry.FirstSeenFP.Valid() && (s.ttl <= 0 || now.Sub(oldEntry.FirstSeenAt) <= s.ttl) {
-			entryCopy.FirstSeenAt = oldEntry.FirstSeenAt
-			entryCopy.FirstSeenFP = oldEntry.FirstSeenFP
-		} else if oldEntry != nil && !oldEntry.CreatedAt.IsZero() && oldEntry.Fingerprint.Valid() && (s.ttl <= 0 || now.Sub(oldEntry.CreatedAt) <= s.ttl) {
-			entryCopy.FirstSeenAt = oldEntry.CreatedAt
-			entryCopy.FirstSeenFP = oldEntry.Fingerprint
-		} else {
-			entryCopy.FirstSeenAt = entryCopy.CreatedAt
-			entryCopy.FirstSeenFP = entryCopy.Fingerprint
+		if oldEntry != nil && (!oldEntry.Shadow.Slot5m.StoredAt.IsZero() || !oldEntry.Shadow.Slot1h.StoredAt.IsZero() || !oldEntry.Shadow.Slot24h.StoredAt.IsZero()) {
+			entryCopy.Shadow = oldEntry.Shadow
+		} else if entryCopy.Shadow.Slot5m.StoredAt.IsZero() && entryCopy.Fingerprint.Valid() {
+			entryCopy.Shadow = decide.ShadowState{
+				Slot5m:  decide.ShadowSlot{StoredAt: entryCopy.CreatedAt, FP: entryCopy.Fingerprint},
+				Slot1h:  decide.ShadowSlot{StoredAt: entryCopy.CreatedAt, FP: entryCopy.Fingerprint},
+				Slot24h: decide.ShadowSlot{StoredAt: entryCopy.CreatedAt, FP: entryCopy.Fingerprint},
+			}
 		}
 
 		itemSize := entryCopy.EstimatedSize(key)
@@ -247,9 +290,12 @@ func (s *Store) Put(key string, entry *StoredEntry) {
 		return
 	}
 
-	if entryCopy.FirstSeenAt.IsZero() || !entryCopy.FirstSeenFP.Valid() {
-		entryCopy.FirstSeenAt = entryCopy.CreatedAt
-		entryCopy.FirstSeenFP = entryCopy.Fingerprint
+	if entryCopy.Shadow.Slot5m.StoredAt.IsZero() && entryCopy.Fingerprint.Valid() {
+		entryCopy.Shadow = decide.ShadowState{
+			Slot5m:  decide.ShadowSlot{StoredAt: entryCopy.CreatedAt, FP: entryCopy.Fingerprint},
+			Slot1h:  decide.ShadowSlot{StoredAt: entryCopy.CreatedAt, FP: entryCopy.Fingerprint},
+			Slot24h: decide.ShadowSlot{StoredAt: entryCopy.CreatedAt, FP: entryCopy.Fingerprint},
+		}
 	}
 	itemSize := entryCopy.EstimatedSize(key)
 	elem := s.evictList.PushFront(&lruItem{key: key, entry: entryCopy, bytes: itemSize})
@@ -316,7 +362,9 @@ func (s *Store) SaveSnapshot(path string) error {
 	records := make([]snapshotRecord, 0, len(s.items))
 	for k, elem := range s.items {
 		item := elem.Value.(*lruItem)
-		records = append(records, snapshotRecord{Key: k, Entry: item.entry.DeepCopy()})
+		if item.entry != nil && !item.entry.shadowOnly {
+			records = append(records, snapshotRecord{Key: k, Entry: item.entry.DeepCopy()})
+		}
 	}
 	s.mu.RUnlock()
 
@@ -373,6 +421,18 @@ func (s *Store) LoadSnapshot(path string, now time.Time, ttl time.Duration) (int
 		// Skip expired entries if TTL is set
 		if ttl > 0 && now.Sub(rec.Entry.CreatedAt) > ttl {
 			continue
+		}
+		// Backward compatibility for snapshots:
+		// If a loaded snapshot entry has a valid Fingerprint and non-zero CreatedAt
+		// but empty Shadow slots, initialize its three slots to {StoredAt: entry.CreatedAt, FP: entry.Fingerprint}
+		if rec.Entry.Fingerprint.Valid() && !rec.Entry.CreatedAt.IsZero() {
+			if rec.Entry.Shadow.Slot5m.StoredAt.IsZero() && rec.Entry.Shadow.Slot1h.StoredAt.IsZero() && rec.Entry.Shadow.Slot24h.StoredAt.IsZero() {
+				rec.Entry.Shadow = decide.ShadowState{
+					Slot5m:  decide.ShadowSlot{StoredAt: rec.Entry.CreatedAt, FP: rec.Entry.Fingerprint},
+					Slot1h:  decide.ShadowSlot{StoredAt: rec.Entry.CreatedAt, FP: rec.Entry.Fingerprint},
+					Slot24h: decide.ShadowSlot{StoredAt: rec.Entry.CreatedAt, FP: rec.Entry.Fingerprint},
+				}
+			}
 		}
 		s.Put(rec.Key, rec.Entry)
 		loaded++

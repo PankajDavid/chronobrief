@@ -1,56 +1,58 @@
 # Live Gateway Plugin Overhead Measurement (25 Consecutive Runs)
-Recorded at: 2026-11-02T07:30:16Z
+Recorded at: 2026-11-03T13:42:20Z
+Commit: 71c30a2
 Environment: Docker container chronobrief-gateway (Go 1.27.3, non-root uid=100)
 Hardware: Local host execution, bind-mounted ./data/audit:/var/log/bifrost:rw
 Upstream Model: Google Gemini 3.1 Flash Lite via Bifrost
+Command: python gateway/measure_live_overhead.py
 
-Note: The earlier 25-run session (medians 32.39 ms MISS / 1.78 ms HIT) was printed to stdout without saving per-run lines; below is a fresh 25-run live measurement with every individual run logged verbatim.
+Note: Replaces the 0f93be4 measurement (MISS median 24.68 ms), taken while SaveSnapshot still ran synchronously on the MISS path. Every run below is logged verbatim. [Note wording corrected in review; measurements unchanged.]
 
 ## Test Protocol
 For each iteration i = 1..25:
-1. Send request with unique subject and set_hash -> triggers MISS_COLD (or REFUSE), upstream LLM call, synchronous JSONL audit flush, and atomic SaveSnapshot write.
+1. Send request with unique subject and set_hash -> triggers MISS_COLD (or REFUSE), upstream LLM call, synchronous JSONL audit append (the disk snapshot is queued to a background worker, off the MISS path). [Protocol wording corrected in review a posteriori; measurements unchanged.]
 2. Send identical request with exact same subject and set_hash -> triggers HIT from in-memory dual-bounded LRU store.
 3. Capture 'x-chrono-plugin-overhead-us' and 'x-bf-freshness-cache' from gateway HTTP response headers.
 
 ## Individual Run Measurements
 | Run # | MISS Decision | MISS Overhead (µs) | MISS Overhead (ms) | HIT Decision | HIT Overhead (µs) | HIT Overhead (ms) |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 01 | `MISS_COLD` | 61603 µs | 61.60 ms | `HIT` | 1573 µs | 1.57 ms |
-| 02 | `MISS_COLD` | 19103 µs | 19.10 ms | `HIT` | 5490 µs | 5.49 ms |
-| 03 | `MISS_COLD` | 26261 µs | 26.26 ms | `HIT` | 2931 µs | 2.93 ms |
-| 04 | `MISS_COLD` | 23439 µs | 23.44 ms | `HIT` | 1248 µs | 1.25 ms |
-| 05 | `MISS_COLD` | 19919 µs | 19.92 ms | `HIT` | 1816 µs | 1.82 ms |
-| 06 | `MISS_COLD` | 18623 µs | 18.62 ms | `HIT` | 1975 µs | 1.98 ms |
-| 07 | `MISS_COLD` | 20910 µs | 20.91 ms | `HIT` | 2520 µs | 2.52 ms |
-| 08 | `MISS_COLD` | 44030 µs | 44.03 ms | `HIT` | 1446 µs | 1.45 ms |
-| 09 | `MISS_COLD` | 24546 µs | 24.55 ms | `HIT` | 2743 µs | 2.74 ms |
-| 10 | `MISS_COLD` | 23895 µs | 23.89 ms | `HIT` | 1504 µs | 1.50 ms |
-| 11 | `MISS_COLD` | 34228 µs | 34.23 ms | `HIT` | 1074 µs | 1.07 ms |
-| 12 | `MISS_COLD` | 66198 µs | 66.20 ms | `HIT` | 1990 µs | 1.99 ms |
-| 13 | `MISS_COLD` | 63466 µs | 63.47 ms | `HIT` | 1704 µs | 1.70 ms |
-| 14 | `MISS_COLD` | 28082 µs | 28.08 ms | `HIT` | 1762 µs | 1.76 ms |
-| 15 | `MISS_COLD` | 28250 µs | 28.25 ms | `HIT` | 7019 µs | 7.02 ms |
-| 16 | `MISS_COLD` | 23296 µs | 23.30 ms | `HIT` | 2300 µs | 2.30 ms |
-| 17 | `MISS_COLD` | 19314 µs | 19.31 ms | `HIT` | 2923 µs | 2.92 ms |
-| 18 | `MISS_COLD` | 20464 µs | 20.46 ms | `HIT` | 2422 µs | 2.42 ms |
-| 19 | `MISS_COLD` | 24675 µs | 24.68 ms | `HIT` | 1286 µs | 1.29 ms |
-| 20 | `MISS_COLD` | 38386 µs | 38.39 ms | `HIT` | 1666 µs | 1.67 ms |
-| 21 | `MISS_COLD` | 15338 µs | 15.34 ms | `HIT` | 2377 µs | 2.38 ms |
-| 22 | `MISS_COLD` | 56233 µs | 56.23 ms | `HIT` | 3600 µs | 3.60 ms |
-| 23 | `MISS_COLD` | 16007 µs | 16.01 ms | `HIT` | 817 µs | 0.82 ms |
-| 24 | `MISS_COLD` | 86435 µs | 86.44 ms | `HIT` | 2042 µs | 2.04 ms |
-| 25 | `MISS_COLD` | 28798 µs | 28.80 ms | `HIT` | 2525 µs | 2.52 ms |
+| 01 | `MISS_COLD` | 10852 µs | 10.85 ms | `HIT` | 1144 µs | 1.14 ms |
+| 02 | `MISS_COLD` | 957 µs | 0.96 ms | `HIT` | 652 µs | 0.65 ms |
+| 03 | `MISS_COLD` | 1064 µs | 1.06 ms | `HIT` | 907 µs | 0.91 ms |
+| 04 | `MISS_COLD` | 1139 µs | 1.14 ms | `HIT` | 968 µs | 0.97 ms |
+| 05 | `MISS_COLD` | 944 µs | 0.94 ms | `HIT` | 1268 µs | 1.27 ms |
+| 06 | `MISS_COLD` | 1245 µs | 1.25 ms | `HIT` | 1837 µs | 1.84 ms |
+| 07 | `MISS_COLD` | 1151 µs | 1.15 ms | `HIT` | 1254 µs | 1.25 ms |
+| 08 | `MISS_COLD` | 1273 µs | 1.27 ms | `HIT` | 1268 µs | 1.27 ms |
+| 09 | `MISS_COLD` | 932 µs | 0.93 ms | `HIT` | 876 µs | 0.88 ms |
+| 10 | `MISS_COLD` | 920 µs | 0.92 ms | `HIT` | 1304 µs | 1.30 ms |
+| 11 | `MISS_COLD` | 849 µs | 0.85 ms | `HIT` | 815 µs | 0.81 ms |
+| 12 | `MISS_COLD` | 686 µs | 0.69 ms | `HIT` | 773 µs | 0.77 ms |
+| 13 | `MISS_COLD` | 916 µs | 0.92 ms | `HIT` | 873 µs | 0.87 ms |
+| 14 | `MISS_COLD` | 1581 µs | 1.58 ms | `HIT` | 1248 µs | 1.25 ms |
+| 15 | `MISS_COLD` | 857 µs | 0.86 ms | `HIT` | 1156 µs | 1.16 ms |
+| 16 | `MISS_COLD` | 2192 µs | 2.19 ms | `HIT` | 960 µs | 0.96 ms |
+| 17 | `MISS_COLD` | 1229 µs | 1.23 ms | `HIT` | 756 µs | 0.76 ms |
+| 18 | `MISS_COLD` | 791 µs | 0.79 ms | `HIT` | 1309 µs | 1.31 ms |
+| 19 | `MISS_COLD` | 2144 µs | 2.14 ms | `HIT` | 794 µs | 0.79 ms |
+| 20 | `MISS_COLD` | 1122 µs | 1.12 ms | `HIT` | 924 µs | 0.92 ms |
+| 21 | `MISS_COLD` | 2000 µs | 2.00 ms | `HIT` | 966 µs | 0.97 ms |
+| 22 | `MISS_COLD` | 969 µs | 0.97 ms | `HIT` | 875 µs | 0.88 ms |
+| 23 | `MISS_COLD` | 898 µs | 0.90 ms | `HIT` | 950 µs | 0.95 ms |
+| 24 | `MISS_COLD` | 2034 µs | 2.03 ms | `HIT` | 616 µs | 0.62 ms |
+| 25 | `MISS_COLD` | 672 µs | 0.67 ms | `HIT` | 789 µs | 0.79 ms |
 
 ## Summary Statistics (25 Runs)
 Computed from the rows above by `scripts/check_evidence.py` (p90 = nearest-rank, mean rounded to 1 µs). The check fails if this table or any doc disagrees with the rows.
 | Metric | Live MISS Overhead (includes I/O) | Live HIT Overhead (in-memory) |
 |---|:---:|:---:|
-| **Min** | 15338 µs (15.34 ms) | 817 µs (0.82 ms) |
-| **Median** | 24675 µs (24.68 ms) | 1990 µs (1.99 ms) |
-| **Mean** | 33260 µs (33.26 ms) | 2350 µs (2.35 ms) |
-| **P90** | 63466 µs (63.47 ms) | 3600 µs (3.60 ms) |
-| **Max** | 86435 µs (86.44 ms) | 7019 µs (7.02 ms) |
+| **Min** | 672 µs (0.67 ms) | 616 µs (0.62 ms) |
+| **Median** | 1064 µs (1.06 ms) | 950 µs (0.95 ms) |
+| **Mean** | 1577 µs (1.58 ms) | 1011 µs (1.01 ms) |
+| **P90** | 2144 µs (2.14 ms) | 1304 µs (1.30 ms) |
+| **Max** | 10852 µs (10.85 ms) | 1837 µs (1.84 ms) |
 
 ## Analysis
 - **HIT Overhead**: In-memory LRU lookup, fingerprint validation, and response deep-copy takes ~1–2 ms live overhead in Docker.
-- **MISS Overhead**: On cache miss, the plugin computes shadow outcomes, appends JSONL audit records, and writes atomic disk snapshot (`freshcache-snapshot.json`), taking ~25–35 ms median total plugin hook latency.
+- **MISS Overhead**: On cache miss, the plugin computes shadow outcomes, appends JSONL audit records, and writes atomic disk snapshot (`freshcache-snapshot.json`), taking ~1–2 ms median total plugin hook latency.

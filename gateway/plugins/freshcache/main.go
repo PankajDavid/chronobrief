@@ -429,6 +429,20 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (bReq 
 	}
 	outcome.cacheKey = cacheK
 
+	pluginMu.RLock()
+	st := cacheStore
+	pol := cachePolicy
+	pluginMu.RUnlock()
+
+	now := time.Now().UTC()
+
+	// Advance Shadow State on EVERY lookup
+	var shadows decide.ShadowOutcomes
+	if st != nil && cacheK != "" {
+		shadows = st.AdvanceShadow(cacheK, now, parsed.Fingerprint)
+	}
+	outcome.shadowOutcomes = shadows
+
 	// 4. Client bypass (refresh): skip lookup, proceed to model, store result in PostLLMHook
 	if parsed.Refresh {
 		if ctx != nil {
@@ -440,11 +454,6 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (bReq 
 	}
 
 	// 5. Lookup Entry in Store
-	pluginMu.RLock()
-	st := cacheStore
-	pol := cachePolicy
-	pluginMu.RUnlock()
-
 	var storedEntry *store.StoredEntry
 	if st != nil {
 		if e, found := st.Get(cacheK); found {
@@ -455,10 +464,8 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (bReq 
 	var decideEntry *decide.Entry
 	if storedEntry != nil {
 		decideEntry = &decide.Entry{
-			FP:          storedEntry.Fingerprint,
-			CreatedAt:   storedEntry.CreatedAt,
-			FirstSeenAt: storedEntry.FirstSeenAt,
-			FirstSeenFP: storedEntry.FirstSeenFP,
+			FP:        storedEntry.Fingerprint,
+			CreatedAt: storedEntry.CreatedAt,
 		}
 		if !storedEntry.Fingerprint.Newest.IsZero() {
 			outcome.entryNewest = storedEntry.Fingerprint.Newest.Format(time.RFC3339)
@@ -466,16 +473,11 @@ func PreLLMHook(ctx *schemas.BifrostContext, req *schemas.BifrostRequest) (bReq 
 		}
 	}
 
-	now := time.Now().UTC()
 	decision := decide.Decide(now, parsed.Fingerprint, decideEntry, pol)
 	if ctx != nil {
 		ctx.SetValue(keyDecision, decision)
 	}
 	outcome.decision = decision
-
-	// Compute Counterfactual TTL Shadow Ledger (Stage 1)
-	shadows := decide.ComputeShadowOutcomes(now, parsed.Fingerprint, decideEntry)
-	outcome.shadowOutcomes = shadows
 
 	// Update Stale-Cache Court & Telemetry counters
 	if decision.Serves() {

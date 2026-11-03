@@ -39,7 +39,7 @@ Every response returned by the gateway is annotated in `HTTPTransportPostHook` w
 | `x-chrono-shadow-ttl-5m` | `MISS_COLD`, `MISS_EXPIRED`, `HIT_FRESH`, `HIT_STALE` | Counterfactual outcome of a standard 5m TTL cache |
 | `x-chrono-shadow-ttl-1h` | `MISS_COLD`, `MISS_EXPIRED`, `HIT_FRESH`, `HIT_STALE` | Counterfactual outcome of a standard 1h TTL cache |
 | `x-chrono-shadow-ttl-24h` | `MISS_COLD`, `MISS_EXPIRED`, `HIT_FRESH`, `HIT_STALE` | Counterfactual outcome of a standard 24h TTL cache |
-| `x-chrono-plugin-overhead-us`| integer | Live plugin overhead in microseconds: HIT `~2 ms` (median 1.99 ms, n=25), MISS `~25–35 ms` (median 24.68 ms, mean 33.26 ms, n=25; with audit flush & snapshot write; raw data in `docs/evidence/live-overhead-25runs.txt`); in-memory microbenchmarks `20.17 ns` to `11.36 µs` without I/O |
+| `x-chrono-plugin-overhead-us`| integer | Live plugin overhead in microseconds: HIT `~1 ms` (median 0.95 ms, n=25), MISS `~1–2 ms` (median 1.06 ms, mean 1.58 ms, n=25; with audit flush & snapshot write; raw data in `docs/evidence/live-overhead-25runs.txt`); in-memory microbenchmarks `20.17 ns` to `11.36 µs` without I/O |
 | `x-bf-freshness-guard` | `STAMPED_SAFE`, `BYPASSED_UNSAFE` | State of native `x-bf-cache-key` guard |
 | `x-chrono-saved-tokens` | integer | Tokens saved from LLM generation on `HIT` |
 | `x-chrono-saved-cost-usd` | float (6 decimals) | USD cost saved from LLM generation on `HIT` |

@@ -6,7 +6,7 @@
 [![Invariants](https://img.shields.io/badge/Invariants-Strict%20Enforced-brightgreen.svg)](#invariants)
 [![Bifrost Core](https://img.shields.io/badge/Bifrost-v2.4.0%20(e869c3f)-blue.svg)](https://github.com/maximhq/bifrost)
 [![Decision Latency](https://img.shields.io/badge/Decision%20Engine-20.17%20ns%2Fop-blueviolet.svg)](#measured-performance--benchmarks)
-[![Live Hit Overhead](https://img.shields.io/badge/Live%20HIT%20Overhead-median%201.99%20ms-informational.svg)](#measured-performance--benchmarks)
+[![Live Hit Overhead](https://img.shields.io/badge/Live%20HIT%20Overhead-median%200.95%20ms-informational.svg)](#measured-performance--benchmarks)
 [![Stale-Serve Rate](https://img.shields.io/badge/Stale--Serve%20Rate-0.0%25%20(Proven)-success.svg)](#the-ttl-frontier-simulation-truth-vs-time)
 
 ---
@@ -84,8 +84,8 @@ flowchart TD
 We distinguish strictly between live end-to-end plugin hook latency and isolated Go microbenchmarks (see [`docs/evidence/gateway-benchmarks.txt`](evidence/gateway-benchmarks.txt)):
 
 ### 1. Live End-to-End Plugin Hook Overhead (Measured in Docker)
-- **HIT: `~2 ms` (median `1.99 ms`, mean `2.35 ms`, min `0.82 ms`, p90 `3.60 ms`, max `7.02 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
-- **MISS: `~25–35 ms` (median `24.68 ms`, mean `33.26 ms`, min `15.34 ms`, p90 `63.47 ms`, max `86.44 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+- **HIT: `~1 ms` (median `0.95 ms`, mean `1.01 ms`, min `0.62 ms`, p90 `1.30 ms`, max `1.84 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
+- **MISS: `~1–2 ms` (median `1.06 ms`, mean `1.58 ms`, min `0.67 ms`, p90 `2.14 ms`, max `10.85 ms`; n=25)** (includes the synchronous JSONL audit append; since `fe233c3` the disk snapshot is queued to a background worker and is no longer on the MISS path).
 
 ### 2. In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)
 | Subsystem | Benchmark | Metric | Allocations | Notes |
