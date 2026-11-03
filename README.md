@@ -80,16 +80,16 @@ saved (LLM only): 5391 tokens  $0.0021
 ```
 (latest brief-v2 run, 2 Nov 2026)
 
-**Latency** (gateway-side, live run): HIT about **1 ms**, fresh generation about **2,400 ms**.
+**Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **1.99 ms**; MISS median **24.68 ms**, before the model call itself.
 
 **Gateway negative proofs** ([`gateway-negative-tests.txt`](docs/evidence/gateway-negative-tests.txt)): no fingerprint, future-dated source, streaming, refresh, missing virtual key, **tenant isolation** (Team Alpha's HIT is Team Beta's MISS), changed source set. 7 of 7 pass.
 
-**Tests:** 89 Python tests (93% coverage of `chronobrief/`) and 17 Go test functions, including a 300,000-iteration property test that no generated case ever serves a stale entry. `ruff`, `mypy --strict` and a custom invariant checker are all clean.
+**Tests:** 125 Python tests (93% coverage of `chronobrief/`), including 36 Python-vs-TypeScript fingerprint parity cases, and 34 Go test functions, including a 300,000-iteration property test that no generated case ever serves a stale entry. `ruff`, `mypy --strict` and a custom invariant checker are all clean.
 
 ## Three-minute demo
 
 1. Type **Stripe** → **Generate brief** → banner **MISS**. The brief has sections for news, executive moves, product launches and open questions, with numbered sources.
-2. **Generate brief** again → **HIT**, about 1 ms, tokens saved shown.
+2. **Generate brief** again → **HIT**, about 2 ms of gateway overhead, tokens saved shown.
 3. **Demo controls → Simulate breaking news.** This adds one article clearly badged **SIMULATED**, dated now.
 4. **Generate brief** → **REFUSED STALE**. The banner shows why, and the new brief can cite the simulated source.
 5. Open the **Cache scoreboard**: stale briefs served **0**, prevented **1**, independent check **PASS**.
@@ -113,7 +113,7 @@ Edit `.env`: set `GEMINI_API_KEY`, `CHRONO_VK_ALPHA=sk-bf-alpha-<hex>`, `CHRONO_
 
 ```bash
 docker compose up -d --build          # Bifrost + freshcache on 127.0.0.1:8080 (first build: 5-10 min)
-python -m pytest -q                   # 89 passed
+python -m pytest -q                   # 125 passed
 streamlit run app/streamlit_app.py    # the dashboard
 python scripts/e2e_cache.py           # MISS -> HIT -> REFUSE proof against your gateway
 python -m chronobrief "Stripe"        # the same brief in the terminal
