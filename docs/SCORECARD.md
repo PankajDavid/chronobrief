@@ -34,8 +34,8 @@
 - **Zero Banned Imports**: `check_invariants.py --strict` guarantees no networking or subprocess packages exist inside the Go plugin.
 - **Full Type Safety**: `mypy --strict` passes across all Python files; Go code compiles with strict symbol checks (`check_plugin_symbols.sh`).
 
-### Axis 4: Testing & Mathematical Proof (15% Weight)
-- **Mathematical Invariant**: Invariant 2 ("Stale-serve rate is 0") is verified both analytically and through 300,000 randomized property test iterations.
+### Axis 4: Testing & Verification (15% Weight)
+- **Invariant 2** ("Stale-serve rate is 0") is property-tested over 300,000 randomized cases and re-checked on live audit logs by `scripts/verify_audit.py`.
 - **End-to-End Proofs**: Quoted terminal outputs and timestamped files in `docs/evidence/` prove the entire `MISS -> HIT -> REFUSE` cycle against the real live container.
 
 ### Axis 5: Security & Guardrails (10% Weight)

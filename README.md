@@ -66,20 +66,17 @@ The cache key is a SHA-256 of tenant, subject, intent, window, prompt version an
 
 All numbers come from runs against the real gateway (Bifrost `transports/v2.4.0` + `freshcache.so`, model `gemini-3.1-flash-lite`). Raw output is in [`docs/evidence/`](docs/evidence).
 
-**End to end** ([`e2e-cache-20261101T170801Z.txt`](docs/evidence/e2e-cache-20261101T170801Z.txt)):
+**End to end, with the independent audit oracle** ([`e2e-cache-20261103T134418Z.txt`](docs/evidence/e2e-cache-20261103T134418Z.txt), commit `71c30a2`). `scripts/e2e_cache.py` sends a first request, the same request again, then injects a newer article; `scripts/verify_audit.py` then re-checks only that run's audit lines from their dates, without trusting the plugin's own label:
 ```
-PASS  1 first request      MISS_COLD              9 claims, 1 call(s)
-PASS  2 same evidence      HIT                    9 claims, 1 call(s)
-PASS  3 newer article      REFUSE_NEWER_SOURCE    9 claims, 1 call(s)
-```
+PASS  1 first request      MISS_COLD              8 claims, 1 call(s)
+PASS  2 same evidence      HIT                    8 claims, 1 call(s)
+PASS  3 newer article      REFUSE_NEWER_SOURCE    10 claims, 1 call(s)
 
-**Independent audit oracle:** `scripts/verify_audit.py` recomputes staleness from the dates in the audit log rather than trusting the plugin's own label. Saved output from the live dashboard run ([`t11-dashboard-proof.txt`](docs/evidence/t11-dashboard-proof.txt): miss, hit, regenerate, hit; no breaking news in that run, so nothing needed refusing):
+audit oracle (scripts/verify_audit.py, 3 audit lines from this run only):
+lookups 3  hits 1  hit rate 33.3%
+stale serves 0  (stale answers prevented: 1)
+saved (LLM only): 5354 tokens  $0.0020
 ```
-lookups 4  hits 2  hit rate 50.0%
-stale serves 0  (stale answers prevented: 0)
-saved (LLM only): 10306 tokens  $0.0029
-```
-`scripts/e2e_cache.py` now runs this oracle on its own audit lines and saves the report, with the git commit, in the same evidence file as the MISS → HIT → REFUSE rows.
 
 **Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **0.95 ms**; MISS median **1.06 ms**, before the model call itself.
 
@@ -90,7 +87,7 @@ saved (LLM only): 10306 tokens  $0.0029
 ## Three-minute demo
 
 1. Type **Stripe** → **Generate brief** → banner **MISS**. The brief has sections for news, executive moves, product launches and open questions, with numbered sources.
-2. **Generate brief** again → **HIT**, about 2 ms of gateway overhead, tokens saved shown.
+2. **Generate brief** again → **HIT**, about 1 ms of gateway overhead, tokens saved shown.
 3. **Demo controls → Simulate breaking news.** This adds one article clearly badged **SIMULATED**, dated now.
 4. **Generate brief** → **REFUSED STALE**. The banner shows why, and the new brief can cite the simulated source.
 5. Open the **Cache scoreboard**: stale briefs served **0**, prevented **1**, independent check **PASS**.

@@ -85,7 +85,7 @@ We distinguish strictly between live end-to-end plugin hook latency and isolated
 
 ### 1. Live End-to-End Plugin Hook Overhead (Measured in Docker)
 - **HIT: `~1 ms` (median `0.95 ms`, mean `1.01 ms`, min `0.62 ms`, p90 `1.30 ms`, max `1.84 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
-- **MISS: `~1–2 ms` (median `1.06 ms`, mean `1.58 ms`, min `0.67 ms`, p90 `2.14 ms`, max `10.85 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+- **MISS: `~1–2 ms` (median `1.06 ms`, mean `1.58 ms`, min `0.67 ms`, p90 `2.14 ms`, max `10.85 ms`; n=25)** (includes the synchronous JSONL audit append; since `fe233c3` the disk snapshot is queued to a background worker and is no longer on the MISS path).
 
 ### 2. In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)
 | Subsystem | Benchmark | Metric | Allocations | Notes |

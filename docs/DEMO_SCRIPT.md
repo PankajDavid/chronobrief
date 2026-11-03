@@ -62,11 +62,11 @@ sequenceDiagram
   *"A time-based cache expires answers on a clock—5 minutes, 1 hour, or 24 hours. But business truth does not expire on a clock. When an executive prepares for a meeting, in our 250-lookup synthetic simulation a 5-minute TTL cache recomputed 88.8% of lookups (222 of 250) even though nothing had changed. A 24-hour TTL cache saves tokens, but when breaking news arrives, it keeps serving the outdated answer for up to 24 hours.  
   ChronoBrief caches by evidence: generate once, reuse when the retrieved evidence is unchanged, regenerate when the retrieved facts move."*
 
-### Act 2: Cold Miss -> ~2 ms Warm Hit (25 seconds — Pankaj)
+### Act 2: Cold Miss -> ~1 ms Warm Hit (25 seconds — Pankaj)
 - **Visual**: Streamlit UI (`http://localhost:8501`) or CLI e2e runner querying `"Stripe"`.
 - **Spoken**:  
   *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 8 verifiable claims, and stores the response in our byte-bounded Go LRU.  
-  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 2 milliseconds of live hook overhead (HIT median 0.95 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
+  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 1 millisecond of live hook overhead (HIT median 0.95 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
 
 ### Act 3: Breaking News Injection & "The Stale-Cache Court" (30 seconds — Swarit & Pankaj)
 - **Visual**: Open Demo Controls in Streamlit, click **Simulate Breaking News**, click **Generate Brief**.
@@ -96,31 +96,22 @@ Three consecutive rehearsal runs were conducted end-to-end against the live Bifr
 
 ## 3. Independent Oracle Audit Ledger (`verify_audit.py --json`)
 
-The independent audit log validator (`scripts/verify_audit.py`) re-checks every audit record without trusting the plugin. Saved output from the live dashboard run ([`t11-dashboard-proof.txt`](evidence/t11-dashboard-proof.txt); no breaking news in that run):
+The independent audit log validator (`scripts/verify_audit.py`) re-checks every audit record without trusting the plugin. Latest saved live run ([`e2e-cache-20261103T134418Z.txt`](evidence/e2e-cache-20261103T134418Z.txt), commit `71c30a2`), MISS → HIT → REFUSE with the oracle over that run's own audit lines:
 
-```json
-{
-  "lookups": 4,
-  "hits": 2,
-  "hit_rate": 0.5,
-  "decisions": {
-    "MISS_COLD": 1,
-    "HIT": 2,
-    "BYPASS_REFRESH": 1
-  },
-  "stale_serves": 0,
-  "stale_serve_rate": 0.0,
-  "served_without_evidence": 0,
-  "stale_answers_prevented": 0,
-  "saved_tokens": 10306,
-  "saved_cost_usd": 0.002852,
-  "malformed_lines": 0
-}
+```
+PASS  1 first request      MISS_COLD              8 claims, 1 call(s)
+PASS  2 same evidence      HIT                    8 claims, 1 call(s)
+PASS  3 newer article      REFUSE_NEWER_SOURCE    10 claims, 1 call(s)
+
+audit oracle (scripts/verify_audit.py, 3 audit lines from this run only):
+lookups 3  hits 1  hit rate 33.3%
+stale serves 0  (stale answers prevented: 1)
+saved (LLM only): 5354 tokens  $0.0020
 ```
 
-Every `python scripts/e2e_cache.py` run now appends the same oracle report, computed over that run's own audit lines and stamped with the git commit, to its `docs/evidence/e2e-cache-<timestamp>.txt` file. Quote numbers for the demo from the latest such file.
+Every `python scripts/e2e_cache.py` run saves this report, stamped with the git commit, to a new `docs/evidence/e2e-cache-<timestamp>.txt`. Quote numbers for the demo from the latest such file.
 
 ### Key Invariant Verified
 - **Stale Serves**: **`0`** in every saved oracle report.
-- **Stale Answers Prevented**: the `REFUSE_NEWER_SOURCE` step in each saved e2e run (e.g. [`e2e-cache-20261101T170801Z.txt`](evidence/e2e-cache-20261101T170801Z.txt)).
+- **Stale Answers Prevented**: **`1`** in the latest saved run (the `REFUSE_NEWER_SOURCE` step, counted independently by the oracle).
 - **Malformed Lines**: **`0`** (Clean atomic append log).
