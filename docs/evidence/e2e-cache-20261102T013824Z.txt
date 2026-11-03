@@ -1,0 +1,4 @@
+e2e cache proof 20261102T013824Z subject=Stripe model=gemini-3.1-flash-lite gateway=http://localhost:8080
+PASS  1 first request      MISS_COLD              8 claims, 1 call(s)
+PASS  2 same evidence      HIT                    8 claims, 1 call(s)
+PASS  3 newer article      REFUSE_NEWER_SOURCE    8 claims, 1 call(s)

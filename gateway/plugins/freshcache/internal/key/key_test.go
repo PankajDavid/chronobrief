@@ -31,3 +31,11 @@ func TestCollisionResistance(t *testing.T) {
 		t.Fatalf("collision detected between adjacent string fields!")
 	}
 }
+
+func BenchmarkKeyCompute(b *testing.B) {
+	b.ResetTimer()
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_ = Compute("team-alpha", "Anthropic", "pre-meeting", 30, "v1", "gemini-3.1-flash-lite")
+	}
+}

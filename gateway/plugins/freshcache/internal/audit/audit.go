@@ -2,6 +2,7 @@ package audit
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -31,6 +32,13 @@ type Record struct {
 	CostUSD              float64 `json:"cost_usd"`
 	SavedCostUSD         float64 `json:"saved_cost_usd"`
 	LatencyMS            int64   `json:"latency_ms"`
+
+	// Stage 1: Counterfactual TTL Shadow Ledger & Overhead (additive fields)
+	ShadowTTL5m        string `json:"shadow_ttl_5m,omitempty"`
+	ShadowTTL1h        string `json:"shadow_ttl_1h,omitempty"`
+	ShadowTTL24h       string `json:"shadow_ttl_24h,omitempty"`
+	WouldServeStale24h bool   `json:"would_serve_stale_24h"`
+	PluginOverheadUS   int64  `json:"plugin_overhead_us,omitempty"`
 }
 
 // Logger manages the thread-safe JSONL audit log file.
@@ -47,12 +55,16 @@ func New(path string) (*Logger, error) {
 	}
 	dir := filepath.Dir(path)
 	if dir != "" && dir != "." {
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0700); err != nil {
 			return nil, err
 		}
 	}
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	if err != nil {
+		return nil, err
+	}
+	if err := os.Chmod(path, 0600); err != nil {
+		_ = f.Close()
 		return nil, err
 	}
 	return &Logger{
@@ -61,23 +73,29 @@ func New(path string) (*Logger, error) {
 	}, nil
 }
 
-// Log writes an audit record. Append failure never blocks or fails request processing.
-func (l *Logger) Log(rec Record) {
+// Log writes an audit record. Append failure returns an error.
+func (l *Logger) Log(rec Record) error {
 	if l == nil || l.file == nil {
-		return
+		return nil
 	}
 	if rec.Timestamp == "" {
 		rec.Timestamp = time.Now().UTC().Format(time.RFC3339)
 	}
 	data, err := json.Marshal(rec)
 	if err != nil {
-		return
+		return err
 	}
 	data = append(data, '\n')
 
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	_, _ = l.file.Write(data)
+	if _, err := l.file.Seek(0, io.SeekEnd); err != nil {
+		return err
+	}
+	if _, err := l.file.Write(data); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Close flushes and closes the audit file.

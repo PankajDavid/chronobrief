@@ -9,6 +9,8 @@ build/
 dist/
 *.egg-info/
 data/audit/*.jsonl
+data/audit/*.json
+data/audit/*.tmp
 data/cache/
 .DS_Store
 .recon/

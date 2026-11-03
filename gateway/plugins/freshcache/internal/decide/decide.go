@@ -24,8 +24,10 @@ func (f Fingerprint) Valid() bool {
 
 // Entry is what the cache remembers about a stored answer.
 type Entry struct {
-	FP        Fingerprint
-	CreatedAt time.Time
+	FP          Fingerprint
+	CreatedAt   time.Time
+	FirstSeenAt time.Time
+	FirstSeenFP Fingerprint
 }
 
 // Policy is the knob set the plugin reads from config.
@@ -81,8 +83,13 @@ func Decide(now time.Time, in Fingerprint, e *Entry, p Policy) Decision {
 	if in.Newest.After(e.FP.Newest) {
 		return RefuseNewerSource
 	}
-	if in.Newest.Equal(e.FP.Newest) && in.CountAtNewest > e.FP.CountAtNewest {
-		return RefuseNewerSource
+	if in.Newest.Equal(e.FP.Newest) {
+		if in.CountAtNewest > e.FP.CountAtNewest {
+			return RefuseNewerSource
+		}
+		if in.Dated != e.FP.Dated {
+			return RefuseSetChanged
+		}
 	}
 	if in.Undated != e.FP.Undated {
 		return RefuseSetChanged
@@ -123,3 +130,56 @@ func StorableWithTenant(now time.Time, tenantID string, fp Fingerprint, p Policy
 	return Storable(now, fp, p)
 }
 
+// ShadowOutcomes captures the counterfactual decision a pure time-based TTL cache
+// would have made on the exact same request.
+type ShadowOutcomes struct {
+	TTL5m              string `json:"shadow_ttl_5m"`
+	TTL1h              string `json:"shadow_ttl_1h"`
+	TTL24h             string `json:"shadow_ttl_24h"`
+	WouldServeStale24h bool   `json:"would_serve_stale_24h"`
+}
+
+// DecideTTLShadow evaluates what a time-only TTL cache would have done on this lookup:
+// - "MISS_COLD" if e == nil
+// - "MISS_EXPIRED" if now.Sub(baseCreatedAt) > ttl
+// - "HIT_STALE" if within TTL (now.Sub(baseCreatedAt) <= ttl) BUT freshcache would have refused
+//   against the original baseline evidence due to newer sources, changed set, invalid evidence, or future date.
+// - "HIT_FRESH" if within TTL and evidence is unchanged against the baseline (freshcache returns Hit).
+func DecideTTLShadow(now time.Time, in Fingerprint, e *Entry, ttl time.Duration) string {
+	if e == nil {
+		return "MISS_COLD"
+	}
+	baseCreatedAt := e.CreatedAt
+	baseFP := e.FP
+	if !e.FirstSeenAt.IsZero() && e.FirstSeenFP.Valid() {
+		baseCreatedAt = e.FirstSeenAt
+		baseFP = e.FirstSeenFP
+	}
+	if ttl > 0 && now.Sub(baseCreatedAt) > ttl {
+		return "MISS_EXPIRED"
+	}
+	// Within TTL: check if evidence would refuse against the baseline
+	realDecision := Decide(now, in, &Entry{FP: baseFP, CreatedAt: baseCreatedAt}, Policy{
+		TTL:        ttl,
+		FutureSkew: 24 * time.Hour,
+		ExactSet:   true,
+	})
+	if realDecision == Hit {
+		return "HIT_FRESH"
+	}
+	// If real decision refused, a naive time-only cache would have blindly served stale!
+	return "HIT_STALE"
+}
+
+// ComputeShadowOutcomes computes the counterfactual outcomes across 5m, 1h, and 24h TTLs.
+func ComputeShadowOutcomes(now time.Time, in Fingerprint, e *Entry) ShadowOutcomes {
+	s5m := DecideTTLShadow(now, in, e, 5*time.Minute)
+	s1h := DecideTTLShadow(now, in, e, 1*time.Hour)
+	s24h := DecideTTLShadow(now, in, e, 24*time.Hour)
+	return ShadowOutcomes{
+		TTL5m:              s5m,
+		TTL1h:              s1h,
+		TTL24h:             s24h,
+		WouldServeStale24h: s24h == "HIT_STALE",
+	}
+}

@@ -1,0 +1,81 @@
+=== FRESHCACHE GATEWAY BENCHMARKS & RACE AUDIT ===
+Mon Nov  2 01:30:04 UTC 2026
+
+--- 0. Data Race Detector Pass ---
+ok  	github.com/chronobrief/freshcache/internal/decide	1.625s (0 races detected)
+ok  	github.com/chronobrief/freshcache/internal/key	1.015s (0 races detected)
+ok  	github.com/chronobrief/freshcache/internal/store	1.221s (0 races detected)
+ok  	github.com/chronobrief/freshcache/internal/headers	1.059s (0 races detected)
+
+--- 1. Microbenchmarks ---
+go: downloading github.com/maximhq/bifrost/core v1.14.1
+go: downloading github.com/mark3labs/mcp-go v1.3.0
+go: downloading github.com/bytedance/sonic v1.15.3-0.20260730064818-2a36d6da63e2
+go: downloading github.com/tidwall/gjson v1.18.0
+go: downloading github.com/tidwall/sjson v1.2.5
+go: downloading github.com/valyala/fasthttp v1.74.0
+go: downloading golang.org/x/net v0.61.0
+go: downloading github.com/tidwall/pretty v1.2.1
+go: downloading github.com/tidwall/match v1.1.1
+go: downloading github.com/yosida95/uritemplate/v3 v3.0.2
+go: downloading github.com/google/jsonschema-go v0.4.2
+go: downloading github.com/spf13/cast v1.10.0
+go: downloading github.com/google/uuid v1.6.0
+go: downloading github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
+go: downloading github.com/klauspost/compress v1.20.0
+go: downloading github.com/molecule-man/go-brrr v1.0.1
+go: downloading github.com/valyala/bytebufferpool v1.0.0
+go: downloading golang.org/x/text v0.43.0
+go: downloading github.com/bytedance/sonic/loader v0.5.2
+go: downloading github.com/twitchyliquid64/golang-asm v0.15.1
+go: downloading github.com/klauspost/cpuid/v2 v2.3.0
+go: downloading github.com/bytedance/gopkg v0.1.3
+go: downloading github.com/cloudwego/base64x v0.1.6
+go: downloading golang.org/x/arch v0.23.0
+[INFO] freshcache loaded 0 entries from snapshot /tmp/TestPluginLifecycle3450886463/001/test-snapshot.json
+[INFO] freshcache loaded 0 entries from snapshot /tmp/TestMetricsEndpoint2659770735/001/test-snapshot.json
+freshcache PostLLMHook recovered from panic: runtime error: invalid memory address or nil pointer dereference
+PASS
+ok  	github.com/chronobrief/freshcache	0.048s
+PASS
+ok  	github.com/chronobrief/freshcache/internal/audit	0.006s
+goos: linux
+goarch: amd64
+pkg: github.com/chronobrief/freshcache/internal/decide
+cpu: Intel(R) Core(TM) i7-14650HX
+BenchmarkDecide-24    	51212100	        20.17 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/chronobrief/freshcache/internal/decide	1.111s
+PASS
+ok  	github.com/chronobrief/freshcache/internal/frontier	0.010s
+goos: linux
+goarch: amd64
+pkg: github.com/chronobrief/freshcache/internal/headers
+cpu: Intel(R) Core(TM) i7-14650HX
+BenchmarkParseHeaders-24    	  726441	      1812 ns/op	     128 B/op	       2 allocs/op
+PASS
+ok  	github.com/chronobrief/freshcache/internal/headers	1.372s
+goos: linux
+goarch: amd64
+pkg: github.com/chronobrief/freshcache/internal/key
+cpu: Intel(R) Core(TM) i7-14650HX
+BenchmarkKeyCompute-24    	 4243026	       306.7 ns/op	     160 B/op	       3 allocs/op
+PASS
+ok  	github.com/chronobrief/freshcache/internal/key	1.628s
+goos: linux
+goarch: amd64
+pkg: github.com/chronobrief/freshcache/internal/store
+cpu: Intel(R) Core(TM) i7-14650HX
+BenchmarkStoreGetHit-24    	  102810	     11361 ns/op	    4991 B/op	      30 allocs/op
+BenchmarkStorePut-24       	   98646	     10974 ns/op	    5023 B/op	      30 allocs/op
+PASS
+ok  	github.com/chronobrief/freshcache/internal/store	2.535s
+
+--- 2. Native Header Fuzzing ---
+fuzz: elapsed: 0s, gathering baseline coverage: 0/3 completed
+fuzz: elapsed: 0s, gathering baseline coverage: 3/3 completed, now fuzzing with 24 workers
+fuzz: elapsed: 3s, execs: 44221 (14738/sec), new interesting: 50 (total: 53)
+fuzz: elapsed: 6s, execs: 122383 (26058/sec), new interesting: 89 (total: 92)
+fuzz: elapsed: 6s, execs: 122383 (0/sec), new interesting: 89 (total: 92)
+PASS
+ok  	github.com/chronobrief/freshcache/internal/headers	6.049s
