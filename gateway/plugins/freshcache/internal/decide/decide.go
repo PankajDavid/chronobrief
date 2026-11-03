@@ -5,7 +5,10 @@
 // audit log and lets the stale-serve invariant be tested exhaustively.
 package decide
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // Fingerprint summarises how fresh the sources behind a request or a stored entry are.
 // It is computed by the Python agent (chronobrief/fingerprint.py) and carried in headers.
@@ -22,12 +25,43 @@ func (f Fingerprint) Valid() bool {
 	return f.Dated > 0 && !f.Newest.IsZero() && f.CountAtNewest > 0 && f.SetHash != ""
 }
 
+// UnmarshalJSON supports unmarshaling both PascalCase and snake_case JSON field representations.
+func (f *Fingerprint) UnmarshalJSON(data []byte) error {
+	type rawFP Fingerprint
+	var aux struct {
+		rawFP
+		NewestLower        time.Time `json:"newest"`
+		CountAtNewestSnake int       `json:"count_at_newest"`
+		DatedLower         int       `json:"dated"`
+		UndatedLower       int       `json:"undated"`
+		SetHashSnake       string    `json:"set_hash"`
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	*f = Fingerprint(aux.rawFP)
+	if f.Newest.IsZero() && !aux.NewestLower.IsZero() {
+		f.Newest = aux.NewestLower
+	}
+	if f.CountAtNewest == 0 && aux.CountAtNewestSnake > 0 {
+		f.CountAtNewest = aux.CountAtNewestSnake
+	}
+	if f.Dated == 0 && aux.DatedLower > 0 {
+		f.Dated = aux.DatedLower
+	}
+	if f.Undated == 0 && aux.UndatedLower > 0 {
+		f.Undated = aux.UndatedLower
+	}
+	if f.SetHash == "" && aux.SetHashSnake != "" {
+		f.SetHash = aux.SetHashSnake
+	}
+	return nil
+}
+
 // Entry is what the cache remembers about a stored answer.
 type Entry struct {
-	FP          Fingerprint
-	CreatedAt   time.Time
-	FirstSeenAt time.Time
-	FirstSeenFP Fingerprint
+	FP        Fingerprint
+	CreatedAt time.Time
 }
 
 // Policy is the knob set the plugin reads from config.
@@ -139,47 +173,58 @@ type ShadowOutcomes struct {
 	WouldServeStale24h bool   `json:"would_serve_stale_24h"`
 }
 
-// DecideTTLShadow evaluates what a time-only TTL cache would have done on this lookup:
-// - "MISS_COLD" if e == nil
-// - "MISS_EXPIRED" if now.Sub(baseCreatedAt) > ttl
-// - "HIT_STALE" if within TTL (now.Sub(baseCreatedAt) <= ttl) BUT freshcache would have refused
-//   against the original baseline evidence due to newer sources, changed set, invalid evidence, or future date.
-// - "HIT_FRESH" if within TTL and evidence is unchanged against the baseline (freshcache returns Hit).
-func DecideTTLShadow(now time.Time, in Fingerprint, e *Entry, ttl time.Duration) string {
-	if e == nil {
-		return "MISS_COLD"
+// ShadowSlot tracks provenance for a counterfactual TTL cache slot.
+type ShadowSlot struct {
+	StoredAt time.Time   `json:"stored_at"`
+	FP       Fingerprint `json:"fp"`
+}
+
+// ShadowState holds three independent counterfactual TTL slots per cache key.
+type ShadowState struct {
+	Slot5m  ShadowSlot `json:"slot_5m"`
+	Slot1h  ShadowSlot `json:"slot_1h"`
+	Slot24h ShadowSlot `json:"slot_24h"`
+}
+
+// AdvanceShadowSlot evaluates what a time-only TTL cache would do on this lookup and returns the outcome and next slot state:
+// - If slot is empty (slot.StoredAt.IsZero() || !slot.FP.Valid()) -> "MISS_COLD"; updated slot = {StoredAt: now, FP: in}
+// - Else if now.Sub(slot.StoredAt) > ttl -> "MISS_EXPIRED"; updated slot = {StoredAt: now, FP: in}
+// - Else -> evaluate Decide(now, in, &Entry{FP: slot.FP, CreatedAt: slot.StoredAt}, Policy{TTL: ttl, FutureSkew: 24 * time.Hour, ExactSet: true}).
+//   If == Hit, outcome is "HIT_FRESH", else "HIT_STALE"; slot remains unchanged.
+func AdvanceShadowSlot(now time.Time, in Fingerprint, slot ShadowSlot, ttl time.Duration) (string, ShadowSlot) {
+	if slot.StoredAt.IsZero() || !slot.FP.Valid() {
+		return "MISS_COLD", ShadowSlot{StoredAt: now, FP: in}
 	}
-	baseCreatedAt := e.CreatedAt
-	baseFP := e.FP
-	if !e.FirstSeenAt.IsZero() && e.FirstSeenFP.Valid() {
-		baseCreatedAt = e.FirstSeenAt
-		baseFP = e.FirstSeenFP
+	if ttl > 0 && now.Sub(slot.StoredAt) > ttl {
+		return "MISS_EXPIRED", ShadowSlot{StoredAt: now, FP: in}
 	}
-	if ttl > 0 && now.Sub(baseCreatedAt) > ttl {
-		return "MISS_EXPIRED"
-	}
-	// Within TTL: check if evidence would refuse against the baseline
-	realDecision := Decide(now, in, &Entry{FP: baseFP, CreatedAt: baseCreatedAt}, Policy{
+	dec := Decide(now, in, &Entry{FP: slot.FP, CreatedAt: slot.StoredAt}, Policy{
 		TTL:        ttl,
 		FutureSkew: 24 * time.Hour,
 		ExactSet:   true,
 	})
-	if realDecision == Hit {
-		return "HIT_FRESH"
+	if dec == Hit {
+		return "HIT_FRESH", slot
 	}
-	// If real decision refused, a naive time-only cache would have blindly served stale!
-	return "HIT_STALE"
+	return "HIT_STALE", slot
 }
 
-// ComputeShadowOutcomes computes the counterfactual outcomes across 5m, 1h, and 24h TTLs.
-func ComputeShadowOutcomes(now time.Time, in Fingerprint, e *Entry) ShadowOutcomes {
-	s5m := DecideTTLShadow(now, in, e, 5*time.Minute)
-	s1h := DecideTTLShadow(now, in, e, 1*time.Hour)
-	s24h := DecideTTLShadow(now, in, e, 24*time.Hour)
-	return ShadowOutcomes{
-		TTL5m:              s5m,
-		TTL1h:              s1h,
-		TTL24h:             s24h,
-		WouldServeStale24h: s24h == "HIT_STALE",
+// AdvanceShadowState evaluates counterfactual outcomes across 5m, 1h, and 24h TTLs and advances the shadow state.
+func AdvanceShadowState(now time.Time, in Fingerprint, state ShadowState) (ShadowOutcomes, ShadowState) {
+	o5m, s5m := AdvanceShadowSlot(now, in, state.Slot5m, 5*time.Minute)
+	o1h, s1h := AdvanceShadowSlot(now, in, state.Slot1h, 1*time.Hour)
+	o24h, s24h := AdvanceShadowSlot(now, in, state.Slot24h, 24*time.Hour)
+
+	outcomes := ShadowOutcomes{
+		TTL5m:              o5m,
+		TTL1h:              o1h,
+		TTL24h:             o24h,
+		WouldServeStale24h: o24h == "HIT_STALE",
 	}
+	newState := ShadowState{
+		Slot5m:  s5m,
+		Slot1h:  s1h,
+		Slot24h: s24h,
+	}
+	return outcomes, newState
 }
