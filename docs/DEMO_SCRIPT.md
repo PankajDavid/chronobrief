@@ -41,7 +41,7 @@ sequenceDiagram
     Model-->>UI: 8 Claims, Brief rendered
     Judge->>UI: Request Stripe Brief again (Run 2)
     UI->>GW: POST /v1/chat/completions (Unchanged Fingerprint)
-    GW-->>UI: HIT (~1 ms live hook overhead, median 1.08 ms; 5,337 tokens saved)
+    GW-->>UI: HIT (~1 ms live hook overhead, median 0.95 ms; 5,337 tokens saved)
 
     Note over Judge,Model: Act 3: Simulated Breaking News Injection (30s)
     Judge->>UI: Inject Breaking Acquisition [SIMULATED]
@@ -66,7 +66,7 @@ sequenceDiagram
 - **Visual**: Streamlit UI (`http://localhost:8501`) or CLI e2e runner querying `"Stripe"`.
 - **Spoken**:  
   *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 8 verifiable claims, and stores the response in our byte-bounded Go LRU.  
-  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 2 milliseconds of live hook overhead (HIT median 1.08 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
+  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 2 milliseconds of live hook overhead (HIT median 0.95 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,337 LLM tokens and 100% of the model generation cost."*
 
 ### Act 3: Breaking News Injection & "The Stale-Cache Court" (30 seconds — Swarit & Pankaj)
 - **Visual**: Open Demo Controls in Streamlit, click **Simulate Breaking News**, click **Generate Brief**.

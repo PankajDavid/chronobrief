@@ -246,8 +246,8 @@ These outcomes are recorded in every JSONL audit record and stamped on response 
 We distinguish strictly between live end-to-end plugin hook latency and isolated Go microbenchmarks:
 
 - **Live End-to-End Plugin Hook Overhead (Measured in Docker)**:
-  - **HIT: `~1 ms` (median `1.08 ms`, mean `1.13 ms`, min `0.56 ms`, p90 `1.47 ms`, max `2.30 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
-  - **MISS: `~1–2 ms` (median `1.51 ms`, mean `1.73 ms`, min `0.84 ms`, p90 `2.15 ms`, max `7.12 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+  - **HIT: `~1 ms` (median `0.95 ms`, mean `1.01 ms`, min `0.62 ms`, p90 `1.30 ms`, max `1.84 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
+  - **MISS: `~1–2 ms` (median `1.06 ms`, mean `1.58 ms`, min `0.67 ms`, p90 `2.14 ms`, max `10.85 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
 - **In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)**:
   - **Decision Engine (`BenchmarkDecide`)**: `20.17 ns/op` | `0 B/op` | `0 allocs/op` (> 50M ops/sec)
   - **Cache Key Generation (`BenchmarkKeyCompute`)**: `306.7 ns/op` | `160 B/op` | `3 allocs/op`

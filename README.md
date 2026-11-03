@@ -81,7 +81,7 @@ saved (LLM only): 10306 tokens  $0.0029
 ```
 `scripts/e2e_cache.py` now runs this oracle on its own audit lines and saves the report, with the git commit, in the same evidence file as the MISS → HIT → REFUSE rows.
 
-**Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **1.08 ms**; MISS median **1.51 ms**, before the model call itself.
+**Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **0.95 ms**; MISS median **1.06 ms**, before the model call itself.
 
 **Gateway negative proofs** ([`gateway-negative-tests.txt`](docs/evidence/gateway-negative-tests.txt)): no fingerprint, future-dated source, streaming, refresh, missing virtual key, **tenant isolation** (Team Alpha's HIT is Team Beta's MISS), changed source set. 7 of 7 pass.
 

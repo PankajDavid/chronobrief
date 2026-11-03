@@ -3,12 +3,12 @@ from __future__ import annotations
 import hashlib
 import math
 import os
-from pathlib import Path
 import shutil
 import statistics
 import subprocess
 import time
 from datetime import UTC, datetime
+from pathlib import Path
 
 import httpx
 from dotenv import load_dotenv
@@ -121,7 +121,7 @@ def main():
         f"Commit: {commit}",
         "Environment: Docker container chronobrief-gateway (Go 1.27.3, non-root uid=100)",
         "Hardware: Local host execution, bind-mounted ./data/audit:/var/log/bifrost:rw",
-        f"Upstream Model: Google Gemini 3.1 Flash Lite via Bifrost",
+        "Upstream Model: Google Gemini 3.1 Flash Lite via Bifrost",
         "Command: python gateway/measure_live_overhead.py",
         "",
         "Note: The earlier 25-run session (medians 32.39 ms MISS / 1.78 ms HIT) was printed to stdout without saving per-run lines; below is a fresh 25-run live measurement with every individual run logged verbatim.",

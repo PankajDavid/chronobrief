@@ -6,7 +6,7 @@
 [![Invariants](https://img.shields.io/badge/Invariants-Strict%20Enforced-brightgreen.svg)](#invariants)
 [![Bifrost Core](https://img.shields.io/badge/Bifrost-v2.4.0%20(e869c3f)-blue.svg)](https://github.com/maximhq/bifrost)
 [![Decision Latency](https://img.shields.io/badge/Decision%20Engine-20.17%20ns%2Fop-blueviolet.svg)](#measured-performance--benchmarks)
-[![Live Hit Overhead](https://img.shields.io/badge/Live%20HIT%20Overhead-median%201.08%20ms-informational.svg)](#measured-performance--benchmarks)
+[![Live Hit Overhead](https://img.shields.io/badge/Live%20HIT%20Overhead-median%200.95%20ms-informational.svg)](#measured-performance--benchmarks)
 [![Stale-Serve Rate](https://img.shields.io/badge/Stale--Serve%20Rate-0.0%25%20(Proven)-success.svg)](#the-ttl-frontier-simulation-truth-vs-time)
 
 ---
@@ -84,8 +84,8 @@ flowchart TD
 We distinguish strictly between live end-to-end plugin hook latency and isolated Go microbenchmarks (see [`docs/evidence/gateway-benchmarks.txt`](evidence/gateway-benchmarks.txt)):
 
 ### 1. Live End-to-End Plugin Hook Overhead (Measured in Docker)
-- **HIT: `~1 ms` (median `1.08 ms`, mean `1.13 ms`, min `0.56 ms`, p90 `1.47 ms`, max `2.30 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
-- **MISS: `~1–2 ms` (median `1.51 ms`, mean `1.73 ms`, min `0.84 ms`, p90 `2.15 ms`, max `7.12 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
+- **HIT: `~1 ms` (median `0.95 ms`, mean `1.01 ms`, min `0.62 ms`, p90 `1.30 ms`, max `1.84 ms`; n=25 live runs in Docker, [`live-overhead-25runs.txt`](evidence/live-overhead-25runs.txt))** (in-memory cache return including HTTP transport hook deserialization).
+- **MISS: `~1–2 ms` (median `1.06 ms`, mean `1.58 ms`, min `0.67 ms`, p90 `2.14 ms`, max `10.85 ms`; n=25)** (includes synchronous JSONL audit flush and atomic disk snapshot write `SaveSnapshot`).
 
 ### 2. In-Memory Go Microbenchmarks (`go test -bench`, No Disk I/O)
 | Subsystem | Benchmark | Metric | Allocations | Notes |
