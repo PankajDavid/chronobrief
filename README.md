@@ -66,16 +66,16 @@ The cache key is a SHA-256 of tenant, subject, intent, window, prompt version an
 
 All numbers come from runs against the real gateway (Bifrost `transports/v2.4.0` + `freshcache.so`, model `gemini-3.1-flash-lite`). Raw output is in [`docs/evidence/`](docs/evidence).
 
-**End to end, with the independent audit oracle** ([`e2e-cache-20261107T170346Z.txt`](docs/evidence/e2e-cache-20261107T170346Z.txt), commit `1572238`). `scripts/e2e_cache.py` sends a first request, the same request again, then injects a newer article; `scripts/verify_audit.py` then re-checks only that run's audit lines from their dates, without trusting the plugin's own label:
+**End to end, with the independent audit oracle** ([`e2e-cache-20261107T170601Z.txt`](docs/evidence/e2e-cache-20261107T170601Z.txt), commit `20107f1`, the recorded demo take). `scripts/e2e_cache.py` sends a first request, the same request again, then injects a newer article; `scripts/verify_audit.py` then re-checks only that run's audit lines from their dates, without trusting the plugin's own label:
 ```
-PASS  1 first request      MISS_COLD              10 claims, 1 call(s)
-PASS  2 same evidence      HIT                    10 claims, 1 call(s)
+PASS  1 first request      MISS_COLD              9 claims, 1 call(s)
+PASS  2 same evidence      HIT                    9 claims, 1 call(s)
 PASS  3 newer article      REFUSE_NEWER_SOURCE    10 claims, 1 call(s)
 
 audit oracle (scripts/verify_audit.py, 3 audit lines from this run only):
 lookups 3  hits 1  hit rate 33.3%
 stale serves 0  (stale answers prevented: 1)
-saved (LLM only): 5580 tokens  $0.0022
+saved (LLM only): 5496 tokens  $0.0016
 ```
 
 **Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **0.95 ms**; MISS median **1.06 ms**, before the model call itself.
