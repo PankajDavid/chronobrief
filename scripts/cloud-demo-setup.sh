@@ -184,6 +184,9 @@ gateway_pid() { pgrep -f "$H/bin/bifrost-http" || true; }
 
 start_gateway() {
   [ -f "$H/app/config.json" ] || die "run setup first"
+  # Regenerate on every start: the session proxy port changes when the container restarts, and a
+  # stale proxy_config makes every Gemini call fail with a 502 inside the gateway.
+  write_config
   [ -z "$(gateway_pid)" ] || { log "gateway already running"; return 0; }
   [ -f "$H/pricing/PLACEHOLDER" ] && log "WARNING: placeholder pricing active, \$ figures are fake"
   # Bifrost's own config/log DBs are rebuilt from config.json on every start. The freshcache
@@ -237,6 +240,7 @@ preflight() {
   # Settings.from_env in live mode): the same 4 news queries, max_results, 30-day window and date
   # parsing, so this cannot drift from what the act sends. That is 4 Tavily calls. The key is never
   # printed. PASS needs: no failed query, and a strict majority of the app's final sources dated.
+  # Subject must match the live act in scripts/cloud-demo-record.md.
   if (cd "$ROOT" && CHRONO_TAVILY_MODE=live "$H/venv/bin/python" - "${CB_PREFLIGHT_SUBJECT:-Stripe}") <<'PY'
 import sys
 from collections import Counter
