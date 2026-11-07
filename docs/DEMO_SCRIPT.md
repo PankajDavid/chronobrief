@@ -38,10 +38,10 @@ sequenceDiagram
     Judge->>UI: Request Stripe Brief (Run 1)
     UI->>GW: POST /v1/chat/completions (x-bf-freshness-*)
     GW->>Model: MISS_COLD -> Model Generates
-    Model-->>UI: 10 Claims, Brief rendered
+    Model-->>UI: 9 Claims, Brief rendered
     Judge->>UI: Request Stripe Brief again (Run 2)
     UI->>GW: POST /v1/chat/completions (Unchanged Fingerprint)
-    GW-->>UI: HIT (~1 ms live hook overhead, median 0.95 ms; 5,580 tokens saved)
+    GW-->>UI: HIT (~1 ms live hook overhead, median 0.95 ms; 5,496 tokens saved)
 
     Note over Judge,Model: Act 3: Simulated Breaking News Injection (30s)
     Judge->>UI: Inject Breaking Acquisition [SIMULATED]
@@ -65,8 +65,8 @@ sequenceDiagram
 ### Act 2: Cold Miss -> ~1 ms Warm Hit (25 seconds — Pankaj)
 - **Visual**: Streamlit UI (`http://localhost:8501`) or CLI e2e runner querying `"Stripe"`.
 - **Spoken**:  
-  *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 10 verifiable claims, and stores the response in our byte-bounded Go LRU.  
-  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 1 millisecond of live hook overhead (HIT median 0.95 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,580 LLM tokens and 100% of the model generation cost."*
+  *"Here is our pre-meeting brief on Stripe. Tavily searches the last 30 days and extracts verified published dates. On Run 1, the cache is cold: Bifrost calls Gemini upstream, validates 9 verifiable claims, and stores the response in our byte-bounded Go LRU.  
+  Two minutes later, an analyst preps for the same meeting. They hit Generate again. Watch the banner: instant cache **HIT**. In about 1 millisecond of live hook overhead (HIT median 0.95 ms over 25 runs; the in-memory lookup alone is 11 µs in a Go microbenchmark), the gateway returns the verified brief, saving 5,496 LLM tokens and 100% of the model generation cost."*
 
 ### Act 3: Breaking News Injection & "The Stale-Cache Court" (30 seconds — Swarit & Pankaj)
 - **Visual**: Open Demo Controls in Streamlit, click **Simulate Breaking News**, click **Generate Brief**.
@@ -96,17 +96,17 @@ Three consecutive rehearsal runs were conducted end-to-end against the live Bifr
 
 ## 3. Independent Oracle Audit Ledger (`verify_audit.py --json`)
 
-The independent audit log validator (`scripts/verify_audit.py`) re-checks every audit record without trusting the plugin. Latest saved live run ([`e2e-cache-20261107T170346Z.txt`](evidence/e2e-cache-20261107T170346Z.txt), commit `1572238`), MISS → HIT → REFUSE with the oracle over that run's own audit lines:
+The independent audit log validator (`scripts/verify_audit.py`) re-checks every audit record without trusting the plugin. Latest saved live run, the one in the recorded demo take ([`e2e-cache-20261107T170601Z.txt`](evidence/e2e-cache-20261107T170601Z.txt), commit `20107f1`), MISS → HIT → REFUSE with the oracle over that run's own audit lines:
 
 ```
-PASS  1 first request      MISS_COLD              10 claims, 1 call(s)
-PASS  2 same evidence      HIT                    10 claims, 1 call(s)
+PASS  1 first request      MISS_COLD              9 claims, 1 call(s)
+PASS  2 same evidence      HIT                    9 claims, 1 call(s)
 PASS  3 newer article      REFUSE_NEWER_SOURCE    10 claims, 1 call(s)
 
 audit oracle (scripts/verify_audit.py, 3 audit lines from this run only):
 lookups 3  hits 1  hit rate 33.3%
 stale serves 0  (stale answers prevented: 1)
-saved (LLM only): 5580 tokens  $0.0022
+saved (LLM only): 5496 tokens  $0.0016
 ```
 
 Every `python scripts/e2e_cache.py` run saves this report, stamped with the git commit, to a new `docs/evidence/e2e-cache-<timestamp>.txt`. Quote numbers for the demo from the latest such file.

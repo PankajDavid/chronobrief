@@ -21,7 +21,8 @@ This directory contains empirical, non-simulated proof artifacts demonstrating t
 
 | Artifact | Type | Description |
 |---|---|---|
-| [`e2e-cache-20261107T170346Z.txt`](e2e-cache-20261107T170346Z.txt) | Live E2E Proof (latest) | Commit `1572238`, after PR #3 (news publishers, relevance filter): `MISS_COLD` -> `HIT` -> `REFUSE_NEWER_SOURCE`, 10 claims each, oracle: 0 stale serves, 5580 tokens / $0.0022 saved. |
+| [`e2e-cache-20261107T170601Z.txt`](e2e-cache-20261107T170601Z.txt) | Live E2E Proof (latest, recorded take) | Commit `20107f1`, the run shown in the recorded demo (branch `demo/recording-20107f1`): `MISS_COLD` -> `HIT` -> `REFUSE_NEWER_SOURCE`, 9/9/10 claims, oracle: 0 stale serves, 5496 tokens / $0.0016 saved. |
+| [`e2e-cache-20261107T170346Z.txt`](e2e-cache-20261107T170346Z.txt) | Live E2E Proof | Commit `1572238`, after PR #3 (news publishers, relevance filter): `MISS_COLD` -> `HIT` -> `REFUSE_NEWER_SOURCE`, 10 claims each, oracle: 0 stale serves, 5580 tokens / $0.0022 saved. |
 | [`e2e-cache-20261102T013824Z.txt`](e2e-cache-20261102T013824Z.txt) | Live E2E Proof | Live proof cycle against `http://localhost:8080`: `MISS_COLD` -> `HIT` -> Simulated Breaking News -> `REFUSE_NEWER_SOURCE`. |
 | [`e2e-cache-20261102T014939Z.txt`](e2e-cache-20261102T014939Z.txt) | Rehearsal Run 1 | Demo rehearsal pass 1 confirming exact same evidence yields `HIT` and injected news triggers instant refusal. |
 | [`e2e-cache-20261102T014950Z.txt`](e2e-cache-20261102T014950Z.txt) | Rehearsal Run 2 | Demo rehearsal pass 2 measuring timing (10.61s) and token savings. |
