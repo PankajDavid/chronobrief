@@ -48,7 +48,6 @@ class Settings:
     tavily_api_key: str = ""
     window_days: int = 30
     fixtures_dir: Path = DEFAULT_FIXTURES_DIR
-    subject_context: str = ""  # live search disambiguator, e.g. "payments company"; replay ignores it
     audit_log: Path = Path("data/audit/freshcache.jsonl")
 
     @classmethod
@@ -62,7 +61,6 @@ class Settings:
             tavily_api_key=os.environ.get("TAVILY_API_KEY", ""),
             window_days=int(os.environ.get("CHRONO_WINDOW_DAYS", "30")),
             fixtures_dir=Path(os.environ.get("CHRONO_FIXTURES_DIR") or DEFAULT_FIXTURES_DIR),
-            subject_context=os.environ.get("CHRONO_SUBJECT_CONTEXT", ""),
             audit_log=Path(os.environ.get("CHRONO_AUDIT_LOG") or "data/audit/freshcache.jsonl"),
         )
 
@@ -94,7 +92,6 @@ def generate_brief(
     retrieval = search(
         subject, mode=settings.mode, now=now, api_key=settings.tavily_api_key,
         client=tavily_client, window_days=settings.window_days, fixtures_dir=settings.fixtures_dir,
-        context=settings.subject_context,
     )
     result = BriefResult(subject=retrieval.subject, retrieval=retrieval)
     if retrieval.partial:

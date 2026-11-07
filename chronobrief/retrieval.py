@@ -34,7 +34,6 @@ RETRY_BACKOFF = (0.5, 1.5)  # two retries, on 429 / 5xx / timeout only
 # Excluded at the Tavily request: these hosts return opaque redirect links (google.com/url?q=<token>)
 # that name no publisher, so a citation to them cannot be checked by a reader. Never unwrapped.
 EXCLUDED_DOMAINS: tuple[str, ...] = ("google.com", "www.google.com", "news.google.com")
-MAX_CONTEXT_CHARS = 60
 
 Mode = Literal["live", "replay"]
 
@@ -79,17 +78,9 @@ def slugify(subject: str) -> str:
     return slug
 
 
-def normalise_context(raw: str | None) -> str:
-    """Optional disambiguator ("payments company") so an ambiguous name targets the right entity.
-    Whitespace collapsed, quotes dropped (it is free text, never a phrase match), length capped."""
-    return " ".join(str(raw or "").replace('"', " ").split())[:MAX_CONTEXT_CHARS].strip()
-
-
-def query_plan(subject: str, context: str = "") -> list[str]:
-    """Four news searches per subject: general, people, launches, strategy.
-    `context` is appended unquoted after the quoted subject in every query."""
-    ctx = normalise_context(context)
-    q = f'"{subject}" {ctx}' if ctx else f'"{subject}"'
+def query_plan(subject: str) -> list[str]:
+    """Four news searches per subject: general, people, launches, strategy."""
+    q = f'"{subject}"'
     return [
         q,
         f"{q} appoints OR hires OR joins executive OR CEO OR CFO OR CTO",
@@ -160,7 +151,6 @@ def _live_results(
     api_key: str | None,
     client: httpx.Client | None,
     sleep: Callable[[float], None],
-    context: str = "",
 ) -> tuple[list[Mapping[str, object]], tuple[str, ...]]:
     if not api_key or api_key == "replace-me":
         raise RetrievalConfigError("TAVILY_API_KEY is not set. Add it to .env (never commit it).")
@@ -170,7 +160,7 @@ def _live_results(
     http = client or httpx.Client()
     merged: list[Mapping[str, object]] = []
     failed: list[str] = []
-    plan = query_plan(subject, context)
+    plan = query_plan(subject)
     try:
         for query in plan:
             payload = {
@@ -218,7 +208,6 @@ def search(
     max_results: int = 10,
     cap: int = 25,
     sleep: Callable[[float], None] = time.sleep,
-    context: str = "",
 ) -> RetrievalResult:
     """Retrieve, normalise, window-filter and cap sources for `subject`."""
     subj = normalise_subject(subject)
@@ -237,7 +226,7 @@ def search(
     elif mode == "live":
         raw, failed = _live_results(
             subj, now=now, window_days=window_days, max_results=max_results,
-            api_key=api_key, client=client, sleep=sleep, context=context,
+            api_key=api_key, client=client, sleep=sleep,
         )
     else:  # pragma: no cover - guarded by the Literal type
         raise ValueError(f"unknown mode {mode!r}")
