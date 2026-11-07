@@ -12,6 +12,7 @@ from chronobrief.fingerprint import fingerprint
 from chronobrief.retrieval import (
     EXCLUDED_DOMAINS,
     NEWS_PUBLISHERS,
+    mentions_subject,
     RetrievalConfigError,
     RetrievalError,
     normalise_subject,
@@ -25,7 +26,7 @@ KEY = "tvly-test-key"
 
 
 def _r(url: str, date: str | None, title: str = "t") -> dict[str, object]:
-    d: dict[str, object] = {"url": url, "title": title, "content": "c"}
+    d: dict[str, object] = {"url": url, "title": title, "content": "news about Acme"}
     if date is not None:
         d["published_date"] = date
     return d
@@ -220,3 +221,55 @@ def test_people_query_requires_subject_as_the_hirer() -> None:
     for phrase in ('"Acme appoints"', '"Acme hires"', '"Acme names"', '"joins Acme as"'):
         assert phrase in people
     assert "CFO" not in people and "executive" not in people
+
+
+# --- subject relevance: whole word, case-insensitive, title or snippet ---
+
+@pytest.mark.parametrize(("title", "snippet", "expected"), [
+    ("Stripe launches Treasury in the UK", "", True),
+    ("Payments roundup", "Today stripe said it will expand.", True),          # snippet only, lower case
+    ("Stripe's AI shopping lead", "", True),                                  # possessive
+    ("Stripe\u2019s new card", "", True),                                     # curly apostrophe
+    ("FedEx and STRIPE team up", "", True),                                   # upper case
+    ("Pentagon names Stars and Stripes acting publisher", "", False),         # plural is another word
+    ("Falcons' viral stripes on helmets", "Bold stripes return.", False),
+    ("Striped shirts are back", "pinstripe suits", False),                    # prefix / embedded
+    ("Shield AI hits $28.8B value", "Defense startup raises money.", False),  # not mentioned at all
+])
+def test_mentions_subject_whole_word(title: str, snippet: str, expected: bool) -> None:
+    assert mentions_subject("Stripe", title, snippet) is expected
+
+
+def test_multi_word_subject_matches_across_whitespace() -> None:
+    assert mentions_subject("Acme Corp", "acme  corp\nraises", "")
+    assert not mentions_subject("Acme Corp", "Acme raises", "Corp news")
+
+
+def test_live_search_drops_off_topic_sources_and_counts_them() -> None:
+    rows = [
+        {"url": "https://a.com/1", "published_date": "2026-10-30", "title": "Stripe launches X", "content": ""},
+        {"url": "https://b.com/2", "published_date": "2026-10-30", "title": "Stars and Stripes publisher", "content": "Pentagon"},
+        {"url": "https://c.com/3", "published_date": "2026-10-31", "title": "Shield AI deal", "content": "no mention"},
+        {"url": "https://d.com/4", "published_date": "2026-10-29", "title": "Roundup", "content": "Stripe expands to Israel"},
+    ]
+    client = _client(lambda _req: httpx.Response(200, json={"results": rows}))
+    res = search("Stripe", mode="live", now=NOW, api_key=KEY, client=client, sleep=lambda _s: None)
+    assert {s.url for s in res.sources} == {"https://a.com/1", "https://d.com/4"}
+    assert res.off_topic_dropped == 2
+
+
+def test_off_topic_newer_source_cannot_move_the_fingerprint() -> None:
+    on = {"url": "https://a.com/1", "published_date": "2026-10-20", "title": "Stripe news", "content": ""}
+    off = {"url": "https://z.com/9", "published_date": "2026-10-31", "title": "Shield AI deal", "content": ""}
+    c1 = _client(lambda _r: httpx.Response(200, json={"results": [on]}))
+    c2 = _client(lambda _r: httpx.Response(200, json={"results": [on, off]}))
+    a = search("Stripe", mode="live", now=NOW, api_key=KEY, client=c1, sleep=lambda _s: None)
+    b = search("Stripe", mode="live", now=NOW, api_key=KEY, client=c2, sleep=lambda _s: None)
+    assert fingerprint(a.sources) == fingerprint(b.sources)
+
+
+def test_replay_fixture_drops_stars_and_stripes_items() -> None:
+    res = search("Stripe", mode="replay", now=NOW)
+    titles = " ".join(s.title for s in res.sources)
+    assert "Stars and Stripes" not in titles and res.off_topic_dropped >= 2
+    assert all(mentions_subject("Stripe", s.title, s.snippet) for s in res.sources)

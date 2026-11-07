@@ -63,6 +63,7 @@ class RetrievalResult:
     failed_queries: tuple[str, ...] = ()
     simulated_urls: frozenset[str] = field(default_factory=frozenset)
     captured_at: str | None = None  # replay only: when the fixture was recorded
+    off_topic_dropped: int = 0  # sources whose title and snippet never name the subject
 
     @property
     def cacheable(self) -> bool:
@@ -96,6 +97,19 @@ def query_plan(subject: str) -> list[str]:
         f"{q} launches OR announces OR releases product OR feature",
         f"{q} partnership OR acquisition OR funding OR strategy",
     ]
+
+
+def _subject_pattern(subject: str) -> re.Pattern[str]:
+    """Whole-word, case-insensitive match of the subject; spaces in it match any whitespace.
+    "Stripe" matches "stripe" and "Stripe's" but not "Stripes" or "Stars and Stripes"."""
+    words = [re.escape(w) for w in subject.split()]
+    return re.compile(r"(?<!\w)" + r"\s+".join(words) + r"(?!\w)", re.IGNORECASE)
+
+
+def mentions_subject(subject: str, title: str, snippet: str) -> bool:
+    """Deterministic relevance check: the subject must be named in the title or the snippet."""
+    pat = _subject_pattern(subject)
+    return bool(pat.search(title) or pat.search(snippet))
 
 
 def _cap_newest(sources: list[Source], cap: int) -> list[Source]:
@@ -249,7 +263,11 @@ def search(
     # Future-date guard uses the later of (fixture time, real now): a simulated article injected
     # during a replay demo is dated "now", which must count as newer, not as untrustworthy.
     normalised = sources_from_tavily(raw, max(ref, now))
-    sources = _cap_newest(_within_window(normalised, ref, window_days), cap)
+    # Drop sources that never name the subject (both modes, before window and cap, so the cap
+    # keeps the newest relevant sources). Search engines match words like "Stripes" or text
+    # outside the article; such sources only add noise and churn to the fingerprint.
+    relevant = [s for s in normalised if mentions_subject(subj, s.title, s.snippet)]
+    sources = _cap_newest(_within_window(relevant, ref, window_days), cap)
     return RetrievalResult(
         subject=subj,
         mode=mode,
@@ -258,4 +276,5 @@ def search(
         failed_queries=failed,
         simulated_urls=simulated & {s.url for s in sources},
         captured_at=captured_at,
+        off_topic_dropped=len(normalised) - len(relevant),
     )
