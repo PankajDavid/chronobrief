@@ -12,9 +12,9 @@ from chronobrief.fingerprint import fingerprint
 from chronobrief.retrieval import (
     EXCLUDED_DOMAINS,
     NEWS_PUBLISHERS,
-    mentions_subject,
     RetrievalConfigError,
     RetrievalError,
+    mentions_subject,
     normalise_subject,
     query_plan,
     search,
