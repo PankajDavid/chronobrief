@@ -14,7 +14,7 @@ Paste the block printed between `--- paste into docs/TAVILY_PROBE.md ---` and `-
 ## What the code currently assumes (confirmed)
 
 - Endpoint `POST https://api.tavily.com/search`, auth header `Authorization: Bearer <key>`.
-- Request: `topic="news"`, `start_date`/`end_date` as `YYYY-MM-DD`, `max_results=10`, `search_depth="basic"`.
+- Request: `topic="news"`, `start_date`/`end_date` as `YYYY-MM-DD`, `max_results=10`, `search_depth="basic"`. Since PR #3 the app also sends `include_domains` (17 news publishers) and `exclude_domains` (google.com redirect hosts); the probe below predates that.
 - Each result has `url`, `title`, `content`, and (news topic) `published_date`.
 - `fingerprint.parse_published` accepts RFC 2822, ISO-8601 (with or without `Z`/offset) and date-only. Any other format is treated as undated, never guessed.
 - Results dated before the window are dropped by `retrieval._within_window`; undated results are kept and counted as undated.

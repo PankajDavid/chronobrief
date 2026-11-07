@@ -46,8 +46,8 @@ Crucially, every single claim in our generated brief carries a deterministic sou
 ### 1:55–2:35 — The Live Demonstration: MISS -> HIT -> REFUSE
 *(Pankaj points to the live screen running Streamlit / CLI runner)*  
 *"Let's see it live on Stripe:
-- **Run 1 (Cold Miss)**: Tavily gathers the latest 30-day evidence. The gateway records `MISS_COLD`, Gemini 3.1 Flash generates the brief, and our citation validator verifies 8 claims.
-- **Run 2 (Warm Reuse)**: Another team member prepares for the same meeting 10 minutes later. They click Generate. Look at the top banner: **HIT in ~1 ms of live hook overhead (median 0.95 ms)**. It returns the verified brief instantly, saving **5,337 LLM tokens** and **100% of LLM cost**.
+- **Run 1 (Cold Miss)**: Tavily gathers the latest 30-day evidence. The gateway records `MISS_COLD`, Gemini 3.1 Flash generates the brief, and our citation validator verifies 10 claims.
+- **Run 2 (Warm Reuse)**: Another team member prepares for the same meeting 10 minutes later. They click Generate. Look at the top banner: **HIT in ~1 ms of live hook overhead (median 0.95 ms)**. It returns the verified brief instantly, saving **5,580 LLM tokens** and **100% of LLM cost**.
 - **Run 3 (Simulated Breaking News & Stale-Cache Court)**: Now, let's inject a breaking acquisition using our demo controls. We click Generate again.  
 Notice the verdict from the Stale-Cache Court: `shadow_ttl_24h` reports **`HIT_STALE`**—meaning any standard time-based cache would have served outdated information. But freshcache detects the newer source timestamp, returns **`REFUSE_NEWER_SOURCE`**, invokes Gemini upstream, and delivers the new brief with the acquisition cited."*
 
