@@ -18,9 +18,10 @@ Probe procedure:
 ## Query plan per target
 Four searches, all `topic="news"`, same date window, each `max_results` 8 to 10:
 1. `"<target>"` general news.
-2. `"<target>" appoints OR hires OR joins executive OR CEO OR CFO OR CTO`.
+2. `"<target> appoints" OR "<target> hires" OR "<target> names" OR "joins <target> as"` (the target must be the one hiring).
 3. `"<target>" launches OR announces OR releases product OR feature`.
 4. `"<target>" partnership OR acquisition OR funding OR strategy`.
+Every live search also sends `include_domains=NEWS_PUBLISHERS` and `exclude_domains=EXCLUDED_DOMAINS` (constants in `chronobrief/retrieval.py`): named news publishers only, never opaque google.com redirect links.
 Merge all results, then run `sources_from_tavily` (canonicalise URLs, parse dates, drop future dates, dedupe). Cap the merged set (for example 25 newest) before building the prompt so token cost stays bounded; the fingerprint is computed on the capped set that the model actually sees.
 
 ## Modes

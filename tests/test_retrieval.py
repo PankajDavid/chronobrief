@@ -11,6 +11,7 @@ import pytest
 from chronobrief.fingerprint import fingerprint
 from chronobrief.retrieval import (
     EXCLUDED_DOMAINS,
+    NEWS_PUBLISHERS,
     RetrievalConfigError,
     RetrievalError,
     normalise_subject,
@@ -45,6 +46,7 @@ def _by_query(responses: dict[int, httpx.Response | Exception]) -> tuple[httpx.C
         assert req.headers["authorization"] == f"Bearer {KEY}"
         assert body["topic"] == "news" and body["start_date"] == "2026-10-02" and body["end_date"] == "2026-11-01"
         assert body["exclude_domains"] == ["google.com", "www.google.com", "news.google.com"]
+        assert body["include_domains"] == list(NEWS_PUBLISHERS)
         out = responses.get(plan.index(body["query"]), httpx.Response(200, json={"results": []}))
         if isinstance(out, Exception):
             raise out
@@ -197,3 +199,24 @@ def test_every_live_request_excludes_google_redirect_hosts() -> None:
     for body in bodies:
         assert set(body["exclude_domains"]) >= {"google.com", "www.google.com", "news.google.com"}  # type: ignore[arg-type]
     assert "google.com" in EXCLUDED_DOMAINS
+
+
+def test_news_publishers_is_a_clean_bare_domain_list() -> None:
+    assert len(NEWS_PUBLISHERS) == len(set(NEWS_PUBLISHERS))
+    assert all("/" not in d and "*" not in d and d == d.strip().lower() for d in NEWS_PUBLISHERS)
+    assert not set(NEWS_PUBLISHERS) & set(EXCLUDED_DOMAINS)
+    assert {"reuters.com", "techcrunch.com", "pymnts.com", "thepaypers.com"} <= set(NEWS_PUBLISHERS)
+    assert not any(d.endswith("google.com") or d == "stripe.com" for d in NEWS_PUBLISHERS)
+
+
+def test_every_live_request_is_restricted_to_news_publishers() -> None:
+    client, bodies = _capture_bodies()
+    _live(client)
+    assert len(bodies) == 4 and all(b["include_domains"] == list(NEWS_PUBLISHERS) for b in bodies)
+
+
+def test_people_query_requires_subject_as_the_hirer() -> None:
+    people = query_plan("Acme")[1]
+    for phrase in ('"Acme appoints"', '"Acme hires"', '"Acme names"', '"joins Acme as"'):
+        assert phrase in people
+    assert "CFO" not in people and "executive" not in people

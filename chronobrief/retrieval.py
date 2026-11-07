@@ -34,6 +34,14 @@ RETRY_BACKOFF = (0.5, 1.5)  # two retries, on 429 / 5xx / timeout only
 # Excluded at the Tavily request: these hosts return opaque redirect links (google.com/url?q=<token>)
 # that name no publisher, so a citation to them cannot be checked by a reader. Never unwrapped.
 EXCLUDED_DOMAINS: tuple[str, ...] = ("google.com", "www.google.com", "news.google.com")
+# Live searches are restricted to these business, payments and tech news publishers (Tavily
+# include_domains, bare domains only). Without it, topic="news" still returned job listings,
+# product pages and social posts. stripe.com/newsroom is left out: path-level matching is unverified.
+NEWS_PUBLISHERS: tuple[str, ...] = (
+    "reuters.com", "bloomberg.com", "cnbc.com", "wsj.com", "ft.com", "axios.com", "fortune.com",
+    "businessinsider.com", "theinformation.com", "techcrunch.com", "theverge.com", "geekwire.com",
+    "pymnts.com", "thepaypers.com", "paymentsdive.com", "finextra.com", "paymentsjournal.com",
+)
 
 Mode = Literal["live", "replay"]
 
@@ -83,7 +91,8 @@ def query_plan(subject: str) -> list[str]:
     q = f'"{subject}"'
     return [
         q,
-        f"{q} appoints OR hires OR joins executive OR CEO OR CFO OR CTO",
+        # The subject must be the one hiring: phrase-quoted so a hire that merely mentions it is not a match.
+        f'"{subject} appoints" OR "{subject} hires" OR "{subject} names" OR "joins {subject} as"',
         f"{q} launches OR announces OR releases product OR feature",
         f"{q} partnership OR acquisition OR funding OR strategy",
     ]
@@ -170,6 +179,7 @@ def _live_results(
                 "end_date": end,
                 "max_results": max_results,
                 "search_depth": "basic",
+                "include_domains": list(NEWS_PUBLISHERS),
                 "exclude_domains": list(EXCLUDED_DOMAINS),
             }
             try:
