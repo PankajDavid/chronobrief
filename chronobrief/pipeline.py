@@ -43,7 +43,7 @@ EMPTY_FINGERPRINT = Fingerprint(newest=None, count_at_newest=0, dated=0, undated
 class Settings:
     bifrost_url: str = "http://localhost:8080"
     virtual_key: str = ""
-    model: str = "gemini-2.5-flash"
+    model: str = "gemini-3.1-flash-lite"
     mode: Mode = "replay"
     tavily_api_key: str = ""
     window_days: int = 30
