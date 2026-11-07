@@ -9,7 +9,7 @@ Everything runs in one cloud session against the native gateway built by
 ```bash
 bash scripts/cloud-demo-setup.sh            # 0.1 build gateway + plugin, venv, asciinema, agg (~5 min cold)
 source ~/.chronobrief-demo/demo.env         # 0.2 env for everything below
-bash scripts/cloud-demo-setup.sh preflight  # 0.3 gateway health + real pricing + ONE live Tavily call
+bash scripts/cloud-demo-setup.sh preflight  # 0.3 gateway health + real pricing + the live act Tavily retrieval (4 calls)
 bash scripts/cloud-demo-setup.sh reset      # 0.4 empty cache + audit log, stripe fixture restored
 ```
 

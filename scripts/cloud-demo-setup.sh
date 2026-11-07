@@ -3,7 +3,7 @@
 # the recording tools in a fresh Claude Code cloud session, from the repo root, in one command.
 #
 #   bash scripts/cloud-demo-setup.sh            # = setup: build everything (idempotent, ~5 min cold)
-#   bash scripts/cloud-demo-setup.sh preflight  # gateway health + ONE live Tavily call, PASS/FAIL
+#   bash scripts/cloud-demo-setup.sh preflight  # gateway health + the live act Tavily retrieval, PASS/FAIL
 #   bash scripts/cloud-demo-setup.sh start|stop|restart|reset|status
 #   source ~/.chronobrief-demo/demo.env         # env for every demo command (venv, agg, keys)
 #
@@ -214,6 +214,13 @@ reset_gateway() {
   (cd "$ROOT" && "$H/venv/bin/python" scripts/inject_article.py stripe --reset >/dev/null)
   log "cache, audit log and stripe fixture reset: next request is MISS_COLD"
   start_gateway
+  # shellcheck disable=SC1091
+  source "$H/demo.env"
+  local entries
+  entries="$(curl -fsS -m 5 -X POST -H "x-chrono-admin: metrics" -H "x-bf-vk: $CHRONO_VK_ALPHA" \
+    "http://127.0.0.1:$PORT/v1/chat/completions" | python3 -c 'import json,sys; print(json.load(sys.stdin)["cache_entries"])')"
+  [ "$entries" = "0" ] || die "cache not empty after reset: cache_entries=$entries"
+  log "cache_entries=0 confirmed via x-chrono-admin metrics"
 }
 
 preflight() {
@@ -226,28 +233,52 @@ preflight() {
     log "FAIL gateway health (run: bash scripts/cloud-demo-setup.sh start)"; ok=0
   fi
   [ -f "$H/pricing/PLACEHOLDER" ] && { log "FAIL pricing is a placeholder: \$ figures would be fake"; ok=0; }
-  # Exactly ONE live Tavily search, max_results=1. The key is never printed.
-  if "$H/venv/bin/python" - <<'PY'
-import os, sys, httpx
-from datetime import UTC, datetime, timedelta
-now = datetime.now(UTC).date()
-key = os.environ.get("TAVILY_API_KEY", "")
-src = "proxy-injected" if key in ("", "proxy-injected-placeholder") else "env var"
+  # The live act retrieval, run through the app's own code (chronobrief.retrieval.search with
+  # Settings.from_env in live mode): the same 4 news queries, max_results, 30-day window and date
+  # parsing, so this cannot drift from what the act sends. That is 4 Tavily calls. The key is never
+  # printed. PASS needs: no failed query, and a strict majority of the app's final sources dated.
+  if (cd "$ROOT" && CHRONO_TAVILY_MODE=live "$H/venv/bin/python" - "${CB_PREFLIGHT_SUBJECT:-Stripe}") <<'PY'
+import sys
+from collections import Counter
+from datetime import UTC, datetime
+from urllib.parse import urlparse
+import httpx
+from chronobrief.pipeline import Settings
+from chronobrief.retrieval import RetrievalConfigError, RetrievalError, search
+
+subject = sys.argv[1]
+settings = Settings.from_env()
+key_src = "proxy-injected" if settings.tavily_api_key in ("", "proxy-injected-placeholder") else "env var"
+raw: list[dict] = []
+
+def capture(resp: httpx.Response) -> None:
+    resp.read()
+    if resp.status_code == 200:
+        raw.extend(r for r in resp.json().get("results", []) if isinstance(r, dict))
+
 try:
-    r = httpx.post("https://api.tavily.com/search", timeout=30,
-                   headers={"Authorization": f"Bearer {key or 'proxy-injected-placeholder'}"},
-                   json={"query": "Stripe", "topic": "news", "search_depth": "basic", "max_results": 1,
-                         "start_date": (now - timedelta(days=30)).isoformat(), "end_date": now.isoformat()})
-except httpx.HTTPError as e:
-    print(f"[cloud-demo] FAIL live Tavily: {type(e).__name__}: {e}"); sys.exit(1)
-if r.status_code != 200:
-    print(f"[cloud-demo] FAIL live Tavily: HTTP {r.status_code} (key source: {src}) {r.text[:160]}"); sys.exit(1)
-res = r.json().get("results", [])
-if not res:
-    print("[cloud-demo] FAIL live Tavily: HTTP 200 but 0 results"); sys.exit(1)
-top = res[0]
-print(f"[cloud-demo] PASS live Tavily: HTTP 200, {len(res)} result, key source: {src}")
-print(f"             {top.get('published_date', 'NO published_date')} | {top.get('url', '')[:90]}")
+    with httpx.Client(event_hooks={"response": [capture]}) as client:
+        res = search(subject, mode="live", now=datetime.now(UTC), api_key=settings.tavily_api_key,
+                     client=client, window_days=settings.window_days, fixtures_dir=settings.fixtures_dir)
+except (RetrievalConfigError, RetrievalError) as e:
+    print(f"[cloud-demo] FAIL live Tavily ({key_src} key): {e}"); sys.exit(1)
+
+raw_dated = sum(1 for r in raw if r.get("published_date"))
+final = res.sources
+final_dated = sum(1 for s in final if s.published is not None)
+print(f"[cloud-demo] live Tavily, subject={subject!r}, window={settings.window_days}d, key source: {key_src}")
+print(f"             raw: {len(raw)} results from 4 queries, {raw_dated} with published_date, "
+      f"failed queries: {len(res.failed_queries)}")
+print(f"             app sources after dedupe/window/cap: {len(final)}, dated: {final_dated}, "
+      f"undated: {len(final) - final_dated}")
+for d, n in Counter(urlparse(s.url).netloc for s in final).most_common():
+    print(f"               {n:2d}  {d}")
+for s in sorted(final, key=lambda s: (s.published is None, -(s.published.timestamp() if s.published else 0))):
+    print(f"             {s.published.date().isoformat() if s.published else 'UNDATED   '}  {s.url[:100]}")
+ok = bool(final) and not res.failed_queries and final_dated * 2 > len(final)
+print(f"[cloud-demo] {'PASS' if ok else 'FAIL'} live Tavily: {final_dated}/{len(final)} app sources dated"
+      + ("" if ok else " (need a strict majority dated and no failed query)"))
+sys.exit(0 if ok else 1)
 PY
   then :; else ok=0; fi
   [ "$ok" = 1 ] && log "PREFLIGHT PASS: cleared to record" || die "PREFLIGHT FAILED: do not record"
@@ -261,7 +292,8 @@ status() {
 
 case "${1:-setup}" in
   setup)
-    build_gateway; fetch_pricing; write_config; python_env; recording_tools; start_gateway
+    # Restart, never reuse a running gateway: it would keep the config and pricing it started with.
+    build_gateway; fetch_pricing; write_config; python_env; recording_tools; stop_gateway; start_gateway
     log "setup done. Next: bash scripts/cloud-demo-setup.sh preflight" ;;
   start)     start_gateway ;;
   stop)      stop_gateway ;;
