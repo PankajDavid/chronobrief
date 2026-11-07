@@ -10,6 +10,7 @@ import pytest
 
 from chronobrief.fingerprint import fingerprint
 from chronobrief.retrieval import (
+    EXCLUDED_DOMAINS,
     RetrievalConfigError,
     RetrievalError,
     normalise_subject,
@@ -43,6 +44,7 @@ def _by_query(responses: dict[int, httpx.Response | Exception]) -> tuple[httpx.C
         seen.append(body["query"])
         assert req.headers["authorization"] == f"Bearer {KEY}"
         assert body["topic"] == "news" and body["start_date"] == "2026-10-02" and body["end_date"] == "2026-11-01"
+        assert body["exclude_domains"] == ["google.com", "www.google.com", "news.google.com"]
         out = responses.get(plan.index(body["query"]), httpx.Response(200, json={"results": []}))
         if isinstance(out, Exception):
             raise out
@@ -174,3 +176,64 @@ def test_real_captured_stripe_fixture_parses_every_date() -> None:
     fp = fingerprint(res.sources)
     assert res.sources and not res.simulated_urls
     assert fp.undated == 0 and fp.newest is not None and fp.set_hash
+
+
+# --- live retrieval quality: no opaque redirect hosts, optional subject disambiguation ---
+
+def _capture_bodies() -> tuple[httpx.Client, list[dict[str, object]]]:
+    bodies: list[dict[str, object]] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        bodies.append(json.loads(req.content))
+        return httpx.Response(200, json={"results": []})
+
+    return _client(handler), bodies
+
+
+def test_every_live_request_excludes_google_redirect_hosts() -> None:
+    client, bodies = _capture_bodies()
+    _live(client)
+    assert len(bodies) == 4
+    for body in bodies:
+        assert set(body["exclude_domains"]) >= {"google.com", "www.google.com", "news.google.com"}  # type: ignore[arg-type]
+    assert "google.com" in EXCLUDED_DOMAINS
+
+
+def test_query_plan_without_context_is_unchanged() -> None:
+    assert query_plan("Acme")[0] == '"Acme"'
+    assert query_plan("Acme", "") == query_plan("Acme")
+    assert query_plan("Acme", "   ") == query_plan("Acme")
+
+
+def test_query_plan_context_targets_every_query() -> None:
+    plan = query_plan("Stripe", "payments company")
+    assert len(plan) == 4
+    assert all(q.startswith('"Stripe" payments company') for q in plan)
+
+
+def test_context_is_normalised_free_text() -> None:
+    plan = query_plan("Stripe", '  "payments"\n  company ')
+    assert plan[0] == '"Stripe" payments company'
+    assert len(query_plan("Stripe", "x" * 500)[0]) == len('"Stripe" ') + 60
+
+
+def test_live_search_sends_context_in_every_query() -> None:
+    client, bodies = _capture_bodies()
+    search("Stripe", mode="live", now=NOW, api_key=KEY, client=client, sleep=lambda _s: None,
+           context="payments company")
+    assert [b["query"] for b in bodies] == query_plan("Stripe", "payments company")
+
+
+def test_replay_ignores_context() -> None:
+    a = search("Stripe", mode="replay", now=NOW)
+    b = search("Stripe", mode="replay", now=NOW, context="payments company")
+    assert fingerprint(a.sources) == fingerprint(b.sources)
+
+
+def test_settings_reads_subject_context_from_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    from chronobrief.pipeline import Settings
+
+    monkeypatch.setenv("CHRONO_SUBJECT_CONTEXT", "payments company")
+    assert Settings.from_env().subject_context == "payments company"
+    monkeypatch.delenv("CHRONO_SUBJECT_CONTEXT")
+    assert Settings.from_env().subject_context == ""

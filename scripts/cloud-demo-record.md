@@ -43,8 +43,8 @@ act "Act 2 - Cold miss -> warm hit (Stripe, replay fixtures) and Act 3 - breakin
 run 'python scripts/e2e_cache.py --subject Stripe'
 
 act "Act 2b - Same pipeline on LIVE Tavily retrieval (Team Beta tenant, its own cache entry)"
-run 'CHRONO_VK=$CHRONO_VK_BETA CHRONO_TAVILY_MODE=live python -m chronobrief Stripe | head -40'
-run 'CHRONO_VK=$CHRONO_VK_BETA CHRONO_TAVILY_MODE=live python -m chronobrief Stripe | grep -E "^Cache:"'
+run 'CHRONO_VK=$CHRONO_VK_BETA CHRONO_TAVILY_MODE=live python -m chronobrief Stripe --context "payments company" | head -40'
+run 'CHRONO_VK=$CHRONO_VK_BETA CHRONO_TAVILY_MODE=live python -m chronobrief Stripe --context "payments company" | grep -E "^Cache:"'
 
 act "Act 4 - Operator readiness: live metrics, restart with snapshot restore, SEC 8-K guard"
 run 'curl -s -X POST -H "x-chrono-admin: metrics" -H "x-bf-vk: $CHRONO_VK_ALPHA" $BIFROST_URL/v1/chat/completions | head -14'

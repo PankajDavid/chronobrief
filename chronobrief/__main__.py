@@ -57,10 +57,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--mode", choices=["replay", "live"])
     ap.add_argument("--refresh", action="store_true", help="skip the cache lookup and store a fresh brief")
     ap.add_argument("--meeting", help="meeting time, ISO-8601 UTC")
+    ap.add_argument("--context", help='live search disambiguator, e.g. "payments company"')
     args = ap.parse_args(argv)
     settings = Settings.from_env()
     if args.mode:
         settings = replace(settings, mode=args.mode)
+    if args.context is not None:
+        settings = replace(settings, subject_context=args.context)
     try:
         res = generate_brief(args.subject, settings=settings, now=datetime.now(UTC),
                              cache_mode="refresh" if args.refresh else "normal", meeting_time=args.meeting)

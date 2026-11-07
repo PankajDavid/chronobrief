@@ -31,6 +31,10 @@ DEFAULT_FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures" / "ta
 MAX_SUBJECT_CHARS = 200
 TIMEOUT_SECONDS = 15.0
 RETRY_BACKOFF = (0.5, 1.5)  # two retries, on 429 / 5xx / timeout only
+# Excluded at the Tavily request: these hosts return opaque redirect links (google.com/url?q=<token>)
+# that name no publisher, so a citation to them cannot be checked by a reader. Never unwrapped.
+EXCLUDED_DOMAINS: tuple[str, ...] = ("google.com", "www.google.com", "news.google.com")
+MAX_CONTEXT_CHARS = 60
 
 Mode = Literal["live", "replay"]
 
@@ -75,9 +79,17 @@ def slugify(subject: str) -> str:
     return slug
 
 
-def query_plan(subject: str) -> list[str]:
-    """Four news searches per subject: general, people, launches, strategy."""
-    q = f'"{subject}"'
+def normalise_context(raw: str | None) -> str:
+    """Optional disambiguator ("payments company") so an ambiguous name targets the right entity.
+    Whitespace collapsed, quotes dropped (it is free text, never a phrase match), length capped."""
+    return " ".join(str(raw or "").replace('"', " ").split())[:MAX_CONTEXT_CHARS].strip()
+
+
+def query_plan(subject: str, context: str = "") -> list[str]:
+    """Four news searches per subject: general, people, launches, strategy.
+    `context` is appended unquoted after the quoted subject in every query."""
+    ctx = normalise_context(context)
+    q = f'"{subject}" {ctx}' if ctx else f'"{subject}"'
     return [
         q,
         f"{q} appoints OR hires OR joins executive OR CEO OR CFO OR CTO",
@@ -148,6 +160,7 @@ def _live_results(
     api_key: str | None,
     client: httpx.Client | None,
     sleep: Callable[[float], None],
+    context: str = "",
 ) -> tuple[list[Mapping[str, object]], tuple[str, ...]]:
     if not api_key or api_key == "replace-me":
         raise RetrievalConfigError("TAVILY_API_KEY is not set. Add it to .env (never commit it).")
@@ -157,8 +170,9 @@ def _live_results(
     http = client or httpx.Client()
     merged: list[Mapping[str, object]] = []
     failed: list[str] = []
+    plan = query_plan(subject, context)
     try:
-        for query in query_plan(subject):
+        for query in plan:
             payload = {
                 "query": query,
                 "topic": "news",
@@ -166,6 +180,7 @@ def _live_results(
                 "end_date": end,
                 "max_results": max_results,
                 "search_depth": "basic",
+                "exclude_domains": list(EXCLUDED_DOMAINS),
             }
             try:
                 merged.extend(_post_with_retry(http, payload, api_key, sleep))
@@ -174,7 +189,7 @@ def _live_results(
     finally:
         if own_client:
             http.close()
-    if len(failed) == len(query_plan(subject)):
+    if len(failed) == len(plan):
         raise RetrievalError("Every Tavily search failed. Coverage is unknown, so no brief was generated.")
     return merged, tuple(failed)
 
@@ -203,6 +218,7 @@ def search(
     max_results: int = 10,
     cap: int = 25,
     sleep: Callable[[float], None] = time.sleep,
+    context: str = "",
 ) -> RetrievalResult:
     """Retrieve, normalise, window-filter and cap sources for `subject`."""
     subj = normalise_subject(subject)
@@ -221,7 +237,7 @@ def search(
     elif mode == "live":
         raw, failed = _live_results(
             subj, now=now, window_days=window_days, max_results=max_results,
-            api_key=api_key, client=client, sleep=sleep,
+            api_key=api_key, client=client, sleep=sleep, context=context,
         )
     else:  # pragma: no cover - guarded by the Literal type
         raise ValueError(f"unknown mode {mode!r}")

@@ -184,6 +184,9 @@ gateway_pid() { pgrep -f "$H/bin/bifrost-http" || true; }
 
 start_gateway() {
   [ -f "$H/app/config.json" ] || die "run setup first"
+  # Regenerate on every start: the session proxy port changes when the container restarts, and a
+  # stale proxy_config makes every Gemini call fail with a 502 inside the gateway.
+  write_config
   [ -z "$(gateway_pid)" ] || { log "gateway already running"; return 0; }
   [ -f "$H/pricing/PLACEHOLDER" ] && log "WARNING: placeholder pricing active, \$ figures are fake"
   # Bifrost's own config/log DBs are rebuilt from config.json on every start. The freshcache
@@ -237,7 +240,9 @@ preflight() {
   # Settings.from_env in live mode): the same 4 news queries, max_results, 30-day window and date
   # parsing, so this cannot drift from what the act sends. That is 4 Tavily calls. The key is never
   # printed. PASS needs: no failed query, and a strict majority of the app's final sources dated.
-  if (cd "$ROOT" && CHRONO_TAVILY_MODE=live "$H/venv/bin/python" - "${CB_PREFLIGHT_SUBJECT:-Stripe}") <<'PY'
+  # Subject and context must match the live act in scripts/cloud-demo-record.md.
+  if (cd "$ROOT" && CHRONO_TAVILY_MODE=live CHRONO_SUBJECT_CONTEXT="${CB_PREFLIGHT_CONTEXT-payments company}" \
+      "$H/venv/bin/python" - "${CB_PREFLIGHT_SUBJECT:-Stripe}") <<'PY'
 import sys
 from collections import Counter
 from datetime import UTC, datetime
@@ -259,14 +264,16 @@ def capture(resp: httpx.Response) -> None:
 try:
     with httpx.Client(event_hooks={"response": [capture]}) as client:
         res = search(subject, mode="live", now=datetime.now(UTC), api_key=settings.tavily_api_key,
-                     client=client, window_days=settings.window_days, fixtures_dir=settings.fixtures_dir)
+                     client=client, window_days=settings.window_days, fixtures_dir=settings.fixtures_dir,
+                     context=settings.subject_context)
 except (RetrievalConfigError, RetrievalError) as e:
     print(f"[cloud-demo] FAIL live Tavily ({key_src} key): {e}"); sys.exit(1)
 
 raw_dated = sum(1 for r in raw if r.get("published_date"))
 final = res.sources
 final_dated = sum(1 for s in final if s.published is not None)
-print(f"[cloud-demo] live Tavily, subject={subject!r}, window={settings.window_days}d, key source: {key_src}")
+print(f"[cloud-demo] live Tavily, subject={subject!r}, context={settings.subject_context!r}, "
+      f"window={settings.window_days}d, key source: {key_src}")
 print(f"             raw: {len(raw)} results from 4 queries, {raw_dated} with published_date, "
       f"failed queries: {len(res.failed_queries)}")
 print(f"             app sources after dedupe/window/cap: {len(final)}, dated: {final_dated}, "
