@@ -43,8 +43,10 @@ except ImportError:
 st.set_page_config(page_title="ChronoBrief", page_icon="🗞️", layout="centered")
 
 # Static, app-authored CSS only (never source or model text). Print view = the brief alone.
+# Screen: dark text on the amber primary button, matching the demo video (the theme has no button-text option).
 st.markdown(
     """<style>
+[data-testid^="stBaseButton-primary"], [data-testid^="stBaseButton-primary"] * { color: #0E1420 !important; }
 @media print {
   header, footer, [data-testid="stForm"], [data-testid="stStatusWidget"], [data-testid="stSidebar"],
   [data-testid="stExpander"], .stButton, [data-testid="stToolbar"] { display: none !important; }

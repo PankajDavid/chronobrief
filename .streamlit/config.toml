@@ -21,8 +21,8 @@ yellowColor = "#F5B841"
 redColor = "#F0685E"
 grayColor = "#8D99AB"                 # muted tone
 
-borderColor = "#16202F"
-dataframeBorderColor = "#16202F"
+borderColor = "#2A3850"
+dataframeBorderColor = "#2A3850"
 dataframeHeaderBackgroundColor = "#16202F"
 dataframeHeaderTextColor = "#8D99AB"
 
