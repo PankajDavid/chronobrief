@@ -1,0 +1,51 @@
+# ChronoBrief dashboard theme, matched to the demo video.
+# Option names checked against `streamlit config show` for the pinned Streamlit (1.66.1).
+
+[server]
+# Serves app/static/ at /app/static/ so the fonts load from this app, not from Google at runtime.
+enableStaticServing = true
+
+[theme]
+base = "dark"
+primaryColor = "#F5B841"              # buttons, accents
+backgroundColor = "#0E1420"
+secondaryBackgroundColor = "#1C2738"
+textColor = "#ECEFF4"
+linkColor = "#5CC8D7"
+
+# Basic palette. Alerts use these: st.success (HIT) green, st.info (MISS) blue,
+# st.warning (REFUSE) yellow, st.error red. Backgrounds and text tints are derived by Streamlit.
+greenColor = "#72D49A"
+blueColor = "#5CC8D7"
+yellowColor = "#F5B841"
+redColor = "#F0685E"
+grayColor = "#8D99AB"                 # muted tone
+
+borderColor = "#16202F"
+dataframeBorderColor = "#16202F"
+dataframeHeaderBackgroundColor = "#16202F"
+dataframeHeaderTextColor = "#8D99AB"
+
+# Fonts are self-hosted (SIL OFL 1.1, licences in app/static/fonts/).
+font = "Inter, sans-serif"
+headingFont = "Archivo Black, sans-serif"
+# Archivo Black ships one weight (400); a heavier weight would make the browser fake a bold.
+headingFontWeights = 400
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter-Variable.ttf"
+weight = "100 900"
+style = "normal"
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "app/static/fonts/Inter-Italic-Variable.ttf"
+weight = "100 900"
+style = "italic"
+
+[[theme.fontFaces]]
+family = "Archivo Black"
+url = "app/static/fonts/ArchivoBlack-Regular.ttf"
+weight = "400"
+style = "normal"
