@@ -18,7 +18,7 @@ jobs:
           go-version-file: gateway/plugins/freshcache/go.mod
           cache-dependency-path: gateway/plugins/freshcache/go.sum
       - name: go test (race detector, verbose so every test is listed)
-        run: go test -race -count=1 -v ./internal/... 2>&1 | tee /tmp/go-test.txt
+        run: go test -race -count=1 -v ./... 2>&1 | tee /tmp/go-test.txt
       - name: summary
         run: |
           echo "top-level tests passed: $(grep -cE '^--- PASS' /tmp/go-test.txt)"
