@@ -96,6 +96,8 @@ saved (LLM only): 5496 tokens  $0.0016
 
 **Plugin overhead** (25 live runs in Docker, raw data in [`live-overhead-25runs.txt`](docs/evidence/live-overhead-25runs.txt)): HIT median **0.95 ms**; MISS median **1.06 ms**, before the model call itself.
 
+**Plugin overhead in the recorded take:** the same script, run on the cloud VM during the recorded demo take (native build, no Docker), measured HIT median **0.23 ms** and MISS median **0.40 ms** ([`recorded-take-20107f1/demo.cast`](docs/evidence/recorded-take-20107f1/demo.cast)). These are the figures in the video and the deck. For comparison, one uncached model call through the gateway in that take took 1.40 s.
+
 **Gateway negative proofs** ([`gateway-negative-tests.txt`](docs/evidence/gateway-negative-tests.txt)): no fingerprint, future-dated source, streaming, refresh, missing virtual key, **tenant isolation** (Team Alpha's HIT is Team Beta's MISS), changed source set. 7 of 7 pass.
 
 **Tests:** 146 Python tests (93% coverage of `chronobrief/`), including 36 Python-vs-TypeScript fingerprint parity cases, and 36 Go test functions plus a header fuzz test, including a 300,000-iteration property test that no generated case ever serves a stale entry. `ruff`, `mypy --strict` and a custom invariant checker are all clean.

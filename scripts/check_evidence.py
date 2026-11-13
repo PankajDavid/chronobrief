@@ -11,6 +11,9 @@ numbers. It:
    that follows a HIT or MISS label must equal the computed value (rounded to
    the number of decimals the doc wrote).
 5. Fails if a doc still quotes a retired number from an unsaved run.
+   A doc line that links the recorded take (recorded-take-20107f1/demo.cast) is
+   checked against the statistics printed inside that terminal recording instead,
+   because those numbers come from a different machine (cloud VM, native build).
 6. Pasted output (e2e PASS/FAIL rows, verify_audit reports, metrics JSON) in README.md and
    docs/*.md must either link a docs/evidence/ file in the lines just above the code block, with
    every line of the block present in that file, or be labelled "illustrative" just above it.
@@ -30,6 +33,8 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parent.parent
 EVIDENCE = ROOT / "docs" / "evidence" / "live-overhead-25runs.txt"
+TAKE = ROOT / "docs" / "evidence" / "recorded-take-20107f1" / "demo.cast"
+TAKE_MARK = "recorded-take-20107f1"
 DOCS = [
     "docs/DEMO_SCRIPT.md",
     "docs/GATEWAY_README_SECTION.md",
@@ -75,6 +80,23 @@ def load_runs() -> tuple[list[int], list[int], list[str]]:
             miss.append(int(m.group(3)))
             hit.append(int(m.group(5)))
     return miss, hit, lines
+
+
+def load_take_stats() -> dict[str, dict[str, float]]:
+    """Read the MISS/HIT statistics that measure_live_overhead.py printed during the recorded take."""
+    import ast
+    import json
+
+    text = ""
+    for raw in TAKE.read_text(encoding="utf-8").splitlines()[1:]:
+        if raw.startswith("["):
+            text += json.loads(raw)[2]
+    out: dict[str, dict[str, float]] = {}
+    for label in ("MISS", "HIT"):
+        m = re.search(label + r": (\{[^}]*'median'[^}]*\})", text)
+        if m:
+            out[label] = {k: float(v) for k, v in ast.literal_eval(m.group(1)).items()}
+    return out
 
 
 def matches(written: str, unit: str, true_us: float) -> bool:
@@ -147,6 +169,9 @@ def main() -> int:
         print("\n".join(errors))
         return 1
     stats = {"MISS": compute(miss), "HIT": compute(hit)}
+    take = load_take_stats() if TAKE.exists() else {}
+    if TAKE.exists() and set(take) != {"MISS", "HIT"}:
+        errors.append(f"{TAKE.name}: could not read MISS/HIT statistics from the recording")
 
     if "--print" in sys.argv:
         for label, s in stats.items():
@@ -175,6 +200,7 @@ def main() -> int:
                     errors.append(f"{rel}:{n}: retired number '{old}' (no saved evidence)")
             if "microbenchmark" in line.lower() and not LABEL.search(line):
                 continue
+            source, src_name = (take, TAKE.name) if TAKE_MARK in line else (stats, EVIDENCE.name)
             current: str | None = None
             for tok in re.split(r"(\bHIT\b|\bMISS\b)", line):
                 if tok in ("HIT", "MISS"):
@@ -184,11 +210,14 @@ def main() -> int:
                     if current is None:
                         errors.append(f"{rel}:{n}: '{sm.group(0)}' has no HIT/MISS label before it")
                         continue
-                    true_us = stats[current][sm.group(1)]
+                    if current not in source:
+                        errors.append(f"{rel}:{n}: no {current} statistics in {src_name}")
+                        continue
+                    true_us = source[current][sm.group(1)]
                     if not matches(sm.group(2), sm.group(3), true_us):
                         errors.append(
                             f"{rel}:{n}: {current} {sm.group(1)} written as {sm.group(2)} {sm.group(3)}, "
-                            f"evidence gives {true_us / 1000:.2f} ms"
+                            f"{src_name} gives {true_us / 1000:.2f} ms"
                         )
 
     errors += check_quoted_output()
