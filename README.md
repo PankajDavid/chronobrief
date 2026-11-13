@@ -62,6 +62,22 @@ flowchart LR
 
 The cache key is a SHA-256 of tenant, subject, intent, window, prompt version and model, where `tenant` is a hash of the Bifrost virtual key. Two teams never share entries, and any prompt change invalidates every old entry.
 
+## How we use Bifrost
+
+- **A native Go plugin** (`freshcache.so`), loaded by Bifrost `transports/v2.4.0` from `gateway/config.json`. It uses three Bifrost hooks:
+  - `HTTPTransportPreHook` reads the `x-chrono-*` freshness headers.
+  - `PreLLMHook` makes the serve-or-recompute decision. On a `HIT` it short-circuits, so the model is never called.
+  - `PostLLMHook` stores fresh answers and writes one audit line per decision.
+- **Virtual keys (Bifrost governance).** Each team gets its own virtual key (`x-bf-vk`). The plugin hashes that key into the tenant id, so one team's cached brief is never served to another. A request without a key is not cached.
+- **Provider routing.** The app never talks to Gemini directly: every model call goes through Bifrost, which holds the provider key.
+
+## How we use Tavily
+
+- **News search, last 30 days.** Each brief runs four Tavily `/search` calls (general, people, launches, deals) with `topic="news"`, a `start_date` 30 days back, a trusted-publisher allowlist and a domain blocklist (`chronobrief/retrieval.py`).
+- **Tavily's dates drive the cache.** Each result's published date and URL go into the evidence fingerprint. That fingerprint is what lets the plugin tell "same evidence" from "a newer article exists".
+- **Every claim is cited.** Brief claims must cite a Tavily result inside the window. Claims that cite nothing are dropped.
+- **Replay mode** uses a real recorded Tavily response (`fixtures/tavily/`), so the demo works offline and spends no credits.
+
 ## Proof
 
 All numbers come from runs against the real gateway (Bifrost `transports/v2.4.0` + `freshcache.so`, model `gemini-3.1-flash-lite`). Raw output is in [`docs/evidence/`](docs/evidence).
@@ -82,7 +98,7 @@ saved (LLM only): 5496 tokens  $0.0016
 
 **Gateway negative proofs** ([`gateway-negative-tests.txt`](docs/evidence/gateway-negative-tests.txt)): no fingerprint, future-dated source, streaming, refresh, missing virtual key, **tenant isolation** (Team Alpha's HIT is Team Beta's MISS), changed source set. 7 of 7 pass.
 
-**Tests:** 125 Python tests (93% coverage of `chronobrief/`), including 36 Python-vs-TypeScript fingerprint parity cases, and 34 Go test functions, including a 300,000-iteration property test that no generated case ever serves a stale entry. `ruff`, `mypy --strict` and a custom invariant checker are all clean.
+**Tests:** 146 Python tests (93% coverage of `chronobrief/`), including 36 Python-vs-TypeScript fingerprint parity cases, and 36 Go test functions plus a header fuzz test, including a 300,000-iteration property test that no generated case ever serves a stale entry. `ruff`, `mypy --strict` and a custom invariant checker are all clean.
 
 ## Three-minute demo
 
@@ -111,7 +127,7 @@ Edit `.env`: set `GEMINI_API_KEY`, `CHRONO_VK_ALPHA=sk-bf-alpha-<hex>`, `CHRONO_
 
 ```bash
 docker compose up -d --build          # Bifrost + freshcache on 127.0.0.1:8080 (first build: 5-10 min)
-python -m pytest -q                   # 125 passed
+python -m pytest -q                   # 146 passed
 streamlit run app/streamlit_app.py    # the dashboard
 python scripts/e2e_cache.py           # MISS -> HIT -> REFUSE proof against your gateway
 python -m chronobrief "Stripe"        # the same brief in the terminal
