@@ -10,7 +10,7 @@ Built for the **Geek Room Global AI Hackathon**, combining:
 
 ![ChronoBrief dashboard with the cache scoreboard, live run against Bifrost + freshcache](docs/evidence/ui-walkthrough/t12-t13-scoreboard-live-gateway.png)
 
-> **Demo video:** _link coming today_ · **Run it yourself:** see [Run it locally](#run-it-locally) (about 10 minutes, Docker + a Gemini key)
+> **Demo video (4:47):** [youtube.com/watch?v=WkXwVzFFn-c](https://www.youtube.com/watch?v=WkXwVzFFn-c) · **Run it yourself:** see [Run it locally](#run-it-locally) (about 10 minutes, Docker + a Gemini key)
 
 ---
 
